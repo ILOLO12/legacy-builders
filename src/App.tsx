@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Home from "./pages/Home";
-import About from "./pages/About";
+import History from "./pages/History";
 import Founder from "./pages/Founder";
 import InMemoriam from "./pages/InMemoriam";
 import Team from "./pages/Team";
@@ -28,7 +28,7 @@ const App = () => (
         <main className="min-h-screen">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
+            <Route path="/history" element={<History />} />
             <Route path="/founder" element={<Founder />} />
             <Route path="/in-memoriam" element={<InMemoriam />} />
             <Route path="/team" element={<Team />} />

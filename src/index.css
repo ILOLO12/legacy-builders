@@ -6,51 +6,58 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 10%;
+    /* Navy-Gold Institutional Palette */
+    --background: 220 30% 98%;
+    --foreground: 215 60% 17%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 215 60% 17%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --popover-foreground: 215 60% 17%;
 
-    --primary: 152 45% 22%;
+    /* Deep Navy Primary */
+    --primary: 215 77% 18%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 43 72% 52%;
-    --secondary-foreground: 0 0% 10%;
+    /* Secondary Blue */
+    --secondary: 215 64% 34%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 140 10% 95%;
-    --muted-foreground: 0 0% 40%;
+    --muted: 220 30% 96%;
+    --muted-foreground: 215 15% 45%;
 
-    --accent: 43 72% 52%;
-    --accent-foreground: 0 0% 10%;
+    /* Gold Accent */
+    --accent: 40 45% 57%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 152 45% 22%;
+    --border: 220 20% 90%;
+    --input: 220 20% 90%;
+    --ring: 215 77% 18%;
 
     --radius: 0.5rem;
 
     /* Custom tokens */
-    --gold: 43 72% 52%;
-    --gold-light: 43 72% 92%;
-    --green-dark: 152 45% 16%;
-    --green-light: 152 30% 95%;
-    --hero-overlay: 152 45% 10%;
+    --gold: 40 45% 57%;
+    --gold-light: 40 50% 94%;
+    --gold-dark: 40 50% 42%;
+    --navy: 215 77% 18%;
+    --navy-light: 215 64% 34%;
+    --navy-dark: 215 80% 12%;
+    --surface: 220 30% 97%;
+    --surface-alt: 220 30% 96%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 152 45% 22%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 140 10% 95%;
-    --sidebar-accent-foreground: 0 0% 10%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 152 45% 22%;
+    --sidebar-background: 215 77% 18%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 40 45% 57%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 64% 34%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 215 60% 25%;
+    --sidebar-ring: 40 45% 57%;
   }
 }
 
@@ -59,7 +66,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
@@ -72,11 +79,11 @@
   }
 
   .gold-border-box {
-    @apply border-2 border-gold rounded-lg p-6 bg-gold-light/30;
+    @apply border-2 border-accent rounded-lg p-6 bg-accent/5;
   }
 
   .page-hero {
-    @apply py-20 lg:py-28 bg-green-light text-center;
+    @apply py-20 lg:py-28 bg-surface text-center;
   }
 
   .page-hero-title {
@@ -85,6 +92,26 @@
 
   .page-hero-subtitle {
     @apply text-lg text-muted-foreground max-w-2xl mx-auto;
+  }
+
+  .gold-line {
+    @apply w-16 h-1 bg-accent mx-auto;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-serif font-bold text-center mb-4;
+  }
+
+  .section-subtitle {
+    @apply text-muted-foreground text-center max-w-2xl mx-auto mb-12;
+  }
+
+  .navy-section {
+    @apply bg-primary text-primary-foreground py-20;
+  }
+
+  .card-hover {
+    @apply bg-card border border-border rounded-xl p-8 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300;
   }
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useInView } from "framer-motion";
 
 interface Props {
   end: number;
@@ -30,19 +30,12 @@ const Counter = ({ end, suffix = "", label }: Props) => {
   }, [inView, end]);
 
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, scale: 0.8 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="text-center"
-    >
-      <p className="text-3xl md:text-4xl font-serif font-bold text-primary">
+    <div ref={ref} className="text-center">
+      <p className="text-4xl md:text-5xl font-serif font-bold text-accent">
         {count.toLocaleString()}{suffix}
       </p>
-      <p className="text-sm text-muted-foreground mt-1">{label}</p>
-    </motion.div>
+      <p className="text-sm text-primary-foreground/70 mt-2 uppercase tracking-wider">{label}</p>
+    </div>
   );
 };
 

@@ -1,14 +1,18 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 
-const navLinks = [
+const mainLinks = [
   { path: "/", label: "Home" },
-  { path: "/about", label: "About Us" },
-  { path: "/founder", label: "Founder" },
-  { path: "/in-memoriam", label: "In Memoriam" },
-  { path: "/team", label: "Our Team" },
+  {
+    label: "About",
+    children: [
+      { path: "/founder", label: "Founder" },
+      { path: "/history", label: "Our History" },
+      { path: "/in-memoriam", label: "In Memoriam" },
+    ],
+  },
   { path: "/activities", label: "Activities" },
   { path: "/membership", label: "Membership" },
   { path: "/contact", label: "Contact" },
@@ -16,41 +20,102 @@ const navLinks = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
   const location = useLocation();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setAboutOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  useEffect(() => {
+    setOpen(false);
+    setAboutOpen(false);
+    setMobileAboutOpen(false);
+  }, [location.pathname]);
+
+  const isAboutActive = ["/founder", "/history", "/in-memoriam"].includes(location.pathname);
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
-      <div className="section-container flex items-center justify-between h-16 lg:h-20">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="text-xl lg:text-2xl font-serif font-bold text-primary">MUFO</span>
-          <span className="hidden sm:inline text-xs text-muted-foreground">Muller's Foundation</span>
+    <nav className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-lg">
+      <div className="section-container flex items-center justify-between h-16 lg:h-[72px]">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center">
+            <span className="text-sm font-bold text-accent-foreground">M</span>
+          </div>
+          <div className="leading-tight">
+            <span className="text-lg font-serif font-bold tracking-wide">MUFO</span>
+            <span className="hidden sm:block text-[10px] opacity-70 tracking-wider uppercase">Muller's Foundation</span>
+          </div>
         </Link>
 
         {/* Desktop nav */}
         <div className="hidden lg:flex items-center gap-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                location.pathname === link.path
-                  ? "text-primary bg-green-light"
-                  : "text-muted-foreground hover:text-primary hover:bg-green-light"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {mainLinks.map((link) =>
+            link.children ? (
+              <div key={link.label} className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setAboutOpen(!aboutOpen)}
+                  className={`flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    isAboutActive
+                      ? "bg-primary-foreground/15 text-primary-foreground"
+                      : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                  }`}
+                >
+                  {link.label}
+                  <ChevronDown size={14} className={`transition-transform ${aboutOpen ? "rotate-180" : ""}`} />
+                </button>
+                {aboutOpen && (
+                  <div className="absolute top-full left-0 mt-1 w-48 bg-card text-card-foreground rounded-lg shadow-xl border border-border py-2 animate-fade-in-up">
+                    {link.children.map((child) => (
+                      <Link
+                        key={child.path}
+                        to={child.path}
+                        className={`block px-4 py-2 text-sm transition-colors ${
+                          location.pathname === child.path
+                            ? "bg-accent/10 text-accent font-medium"
+                            : "hover:bg-muted"
+                        }`}
+                      >
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                key={link.path}
+                to={link.path!}
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  location.pathname === link.path
+                    ? "bg-primary-foreground/15 text-primary-foreground"
+                    : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                }`}
+              >
+                {link.label}
+              </Link>
+            )
+          )}
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Right side */}
+        <div className="flex items-center gap-3">
           <Link to="/donate">
             <Button variant="gold" size="sm" className="hidden sm:inline-flex">
-              Make a Donation
+              Donate
             </Button>
           </Link>
           <button
-            className="lg:hidden p-2 text-foreground"
+            className="lg:hidden p-2 text-primary-foreground"
             onClick={() => setOpen(!open)}
             aria-label="Toggle menu"
           >
@@ -61,24 +126,44 @@ const Navbar = () => {
 
       {/* Mobile nav */}
       {open && (
-        <div className="lg:hidden border-t border-border bg-background animate-fade-in">
+        <div className="lg:hidden border-t border-primary-foreground/10 bg-primary animate-fade-in-up">
           <div className="section-container py-4 flex flex-col gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => setOpen(false)}
-                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                  location.pathname === link.path
-                    ? "text-primary bg-green-light"
-                    : "text-muted-foreground hover:text-primary"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link to="/donate" onClick={() => setOpen(false)}>
-              <Button variant="gold" className="w-full mt-2">Make a Donation</Button>
+            {mainLinks.map((link) =>
+              link.children ? (
+                <div key={link.label}>
+                  <button
+                    onClick={() => setMobileAboutOpen(!mobileAboutOpen)}
+                    className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-primary-foreground/80 rounded-md"
+                  >
+                    {link.label}
+                    <ChevronDown size={14} className={`transition-transform ${mobileAboutOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  {mobileAboutOpen && (
+                    <div className="ml-4 space-y-1">
+                      {link.children.map((child) => (
+                        <Link
+                          key={child.path}
+                          to={child.path}
+                          className="block px-3 py-2 text-sm text-primary-foreground/70 hover:text-primary-foreground"
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  key={link.path}
+                  to={link.path!}
+                  className="px-3 py-2 text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground rounded-md"
+                >
+                  {link.label}
+                </Link>
+              )
+            )}
+            <Link to="/donate" className="mt-2">
+              <Button variant="gold" className="w-full">Donate</Button>
             </Link>
           </div>
         </div>

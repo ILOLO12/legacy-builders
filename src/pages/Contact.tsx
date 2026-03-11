@@ -5,24 +5,26 @@ import { Textarea } from "@/components/ui/textarea";
 import AnimatedSection from "@/components/AnimatedSection";
 import { MapPin, Mail, Phone } from "lucide-react";
 import { toast } from "sonner";
-
-const offices = [
-  { country: "DR Congo", city: "Kinshasa", type: "Headquarters" },
-  { country: "United States", city: "USA Office", type: "Representation" },
-  { country: "France", city: "France Office", type: "Representation" },
-  { country: "Canada", city: "Canada Office", type: "Representation" },
-];
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const Contact = () => {
+  const { t } = useLanguage();
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+
+  const offices = [
+    { country: t.contact.drCongo, city: t.contact.kinshasa, type: t.contact.headquarters },
+    { country: t.contact.usa, city: t.contact.usaOffice, type: t.contact.representation },
+    { country: t.contact.france, city: t.contact.franceOffice, type: t.contact.representation },
+    { country: t.contact.canada, city: t.contact.canadaOffice, type: t.contact.representation },
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
-      toast.error("Please fill in all required fields.");
+      toast.error(t.contact.errorFields);
       return;
     }
-    toast.success("Thank you! Your message has been sent.");
+    toast.success(t.contact.successMsg);
     setForm({ name: "", email: "", subject: "", message: "" });
   };
 
@@ -30,9 +32,9 @@ const Contact = () => {
     <div>
       <section className="page-hero">
         <div className="section-container">
-          <h1 className="page-hero-title">Contact Us</h1>
+          <h1 className="page-hero-title">{t.contact.title}</h1>
           <div className="gold-line mt-6" />
-          <p className="page-hero-subtitle mt-6">We'd love to hear from you. Reach out anytime.</p>
+          <p className="page-hero-subtitle mt-6">{t.contact.subtitle}</p>
         </div>
       </section>
 
@@ -40,18 +42,18 @@ const Contact = () => {
         <div className="section-container">
           <div className="grid lg:grid-cols-2 gap-16 max-w-5xl mx-auto">
             <AnimatedSection>
-              <h2 className="text-2xl font-serif font-bold mb-6">Send Us a Message</h2>
+              <h2 className="text-2xl font-serif font-bold mb-6">{t.contact.sendMessage}</h2>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <Input placeholder="Full Name *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} maxLength={100} />
-                <Input type="email" placeholder="Email Address *" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} maxLength={255} />
-                <Input placeholder="Subject" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} maxLength={200} />
-                <Textarea placeholder="Your Message *" rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} maxLength={1000} />
-                <Button type="submit" className="w-full sm:w-auto px-8">Send Message</Button>
+                <Input placeholder={t.contact.fullName} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} maxLength={100} />
+                <Input type="email" placeholder={t.contact.email} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} maxLength={255} />
+                <Input placeholder={t.contact.subject} value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} maxLength={200} />
+                <Textarea placeholder={t.contact.message} rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} maxLength={1000} />
+                <Button type="submit" className="w-full sm:w-auto px-8">{t.contact.send}</Button>
               </form>
             </AnimatedSection>
 
             <AnimatedSection delay={0.2}>
-              <h2 className="text-2xl font-serif font-bold mb-6">Our Offices</h2>
+              <h2 className="text-2xl font-serif font-bold mb-6">{t.contact.ourOffices}</h2>
               <div className="space-y-3">
                 {offices.map((o) => (
                   <div key={o.country} className="flex items-start gap-3 p-4 bg-surface rounded-lg">
@@ -76,7 +78,7 @@ const Contact = () => {
               </div>
 
               <div className="mt-8 bg-muted rounded-xl h-48 flex items-center justify-center border border-border">
-                <p className="text-muted-foreground text-sm">Google Maps — Kinshasa, DR Congo</p>
+                <p className="text-muted-foreground text-sm">{t.contact.mapPlaceholder}</p>
               </div>
             </AnimatedSection>
           </div>

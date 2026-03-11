@@ -1,22 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown } from "lucide-react";
-
-const mainLinks = [
-  { path: "/", label: "Home" },
-  {
-    label: "About",
-    children: [
-      { path: "/founder", label: "Founder" },
-      { path: "/history", label: "Our History" },
-      { path: "/in-memoriam", label: "In Memoriam" },
-    ],
-  },
-  { path: "/activities", label: "Activities" },
-  { path: "/membership", label: "Membership" },
-  { path: "/contact", label: "Contact" },
-];
+import { Menu, X, ChevronDown, Globe } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
+import logo from "@/assets/logo.jpeg";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -24,6 +11,22 @@ const Navbar = () => {
   const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
   const location = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { lang, setLang, t } = useLanguage();
+
+  const mainLinks = [
+    { path: "/", label: t.nav.home },
+    {
+      label: t.nav.about,
+      children: [
+        { path: "/founder", label: t.nav.founder },
+        { path: "/history", label: t.nav.history },
+        { path: "/in-memoriam", label: t.nav.inMemoriam },
+      ],
+    },
+    { path: "/activities", label: t.nav.activities },
+    { path: "/membership", label: t.nav.membership },
+    { path: "/contact", label: t.nav.contact },
+  ];
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -48,8 +51,8 @@ const Navbar = () => {
       <div className="section-container flex items-center justify-between h-16 lg:h-[72px]">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center">
-            <span className="text-sm font-bold text-accent-foreground">M</span>
+          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-accent/50 shadow-md">
+            <img src={logo} alt="MUFO Logo" className="w-full h-full object-cover" />
           </div>
           <div className="leading-tight">
             <span className="text-lg font-serif font-bold tracking-wide">MUFO</span>
@@ -64,7 +67,7 @@ const Navbar = () => {
               <div key={link.label} className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setAboutOpen(!aboutOpen)}
-                  className={`flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  className={`flex items-center gap-1 px-3 py-2 text-sm font-semibold tracking-wide rounded-md transition-colors ${
                     isAboutActive
                       ? "bg-primary-foreground/15 text-primary-foreground"
                       : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
@@ -95,7 +98,7 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path!}
-                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`px-3 py-2 text-sm font-semibold tracking-wide rounded-md transition-colors ${
                   location.pathname === link.path
                     ? "bg-primary-foreground/15 text-primary-foreground"
                     : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
@@ -108,10 +111,19 @@ const Navbar = () => {
         </div>
 
         {/* Right side */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* Language toggle */}
+          <button
+            onClick={() => setLang(lang === "en" ? "fr" : "en")}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-md bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground transition-colors"
+            aria-label="Toggle language"
+          >
+            <Globe size={14} />
+            {lang === "en" ? "FR" : "EN"}
+          </button>
           <Link to="/donate">
             <Button variant="gold" size="sm" className="hidden sm:inline-flex">
-              Donate
+              {t.nav.donate}
             </Button>
           </Link>
           <button
@@ -133,7 +145,7 @@ const Navbar = () => {
                 <div key={link.label}>
                   <button
                     onClick={() => setMobileAboutOpen(!mobileAboutOpen)}
-                    className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-primary-foreground/80 rounded-md"
+                    className="flex items-center justify-between w-full px-3 py-2 text-sm font-semibold tracking-wide text-primary-foreground/80 rounded-md"
                   >
                     {link.label}
                     <ChevronDown size={14} className={`transition-transform ${mobileAboutOpen ? "rotate-180" : ""}`} />
@@ -156,14 +168,14 @@ const Navbar = () => {
                 <Link
                   key={link.path}
                   to={link.path!}
-                  className="px-3 py-2 text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground rounded-md"
+                  className="px-3 py-2 text-sm font-semibold tracking-wide text-primary-foreground/80 hover:text-primary-foreground rounded-md"
                 >
                   {link.label}
                 </Link>
               )
             )}
             <Link to="/donate" className="mt-2">
-              <Button variant="gold" className="w-full">Donate</Button>
+              <Button variant="gold" className="w-full">{t.nav.donate}</Button>
             </Link>
           </div>
         </div>

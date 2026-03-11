@@ -6,49 +6,49 @@
 
 @layer base {
   :root {
-    /* Navy-Gold Institutional Palette */
-    --background: 220 30% 98%;
-    --foreground: 215 60% 17%;
+    /* Bright Navy-Gold Institutional Palette */
+    --background: 0 0% 100%;
+    --foreground: 215 50% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 60% 17%;
+    --card-foreground: 215 50% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 60% 17%;
+    --popover-foreground: 215 50% 20%;
 
     /* Deep Navy Primary */
-    --primary: 215 77% 18%;
+    --primary: 215 77% 22%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary Blue */
-    --secondary: 215 64% 34%;
+    --secondary: 215 60% 40%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 30% 96%;
-    --muted-foreground: 215 15% 45%;
+    --muted: 220 25% 96%;
+    --muted-foreground: 215 12% 50%;
 
-    /* Gold Accent */
-    --accent: 40 45% 57%;
+    /* Brighter Gold Accent */
+    --accent: 40 55% 55%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 20% 90%;
-    --input: 220 20% 90%;
-    --ring: 215 77% 18%;
+    --border: 220 18% 92%;
+    --input: 220 18% 92%;
+    --ring: 215 77% 22%;
 
     --radius: 0.5rem;
 
     /* Custom tokens */
-    --gold: 40 45% 57%;
-    --gold-light: 40 50% 94%;
+    --gold: 40 55% 55%;
+    --gold-light: 42 60% 95%;
     --gold-dark: 40 50% 42%;
-    --navy: 215 77% 18%;
-    --navy-light: 215 64% 34%;
-    --navy-dark: 215 80% 12%;
-    --surface: 220 30% 97%;
-    --surface-alt: 220 30% 96%;
+    --navy: 215 77% 22%;
+    --navy-light: 215 60% 40%;
+    --navy-dark: 215 80% 14%;
+    --surface: 220 20% 98%;
+    --surface-alt: 220 20% 96%;
 
     --sidebar-background: 215 77% 18%;
     --sidebar-foreground: 0 0% 100%;

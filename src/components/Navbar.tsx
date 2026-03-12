@@ -14,19 +14,20 @@ const Navbar = () => {
   const { lang, setLang, t } = useLanguage();
 
   const mainLinks = [
-    { path: "/", label: t.nav.home },
+    { path: "/", label: t.nav.home, icon: Home },
     {
       label: t.nav.about,
+      icon: Info,
       children: [
         { path: "/founder", label: t.nav.founder },
         { path: "/history", label: t.nav.history },
         { path: "/in-memoriam", label: t.nav.inMemoriam },
       ],
     },
-    { path: "/activities", label: t.nav.activities },
-    { path: "/news", label: t.nav.news },
-    { path: "/membership", label: t.nav.membership },
-    { path: "/contact", label: t.nav.contact },
+    { path: "/activities", label: t.nav.activities, icon: Activity },
+    { path: "/news", label: t.nav.news, icon: Newspaper },
+    { path: "/membership", label: t.nav.membership, icon: Users },
+    { path: "/contact", label: t.nav.contact, icon: Phone },
   ];
 
   useEffect(() => {

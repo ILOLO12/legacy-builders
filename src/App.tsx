@@ -12,6 +12,7 @@ import Founder from "./pages/Founder";
 import InMemoriam from "./pages/InMemoriam";
 import Team from "./pages/Team";
 import Activities from "./pages/Activities";
+import News from "./pages/News";
 import Donate from "./pages/Donate";
 import Membership from "./pages/Membership";
 import Contact from "./pages/Contact";
@@ -35,6 +36,7 @@ const App = () => (
               <Route path="/in-memoriam" element={<InMemoriam />} />
               <Route path="/team" element={<Team />} />
               <Route path="/activities" element={<Activities />} />
+              <Route path="/news" element={<News />} />
               <Route path="/donate" element={<Donate />} />
               <Route path="/membership" element={<Membership />} />
               <Route path="/contact" element={<Contact />} />

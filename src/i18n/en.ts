@@ -7,6 +7,7 @@ export const en = {
     history: "Our History",
     inMemoriam: "In Memoriam",
     activities: "ACTIVITIES",
+    news: "NEWS",
     membership: "MEMBERSHIP",
     contact: "CONTACT",
     donate: "Donate",
@@ -233,5 +234,18 @@ export const en = {
     allRights: "All rights reserved.",
     builtWith: "Built with",
     forHumanity: "for humanity",
+  },
+
+  news: {
+    title: "News & Updates",
+    subtitle: "Stay informed about our latest initiatives, events, and impact stories.",
+    news1Title: "Youth Empowerment Program Launch",
+    news1Desc: "MUFO launches a comprehensive youth empowerment program targeting 500 young people in Kinshasa with skills training and mentorship opportunities.",
+    news2Title: "Community Health Campaign Success",
+    news2Desc: "Our community health screening campaign reached over 1,200 families across three provinces, providing essential medical checkups and awareness sessions.",
+    news3Title: "Back-to-School Supply Distribution",
+    news3Desc: "Over 800 children received school supplies, uniforms, and learning materials as part of our annual educational support initiative.",
+    news4Title: "MUFO Strategic Partnership Announcement",
+    news4Desc: "Muller's Foundation signs strategic partnerships with international organizations to expand its reach and impact across Central Africa.",
   },
 };

@@ -8,6 +8,7 @@ export const fr: typeof en = {
     history: "Notre Histoire",
     inMemoriam: "In Memoriam",
     activities: "ACTIVITÉS",
+    news: "ACTUALITÉ",
     membership: "ADHÉSION",
     contact: "CONTACT",
     donate: "Faire un don",
@@ -225,5 +226,18 @@ export const fr: typeof en = {
     allRights: "Tous droits réservés.",
     builtWith: "Construit avec",
     forHumanity: "pour l'humanité",
+  },
+
+  news: {
+    title: "Actualités",
+    subtitle: "Restez informé de nos dernières initiatives, événements et histoires d'impact.",
+    news1Title: "Lancement du Programme d'Autonomisation des Jeunes",
+    news1Desc: "MUFO lance un programme complet d'autonomisation des jeunes ciblant 500 jeunes à Kinshasa avec des formations et du mentorat.",
+    news2Title: "Succès de la Campagne de Santé Communautaire",
+    news2Desc: "Notre campagne de dépistage a atteint plus de 1 200 familles dans trois provinces, offrant des bilans de santé et des sessions de sensibilisation.",
+    news3Title: "Distribution de Fournitures Scolaires",
+    news3Desc: "Plus de 800 enfants ont reçu des fournitures scolaires, des uniformes et du matériel pédagogique dans le cadre de notre initiative annuelle.",
+    news4Title: "Annonce de Partenariat Stratégique",
+    news4Desc: "La Fondation Muller signe des partenariats stratégiques avec des organisations internationales pour étendre son impact en Afrique centrale.",
   },
 };

@@ -16,9 +16,10 @@ const slides = [
 ];
 
 const MediaCarousel = () => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start", slidesToScroll: 1 }, [
-    Autoplay({ delay: 4000, stopOnInteraction: true }),
-  ]);
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: true, align: "start", slidesToScroll: 1, direction: "ltr" },
+    [Autoplay({ delay: 3500, stopOnInteraction: true })]
+  );
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
@@ -26,15 +27,14 @@ const MediaCarousel = () => {
   return (
     <div className="relative">
       <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-4">
+        <div className="flex gap-5">
           {slides.map((slide, i) => (
             <div
               key={i}
-              className="flex-[0_0_280px] md:flex-[0_0_340px] min-w-0"
+              className="flex-[0_0_85%] sm:flex-[0_0_45%] lg:flex-[0_0_30%] min-w-0"
             >
-              <div className="relative bg-navy-light rounded-xl overflow-hidden aspect-video flex items-center justify-center group cursor-pointer">
-                {/* Placeholder gradient bg */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-secondary/60" />
+              <div className="relative bg-primary/10 rounded-xl overflow-hidden aspect-[16/10] flex items-center justify-center group cursor-pointer">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/70 to-secondary/50" />
                 {slide.type === "video" && (
                   <div className="relative z-10 w-16 h-16 rounded-full bg-accent/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                     <Play className="text-accent-foreground ml-1" size={24} />

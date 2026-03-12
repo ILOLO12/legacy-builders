@@ -7,6 +7,7 @@ export const en = {
     history: "Our History",
     inMemoriam: "In Memoriam",
     activities: "ACTIVITIES",
+    news: "NEWS",
     membership: "MEMBERSHIP",
     contact: "CONTACT",
     donate: "Donate",

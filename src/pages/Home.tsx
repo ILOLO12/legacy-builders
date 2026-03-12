@@ -45,7 +45,12 @@ const Home = () => {
       {/* ─── HERO ─── */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroBg} alt="Children in classroom" className="w-full h-full object-cover object-center" />
+          <img
+            src={heroBg}
+            alt="Children in classroom"
+            className="w-full h-full object-cover object-center will-change-transform"
+            style={{ transform: `translateY(${scrollY * 0.35}px) scale(1.1)` }}
+          />
           <div className="absolute inset-0 bg-primary/65" />
         </div>
         <div className="relative z-10 section-container text-center text-primary-foreground py-20">

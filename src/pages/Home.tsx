@@ -13,7 +13,13 @@ import { useLanguage } from "@/i18n/LanguageContext";
 
 const Home = () => {
   const { t } = useLanguage();
+  const [scrollY, setScrollY] = useState(0);
 
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   const pillars = [
     { icon: BookOpen, title: t.home.pillarEdu, desc: t.home.pillarEduDesc },
     { icon: HeartPulse, title: t.home.pillarHealth, desc: t.home.pillarHealthDesc },

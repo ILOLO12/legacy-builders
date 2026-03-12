@@ -12,6 +12,7 @@ import Founder from "./pages/Founder";
 import InMemoriam from "./pages/InMemoriam";
 import Team from "./pages/Team";
 import Activities from "./pages/Activities";
+import News from "./pages/News";
 import Donate from "./pages/Donate";
 import Membership from "./pages/Membership";
 import Contact from "./pages/Contact";

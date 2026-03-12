@@ -8,6 +8,7 @@ export const fr: typeof en = {
     history: "Notre Histoire",
     inMemoriam: "In Memoriam",
     activities: "ACTIVITÉS",
+    news: "ACTUALITÉ",
     membership: "ADHÉSION",
     contact: "CONTACT",
     donate: "Faire un don",

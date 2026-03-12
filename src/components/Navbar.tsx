@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown, Globe } from "lucide-react";
+import { Menu, X, ChevronDown, Globe, Home, Info, Activity, Newspaper, Users, Phone, Heart } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import logo from "@/assets/logo.jpeg";
 
@@ -14,19 +14,20 @@ const Navbar = () => {
   const { lang, setLang, t } = useLanguage();
 
   const mainLinks = [
-    { path: "/", label: t.nav.home },
+    { path: "/", label: t.nav.home, icon: Home },
     {
       label: t.nav.about,
+      icon: Info,
       children: [
         { path: "/founder", label: t.nav.founder },
         { path: "/history", label: t.nav.history },
         { path: "/in-memoriam", label: t.nav.inMemoriam },
       ],
     },
-    { path: "/activities", label: t.nav.activities },
-    { path: "/news", label: t.nav.news },
-    { path: "/membership", label: t.nav.membership },
-    { path: "/contact", label: t.nav.contact },
+    { path: "/activities", label: t.nav.activities, icon: Activity },
+    { path: "/news", label: t.nav.news, icon: Newspaper },
+    { path: "/membership", label: t.nav.membership, icon: Users },
+    { path: "/contact", label: t.nav.contact, icon: Phone },
   ];
 
   useEffect(() => {
@@ -68,12 +69,13 @@ const Navbar = () => {
               <div key={link.label} className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setAboutOpen(!aboutOpen)}
-                  className={`flex items-center gap-1 px-3 py-2 text-sm font-semibold tracking-wide rounded-md transition-colors ${
+                  className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold tracking-wide rounded-md transition-colors ${
                     isAboutActive
                       ? "bg-primary-foreground/15 text-primary-foreground"
                       : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
                   }`}
                 >
+                  <link.icon size={15} />
                   {link.label}
                   <ChevronDown size={14} className={`transition-transform ${aboutOpen ? "rotate-180" : ""}`} />
                 </button>
@@ -99,12 +101,13 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path!}
-                className={`px-3 py-2 text-sm font-semibold tracking-wide rounded-md transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold tracking-wide rounded-md transition-colors ${
                   location.pathname === link.path
                     ? "bg-primary-foreground/15 text-primary-foreground"
                     : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
                 }`}
               >
+                <link.icon size={15} />
                 {link.label}
               </Link>
             )

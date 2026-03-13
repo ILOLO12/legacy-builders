@@ -131,7 +131,7 @@ const Navbar = () => {
             </Button>
           </Link>
           <button
-            className="lg:hidden p-2 text-primary-foreground"
+            className="lg:hidden p-2 text-accent"
             onClick={() => setOpen(!open)}
             aria-label="Toggle menu"
           >

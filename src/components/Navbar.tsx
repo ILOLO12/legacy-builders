@@ -119,7 +119,7 @@ const Navbar = () => {
           {/* Language toggle */}
           <button
             onClick={() => setLang(lang === "en" ? "fr" : "en")}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-md bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground transition-colors"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-md bg-accent/10 hover:bg-accent/20 text-accent transition-colors"
             aria-label="Toggle language"
           >
             <Globe size={14} />

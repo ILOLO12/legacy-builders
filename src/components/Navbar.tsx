@@ -71,8 +71,8 @@ const Navbar = () => {
                   onClick={() => setAboutOpen(!aboutOpen)}
                   className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold tracking-wide rounded-md transition-colors ${
                     isAboutActive
-                      ? "bg-primary-foreground/15 text-primary-foreground"
-                      : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                      ? "bg-accent/15 text-accent"
+                      : "text-accent/80 hover:text-accent hover:bg-accent/10"
                   }`}
                 >
                   <link.icon size={15} />

@@ -172,7 +172,7 @@ const Navbar = () => {
                 <Link
                   key={link.path}
                   to={link.path!}
-                  className="px-3 py-2 text-sm font-semibold tracking-wide text-primary-foreground/80 hover:text-primary-foreground rounded-md"
+                  className="px-3 py-2 text-sm font-semibold tracking-wide text-accent/80 hover:text-accent rounded-md"
                 >
                   {link.label}
                 </Link>

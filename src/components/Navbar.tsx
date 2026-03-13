@@ -49,7 +49,7 @@ const Navbar = () => {
   const isAboutActive = ["/founder", "/history", "/in-memoriam"].includes(location.pathname);
 
   return (
-    <nav className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-lg">
+    <nav className="sticky top-0 z-50 bg-primary shadow-lg">
       <div className="section-container flex items-center justify-between h-16 lg:h-[72px]">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3">

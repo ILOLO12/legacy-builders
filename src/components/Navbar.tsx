@@ -57,8 +57,8 @@ const Navbar = () => {
             <img src={logo} alt="MUFO Logo" className="w-full h-full object-cover" />
           </div>
           <div className="leading-tight">
-            <span className="text-lg font-serif font-bold tracking-wide">MUFO</span>
-            <span className="hidden sm:block text-[10px] opacity-70 tracking-wider uppercase">Muller's Foundation</span>
+            <span className="text-lg font-serif font-bold tracking-wide text-accent">MUFO</span>
+            <span className="hidden sm:block text-[10px] text-accent/70 tracking-wider uppercase">Muller's Foundation</span>
           </div>
         </Link>
 

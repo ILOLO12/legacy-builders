@@ -142,7 +142,7 @@ const Navbar = () => {
 
       {/* Mobile nav */}
       {open && (
-        <div className="lg:hidden border-t border-primary-foreground/10 bg-primary animate-fade-in-up">
+        <div className="lg:hidden border-t border-accent/10 bg-primary animate-fade-in-up">
           <div className="section-container py-4 flex flex-col gap-1">
             {mainLinks.map((link) =>
               link.children ? (

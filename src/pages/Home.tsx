@@ -19,11 +19,19 @@ const heroImages = [heroBg1, heroBg2, heroBg3, heroBg4];
 const Home = () => {
   const { t } = useLanguage();
   const [scrollY, setScrollY] = useState(0);
+  const [currentImage, setCurrentImage] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
   const pillars = [
     { icon: BookOpen, title: t.home.pillarEdu, desc: t.home.pillarEduDesc },

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,8 +8,13 @@ import {
 import AnimatedSection from "@/components/AnimatedSection";
 import Counter from "@/components/Counter";
 import MediaCarousel from "@/components/MediaCarousel";
-import heroBg from "@/assets/hero-bg.jpg";
+import heroBg1 from "@/assets/hero-bg.jpg";
+import heroBg2 from "@/assets/hero-bg-2.jpg";
+import heroBg3 from "@/assets/hero-bg-3.jpg";
+import heroBg4 from "@/assets/hero-bg-4.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
+
+const heroImages = [heroBg1, heroBg2, heroBg3, heroBg4];
 
 const Home = () => {
   const { t } = useLanguage();

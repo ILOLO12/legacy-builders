@@ -149,7 +149,7 @@ const Navbar = () => {
                 <div key={link.label}>
                   <button
                     onClick={() => setMobileAboutOpen(!mobileAboutOpen)}
-                    className="flex items-center justify-between w-full px-3 py-2 text-sm font-semibold tracking-wide text-accent/80 rounded-md"
+                    className="flex items-center justify-between w-full px-3 py-2 text-sm font-semibold tracking-wide text-primary-foreground/80 rounded-md"
                   >
                     {link.label}
                     <ChevronDown size={14} className={`transition-transform ${mobileAboutOpen ? "rotate-180" : ""}`} />

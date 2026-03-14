@@ -4,8 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/i18n/LanguageContext";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import PublicLayout from "@/components/PublicLayout";
 import Home from "./pages/Home";
 import History from "./pages/History";
 import Founder from "./pages/Founder";
@@ -18,6 +17,18 @@ import Membership from "./pages/Membership";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 
+// Admin
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminArticles from "./pages/admin/AdminArticles";
+import AdminTeam from "./pages/admin/AdminTeam";
+import AdminActivities from "./pages/admin/AdminActivities";
+import AdminPartners from "./pages/admin/AdminPartners";
+import AdminGallery from "./pages/admin/AdminGallery";
+import AdminTestimonials from "./pages/admin/AdminTestimonials";
+import AdminSettings from "./pages/admin/AdminSettings";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -27,9 +38,22 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Navbar />
-          <main className="min-h-screen">
-            <Routes>
+          <Routes>
+            {/* Admin routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="articles" element={<AdminArticles />} />
+              <Route path="team" element={<AdminTeam />} />
+              <Route path="activities" element={<AdminActivities />} />
+              <Route path="partners" element={<AdminPartners />} />
+              <Route path="gallery" element={<AdminGallery />} />
+              <Route path="testimonials" element={<AdminTestimonials />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
+
+            {/* Public routes */}
+            <Route element={<PublicLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/history" element={<History />} />
               <Route path="/founder" element={<Founder />} />
@@ -41,9 +65,8 @@ const App = () => (
               <Route path="/membership" element={<Membership />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          <Footer />
+            </Route>
+          </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </LanguageProvider>

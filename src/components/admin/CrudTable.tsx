@@ -1,0 +1,189 @@
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { Plus, Pencil, Trash2, X, Save } from "lucide-react";
+
+export interface FieldDef {
+  key: string;
+  label: string;
+  type?: "text" | "textarea" | "number" | "checkbox" | "date";
+  required?: boolean;
+}
+
+interface CrudTableProps {
+  table: string;
+  title: string;
+  fields: FieldDef[];
+  orderBy?: string;
+}
+
+const CrudTable = ({ table, title, fields, orderBy = "created_at" }: CrudTableProps) => {
+  const queryClient = useQueryClient();
+  const [editing, setEditing] = useState<Record<string, any> | null>(null);
+  const [isNew, setIsNew] = useState(false);
+
+  const { data: rows = [], isLoading } = useQuery({
+    queryKey: ["admin", table],
+    queryFn: async () => {
+      const { data, error } = await supabase.from(table as any).select("*").order(orderBy, { ascending: true });
+      if (error) throw error;
+      return data as Record<string, any>[];
+    },
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: async (row: Record<string, any>) => {
+      const payload: Record<string, any> = {};
+      fields.forEach((f) => { payload[f.key] = row[f.key] ?? null; });
+
+      if (isNew) {
+        const { error } = await supabase.from(table as any).insert(payload as any);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from(table as any).update(payload as any).eq("id", row.id);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", table] });
+      setEditing(null);
+      setIsNew(false);
+      toast.success(isNew ? "Créé avec succès" : "Mis à jour avec succès");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from(table as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", table] });
+      toast.success("Supprimé");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const startNew = () => {
+    const empty: Record<string, any> = {};
+    fields.forEach((f) => {
+      empty[f.key] = f.type === "checkbox" ? false : f.type === "number" ? 0 : "";
+    });
+    setEditing(empty);
+    setIsNew(true);
+  };
+
+  const renderField = (f: FieldDef, value: any, onChange: (v: any) => void) => {
+    if (f.type === "textarea") {
+      return <Textarea value={value ?? ""} onChange={(e) => onChange(e.target.value)} placeholder={f.label} className="text-sm" />;
+    }
+    if (f.type === "checkbox") {
+      return (
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={!!value} onChange={(e) => onChange(e.target.checked)} className="rounded" />
+          {f.label}
+        </label>
+      );
+    }
+    return (
+      <Input
+        type={f.type === "number" ? "number" : f.type === "date" ? "datetime-local" : "text"}
+        value={value ?? ""}
+        onChange={(e) => onChange(f.type === "number" ? Number(e.target.value) : e.target.value)}
+        placeholder={f.label}
+        className="text-sm"
+      />
+    );
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-serif font-bold text-foreground">{title}</h1>
+        <Button onClick={startNew} className="gap-2 bg-primary">
+          <Plus size={16} /> Ajouter
+        </Button>
+      </div>
+
+      {/* Edit / Create form */}
+      {editing && (
+        <div className="bg-card border border-border rounded-xl p-6 mb-6 space-y-4">
+          <h3 className="font-semibold text-foreground">{isNew ? "Nouveau" : "Modifier"}</h3>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {fields.map((f) => (
+              <div key={f.key} className={f.type === "textarea" ? "sm:col-span-2" : ""}>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">{f.label}</label>
+                {renderField(f, editing[f.key], (v) => setEditing({ ...editing, [f.key]: v }))}
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={() => saveMutation.mutate(editing)} disabled={saveMutation.isPending} className="gap-2 bg-primary">
+              <Save size={14} /> Enregistrer
+            </Button>
+            <Button variant="outline" onClick={() => { setEditing(null); setIsNew(false); }} className="gap-2">
+              <X size={14} /> Annuler
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Table */}
+      {isLoading ? (
+        <div className="text-center py-12 text-muted-foreground">Chargement...</div>
+      ) : rows.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">Aucun élément. Cliquez sur « Ajouter » pour commencer.</div>
+      ) : (
+        <div className="bg-card border border-border rounded-xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border bg-muted/50">
+                  {fields.slice(0, 4).map((f) => (
+                    <th key={f.key} className="text-left px-4 py-3 font-medium text-muted-foreground">{f.label}</th>
+                  ))}
+                  <th className="px-4 py-3 text-right font-medium text-muted-foreground">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row) => (
+                  <tr key={row.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+                    {fields.slice(0, 4).map((f) => (
+                      <td key={f.key} className="px-4 py-3 text-foreground max-w-[200px] truncate">
+                        {f.type === "checkbox" ? (row[f.key] ? "✓" : "✗") : String(row[f.key] ?? "—")}
+                      </td>
+                    ))}
+                    <td className="px-4 py-3 text-right space-x-1">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => { setEditing({ ...row }); setIsNew(false); }}
+                      >
+                        <Pencil size={14} />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => { if (confirm("Supprimer ?")) deleteMutation.mutate(row.id); }}
+                      >
+                        <Trash2 size={14} />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default CrudTable;

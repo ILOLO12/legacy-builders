@@ -93,6 +93,21 @@ const Home = () => {
                 </Button>
               </Link>
             </div>
+            {/* Dot indicators */}
+            <div className="mt-8 flex justify-center gap-2">
+              {heroImages.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentImage(i)}
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                    currentImage === i
+                      ? "bg-accent w-6"
+                      : "bg-primary-foreground/40 hover:bg-primary-foreground/60"
+                  }`}
+                  aria-label={`Image ${i + 1}`}
+                />
+              ))}
+            </div>
           </AnimatedSection>
         </div>
       </section>

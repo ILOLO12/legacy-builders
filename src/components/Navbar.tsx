@@ -57,8 +57,8 @@ const Navbar = () => {
             <img src={logo} alt="MUFO Logo" className="w-full h-full object-cover" />
           </div>
           <div className="leading-tight">
-            <span className="text-lg font-serif font-bold tracking-wide text-accent">MUFO</span>
-            <span className="hidden sm:block text-[10px] text-accent/70 tracking-wider uppercase">Muller's Foundation</span>
+            <span className="text-lg font-serif font-bold tracking-wide text-primary-foreground">MUFO</span>
+            <span className="hidden sm:block text-[10px] text-primary-foreground/70 tracking-wider uppercase">Muller's Foundation</span>
           </div>
         </Link>
 
@@ -71,8 +71,8 @@ const Navbar = () => {
                   onClick={() => setAboutOpen(!aboutOpen)}
                   className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold tracking-wide rounded-md transition-colors ${
                     isAboutActive
-                      ? "bg-accent/15 text-accent"
-                      : "text-accent/80 hover:text-accent hover:bg-accent/10"
+                      ? "bg-primary-foreground/15 text-primary-foreground"
+                      : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
                   }`}
                 >
                   <link.icon size={15} />
@@ -103,8 +103,8 @@ const Navbar = () => {
                 to={link.path!}
                 className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold tracking-wide rounded-md transition-colors ${
                   location.pathname === link.path
-                    ? "bg-accent/15 text-accent"
-                    : "text-accent/80 hover:text-accent hover:bg-accent/10"
+                    ? "bg-primary-foreground/15 text-primary-foreground"
+                    : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
                 }`}
               >
                 <link.icon size={15} />
@@ -119,7 +119,7 @@ const Navbar = () => {
           {/* Language toggle */}
           <button
             onClick={() => setLang(lang === "en" ? "fr" : "en")}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-md bg-accent/10 hover:bg-accent/20 text-accent transition-colors"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-md bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground transition-colors"
             aria-label="Toggle language"
           >
             <Globe size={14} />
@@ -131,7 +131,7 @@ const Navbar = () => {
             </Button>
           </Link>
           <button
-            className="lg:hidden p-2 text-accent"
+            className="lg:hidden p-2 text-primary-foreground"
             onClick={() => setOpen(!open)}
             aria-label="Toggle menu"
           >
@@ -149,7 +149,7 @@ const Navbar = () => {
                 <div key={link.label}>
                   <button
                     onClick={() => setMobileAboutOpen(!mobileAboutOpen)}
-                    className="flex items-center justify-between w-full px-3 py-2 text-sm font-semibold tracking-wide text-accent/80 rounded-md"
+                    className="flex items-center justify-between w-full px-3 py-2 text-sm font-semibold tracking-wide text-primary-foreground/80 rounded-md"
                   >
                     {link.label}
                     <ChevronDown size={14} className={`transition-transform ${mobileAboutOpen ? "rotate-180" : ""}`} />
@@ -160,7 +160,7 @@ const Navbar = () => {
                         <Link
                           key={child.path}
                           to={child.path}
-                          className="block px-3 py-2 text-sm text-accent/70 hover:text-accent"
+                          className="block px-3 py-2 text-sm text-primary-foreground/70 hover:text-primary-foreground"
                         >
                           {child.label}
                         </Link>
@@ -172,7 +172,7 @@ const Navbar = () => {
                 <Link
                   key={link.path}
                   to={link.path!}
-                  className="px-3 py-2 text-sm font-semibold tracking-wide text-accent/80 hover:text-accent rounded-md"
+                  className="px-3 py-2 text-sm font-semibold tracking-wide text-primary-foreground/80 hover:text-primary-foreground rounded-md"
                 >
                   {link.label}
                 </Link>

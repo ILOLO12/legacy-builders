@@ -64,8 +64,11 @@ const AdminLogin = () => {
             required
           />
           <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={loading}>
-            {loading ? "Connexion..." : "Se connecter"}
+            {loading ? "Chargement..." : isSignUp ? "Créer le compte" : "Se connecter"}
           </Button>
+          <button type="button" className="text-sm text-muted-foreground underline w-full text-center" onClick={() => setIsSignUp(!isSignUp)}>
+            {isSignUp ? "Déjà un compte ? Se connecter" : "Créer un compte"}
+          </button>
         </form>
       </div>
     </div>

@@ -47,7 +47,12 @@ const Footer = () => {
         </div>
         <div className="border-t border-primary-foreground/10 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs opacity-50">
           <p>© {new Date().getFullYear()} Muller's Foundation (MUFO). {t.footer.allRights}</p>
-          <p className="flex items-center gap-1">{t.footer.builtWith} <Heart size={12} className="text-accent" /> {t.footer.forHumanity}</p>
+          <div className="flex items-center gap-4">
+            <Link to="/admin/login" className="flex items-center gap-1 hover:opacity-100 transition-opacity">
+              <Lock size={10} /> Admin
+            </Link>
+            <p className="flex items-center gap-1">{t.footer.builtWith} <Heart size={12} className="text-accent" /> {t.footer.forHumanity}</p>
+          </div>
         </div>
       </div>
     </footer>

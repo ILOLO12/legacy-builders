@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,18 +11,30 @@ const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await signIn(email, password);
-    setLoading(false);
-    if (error) {
-      toast.error("Identifiants invalides");
+    if (isSignUp) {
+      const { error } = await supabase.auth.signUp({ email, password });
+      setLoading(false);
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Compte créé ! Connectez-vous maintenant.");
+        setIsSignUp(false);
+      }
     } else {
-      navigate("/admin");
+      const { error } = await signIn(email, password);
+      setLoading(false);
+      if (error) {
+        toast.error("Identifiants invalides");
+      } else {
+        navigate("/admin");
+      }
     }
   };
 
@@ -51,8 +64,11 @@ const AdminLogin = () => {
             required
           />
           <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={loading}>
-            {loading ? "Connexion..." : "Se connecter"}
+            {loading ? "Chargement..." : isSignUp ? "Créer le compte" : "Se connecter"}
           </Button>
+          <button type="button" className="text-sm text-muted-foreground underline w-full text-center" onClick={() => setIsSignUp(!isSignUp)}>
+            {isSignUp ? "Déjà un compte ? Se connecter" : "Créer un compte"}
+          </button>
         </form>
       </div>
     </div>

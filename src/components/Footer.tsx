@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Heart } from "lucide-react";
+import { Heart, Lock } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import logo from "@/assets/logo.jpeg";
 

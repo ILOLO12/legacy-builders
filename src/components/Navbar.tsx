@@ -28,6 +28,7 @@ const Navbar = () => {
     { path: "/news", label: t.nav.news, icon: Newspaper },
     { path: "/membership", label: t.nav.membership, icon: Users },
     { path: "/contact", label: t.nav.contact, icon: Phone },
+    { path: "/admin/login", label: t.nav.login || "Connexion", icon: Lock },
   ];
 
   useEffect(() => {

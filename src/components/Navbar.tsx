@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown, Globe, Home, Info, Activity, Newspaper, Users, Phone, Heart } from "lucide-react";
+import { Menu, X, ChevronDown, Globe, Home, Info, Activity, Newspaper, Users, Phone, Heart, Lock } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import logo from "@/assets/logo.jpeg";
 
@@ -28,6 +28,7 @@ const Navbar = () => {
     { path: "/news", label: t.nav.news, icon: Newspaper },
     { path: "/membership", label: t.nav.membership, icon: Users },
     { path: "/contact", label: t.nav.contact, icon: Phone },
+    { path: "/admin/login", label: "Connexion", icon: Lock as any },
   ];
 
   useEffect(() => {

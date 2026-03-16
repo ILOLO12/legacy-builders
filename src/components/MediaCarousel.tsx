@@ -31,7 +31,7 @@ const MediaCarousel = () => {
           {slides.map((slide, i) => (
             <div
               key={i}
-              className="flex-[0_0_85%] sm:flex-[0_0_45%] lg:flex-[0_0_30%] min-w-0"
+              className="flex-[0_0_70%] sm:flex-[0_0_35%] lg:flex-[0_0_22%] min-w-0"
             >
               <div className="relative bg-primary/10 rounded-xl overflow-hidden aspect-[16/10] flex items-center justify-center group cursor-pointer">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/70 to-secondary/50" />

@@ -1,6 +1,7 @@
 import AnimatedSection from "@/components/AnimatedSection";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Newspaper, Calendar } from "lucide-react";
+import { useSEO } from "@/hooks/useSEO";
 
 const newsItems = [
   { date: "2025-02-15", titleKey: "news1Title" as const, descKey: "news1Desc" as const },
@@ -11,6 +12,7 @@ const newsItems = [
 
 const News = () => {
   const { t } = useLanguage();
+  useSEO("News", "Latest news and updates from Muller's Foundation (MUFO).");
 
   return (
     <div>

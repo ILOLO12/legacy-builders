@@ -23,20 +23,20 @@ const AdminSettings = () => {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, value }: { id: string; value: string }) => {
-      const { error } = await supabase.from("site_settings").update({ value, updated_at: new Date().toISOString() } as any).eq("id", id);
+      const { error } = await supabase.from("site_settings").update({ value, updated_at: new Date().toISOString() }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "site_settings"] });
       toast.success("Paramètre mis à jour");
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const addMutation = useMutation({
     mutationFn: async () => {
       if (!newKey.trim()) throw new Error("Clé requise");
-      const { error } = await supabase.from("site_settings").insert({ key: newKey.trim(), value: newValue } as any);
+      const { error } = await supabase.from("site_settings").insert({ key: newKey.trim(), value: newValue });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -45,7 +45,7 @@ const AdminSettings = () => {
       setNewValue("");
       toast.success("Paramètre ajouté");
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const deleteMutation = useMutation({
@@ -57,7 +57,7 @@ const AdminSettings = () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "site_settings"] });
       toast.success("Supprimé");
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: Error) => toast.error(e.message),
   });
 
   return (

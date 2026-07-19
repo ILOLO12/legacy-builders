@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Newspaper, Users, Activity, Handshake, Image, MessageSquareQuote } from "lucide-react";
 
@@ -12,16 +12,16 @@ const stats = [
 ];
 
 const AdminDashboard = () => {
-  const counts = stats.map((s) => {
-    const { data } = useQuery({
+  const results = useQueries({
+    queries: stats.map((s) => ({
       queryKey: ["admin-count", s.table],
       queryFn: async () => {
         const { count } = await supabase.from(s.table).select("*", { count: "exact", head: true });
         return count ?? 0;
       },
-    });
-    return { ...s, count: data ?? 0 };
+    })),
   });
+  const counts = stats.map((s, i) => ({ ...s, count: results[i].data ?? 0 }));
 
   return (
     <div>

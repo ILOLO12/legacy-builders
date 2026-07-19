@@ -1,9 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   BookOpen, HeartPulse, Users, ArrowRight, GraduationCap, Stethoscope,
-  Lightbulb, Shield, CheckCircle, Clapperboard, Handshake
+  Lightbulb, Shield, CheckCircle, Clapperboard, Handshake, Quote
 } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import Counter from "@/components/Counter";
@@ -13,13 +14,35 @@ import heroBg2 from "@/assets/hero-bg-2.jpg";
 import heroBg3 from "@/assets/hero-bg-3.jpg";
 import heroBg4 from "@/assets/hero-bg-4.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useSEO } from "@/hooks/useSEO";
 
 const heroImages = [heroBg1, heroBg2, heroBg3, heroBg4];
 
 const Home = () => {
   const { t } = useLanguage();
+  useSEO("Home", "International humanitarian NGO transforming potential into sustainable opportunity through education, health, and community development.");
+  const { data: partners = [] } = useQuery({
+    queryKey: ["partners"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("partners").select("*").order("display_order", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+  const { data: testimonials = [] } = useQuery({
+    queryKey: ["testimonials"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("testimonials").select("*").order("display_order", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
   const [scrollY, setScrollY] = useState(0);
   const [currentImage, setCurrentImage] = useState(0);
+  // Only the current slide plus the next one are ever mounted, so the browser
+  // isn't forced to download all hero images (~800kB) on first paint.
+  const [loadedImages, setLoadedImages] = useState(() => new Set([0, 1 % heroImages.length]));
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -29,7 +52,12 @@ const Home = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % heroImages.length);
+      setCurrentImage((prev) => {
+        const next = (prev + 1) % heroImages.length;
+        const upcoming = (next + 1) % heroImages.length;
+        setLoadedImages((loaded) => new Set(loaded).add(next).add(upcoming));
+        return next;
+      });
     }, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -58,18 +86,21 @@ const Home = () => {
       {/* ─── HERO ─── */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          {heroImages.map((img, i) => (
-            <img
-              key={i}
-              src={img}
-              alt={`Hero background ${i + 1}`}
-              className="absolute inset-0 w-full h-full object-cover object-center will-change-transform transition-opacity duration-1000 ease-in-out"
-              style={{
-                transform: `translateY(${scrollY * 0.35}px) scale(1.1)`,
-                opacity: currentImage === i ? 1 : 0,
-              }}
-            />
-          ))}
+          {heroImages.map((img, i) =>
+            loadedImages.has(i) ? (
+              <img
+                key={i}
+                src={img}
+                alt={`Hero background ${i + 1}`}
+                loading={i === 0 ? "eager" : "lazy"}
+                className="absolute inset-0 w-full h-full object-cover object-center will-change-transform transition-opacity duration-1000 ease-in-out"
+                style={{
+                  transform: `translateY(${scrollY * 0.35}px) scale(1.1)`,
+                  opacity: currentImage === i ? 1 : 0,
+                }}
+              />
+            ) : null
+          )}
           <div className="absolute inset-0 bg-primary/65" />
         </div>
         <div className="relative z-10 section-container text-center text-primary-foreground py-20">
@@ -259,28 +290,71 @@ const Home = () => {
       </section>
 
       {/* ─── PARTNERS ─── */}
-      <section className="py-20 bg-surface">
-        <div className="section-container">
-          <AnimatedSection>
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <Handshake className="text-accent" size={24} />
-              <h2 className="section-title mb-0">{t.home.ourPartners}</h2>
-            </div>
-            <p className="section-subtitle">{t.home.partnersSub}</p>
-          </AnimatedSection>
-          <AnimatedSection delay={0.2}>
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-6 max-w-4xl mx-auto">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="aspect-square bg-card border border-border rounded-xl flex items-center justify-center hover:shadow-md transition-shadow">
-                  <div className="text-muted-foreground/30 text-xs uppercase tracking-wider font-medium">
-                    Partner {i + 1}
+      {partners.length > 0 && (
+        <section className="py-20 bg-surface">
+          <div className="section-container">
+            <AnimatedSection>
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Handshake className="text-accent" size={24} />
+                <h2 className="section-title mb-0">{t.home.ourPartners}</h2>
+              </div>
+              <p className="section-subtitle">{t.home.partnersSub}</p>
+            </AnimatedSection>
+            <AnimatedSection delay={0.2}>
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-6 max-w-4xl mx-auto">
+                {partners.map((p) => (
+                  <a
+                    key={p.id}
+                    href={p.website_url ?? undefined}
+                    target={p.website_url ? "_blank" : undefined}
+                    rel={p.website_url ? "noopener noreferrer" : undefined}
+                    className="aspect-square bg-card border border-border rounded-xl flex items-center justify-center hover:shadow-md transition-shadow p-3"
+                  >
+                    {p.logo_url ? (
+                      <img src={p.logo_url} alt={p.name} className="max-w-full max-h-full object-contain" loading="lazy" />
+                    ) : (
+                      <div className="text-muted-foreground/30 text-xs uppercase tracking-wider font-medium text-center">
+                        {p.name}
+                      </div>
+                    )}
+                  </a>
+                ))}
+              </div>
+            </AnimatedSection>
+          </div>
+        </section>
+      )}
+
+      {/* ─── TESTIMONIALS ─── */}
+      {testimonials.length > 0 && (
+        <section className="py-20">
+          <div className="section-container">
+            <AnimatedSection>
+              <h2 className="section-title text-center">{t.home.testimonialsTitle}</h2>
+              <div className="gold-line mb-12 mx-auto" />
+            </AnimatedSection>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {testimonials.map((tItem, i) => (
+                <AnimatedSection key={tItem.id} delay={i * 0.1}>
+                  <div className="bg-card border border-border rounded-xl p-6 h-full flex flex-col">
+                    <Quote className="text-accent/40 mb-3" size={28} />
+                    <p className="text-sm text-muted-foreground flex-1 mb-4 leading-relaxed">{tItem.quote}</p>
+                    <div className="flex items-center gap-3">
+                      {tItem.author_photo_url && (
+                        <img src={tItem.author_photo_url} alt={tItem.author_name} className="w-10 h-10 rounded-full object-cover" loading="lazy" />
+                      )}
+                      <div>
+                        <p className="text-sm font-semibold">{tItem.author_name}</p>
+                        {tItem.author_role && <p className="text-xs text-muted-foreground">{tItem.author_role}</p>}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </AnimatedSection>
               ))}
             </div>
-          </AnimatedSection>
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
       {/* ─── QUOTE ─── */}
       <section className="navy-section">

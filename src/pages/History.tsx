@@ -1,9 +1,11 @@
 import AnimatedSection from "@/components/AnimatedSection";
 import { BookOpen, Award, Heart, Stethoscope, Lightbulb, Shield, Scale, Gem } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useSEO } from "@/hooks/useSEO";
 
 const History = () => {
   const { t } = useLanguage();
+  useSEO("Our History", "Discover the history and founding story of Muller's Foundation (MUFO).");
 
   const values = [
     { icon: Heart, name: t.history.compassion, desc: t.history.compassionDesc },

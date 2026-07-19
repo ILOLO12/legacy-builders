@@ -1,10 +1,13 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import AnimatedSection from "@/components/AnimatedSection";
 import { CreditCard, Smartphone, Globe, DollarSign } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useSEO } from "@/hooks/useSEO";
 
 const Donate = () => {
   const { t } = useLanguage();
+  useSEO("Donate", "Support Muller's Foundation (MUFO) and help us restore hope and build a lasting legacy.");
 
   const methods = [
     { icon: CreditCard, name: t.donateP.bankTransfer, desc: t.donateP.bankDesc },
@@ -49,7 +52,9 @@ const Donate = () => {
                   </div>
                   <h3 className="font-serif font-semibold mb-2">{m.name}</h3>
                   <p className="text-sm text-muted-foreground mb-6 flex-1">{m.desc}</p>
-                  <Button variant="gold" size="sm" className="w-full">{t.donateP.donateNow}</Button>
+                  <Button variant="gold" size="sm" className="w-full" asChild>
+                    <Link to="/contact">{t.donateP.donateNow}</Link>
+                  </Button>
                 </div>
               </AnimatedSection>
             ))}

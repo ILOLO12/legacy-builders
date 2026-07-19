@@ -1,9 +1,11 @@
 import AnimatedSection from "@/components/AnimatedSection";
 import founderImg from "@/assets/founder.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useSEO } from "@/hooks/useSEO";
 
 const Founder = () => {
   const { t } = useLanguage();
+  useSEO("Our Founder", "Meet the founder of Muller's Foundation (MUFO) and his vision for restoring hope and building legacy.");
 
   const quotes = [t.founder.quote1, t.founder.quote2];
 

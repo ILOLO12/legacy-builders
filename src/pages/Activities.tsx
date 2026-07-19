@@ -2,9 +2,11 @@ import AnimatedSection from "@/components/AnimatedSection";
 import Counter from "@/components/Counter";
 import { BookOpen, HeartPulse, Users, Star } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useSEO } from "@/hooks/useSEO";
 
 const Activities = () => {
   const { t } = useLanguage();
+  useSEO("Our Activities", "Explore MUFO's timeline, field projects, and community impact.");
 
   const timeline = [
     { year: "2021", title: t.activities.t2021, desc: t.activities.t2021Desc, icon: Star },

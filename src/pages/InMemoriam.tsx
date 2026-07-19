@@ -2,9 +2,11 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { Shield, Heart, Mountain, Users } from "lucide-react";
 import memorialImg from "@/assets/memorial.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useSEO } from "@/hooks/useSEO";
 
 const InMemoriam = () => {
   const { t } = useLanguage();
+  useSEO("In Memoriam", "Honoring the memory and legacy of those who inspired Muller's Foundation (MUFO).");
 
   const values = [
     { icon: Shield, name: t.memoriam.responsibility },

@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Check } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useSEO } from "@/hooks/useSEO";
 
 const Membership = () => {
   const { t } = useLanguage();
+  useSEO("Membership", "Become a member of Muller's Foundation (MUFO) and join our mission.");
   const b = t.membership.benefits;
 
   const tiers = [

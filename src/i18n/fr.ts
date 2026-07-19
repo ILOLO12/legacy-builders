@@ -53,6 +53,7 @@ export const fr: typeof en = {
     viewAllActivities: "Voir Toutes les Activités",
     ourPartners: "Nos Partenaires",
     partnersSub: "Travailler ensemble pour un impact durable.",
+    testimonialsTitle: "Ce qu'ils en disent",
     quote: "« La compassion inspire notre mission. La discipline garantit l'impact. L'héritage se construit ensemble. »",
     mullersFoundation: "Fondation Muller",
   },

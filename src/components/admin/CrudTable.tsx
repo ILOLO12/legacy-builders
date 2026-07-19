@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,8 +15,11 @@ export interface FieldDef {
   required?: boolean;
 }
 
+type FieldValue = string | number | boolean | null;
+type RowData = Record<string, FieldValue> & { id?: string };
+
 interface CrudTableProps {
-  table: string;
+  table: keyof Database["public"]["Tables"];
   title: string;
   fields: FieldDef[];
   orderBy?: string;
@@ -23,28 +27,28 @@ interface CrudTableProps {
 
 const CrudTable = ({ table, title, fields, orderBy = "created_at" }: CrudTableProps) => {
   const queryClient = useQueryClient();
-  const [editing, setEditing] = useState<Record<string, any> | null>(null);
+  const [editing, setEditing] = useState<RowData | null>(null);
   const [isNew, setIsNew] = useState(false);
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["admin", table],
     queryFn: async () => {
-      const { data, error } = await supabase.from(table as any).select("*").order(orderBy, { ascending: true });
+      const { data, error } = await supabase.from(table).select("*").order(orderBy, { ascending: true });
       if (error) throw error;
-      return data as Record<string, any>[];
+      return data as unknown as RowData[];
     },
   });
 
   const saveMutation = useMutation({
-    mutationFn: async (row: Record<string, any>) => {
-      const payload: Record<string, any> = {};
+    mutationFn: async (row: RowData) => {
+      const payload: Record<string, FieldValue> = {};
       fields.forEach((f) => { payload[f.key] = row[f.key] ?? null; });
 
       if (isNew) {
-        const { error } = await supabase.from(table as any).insert(payload as any);
+        const { error } = await supabase.from(table).insert(payload as never);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from(table as any).update(payload as any).eq("id", row.id);
+        const { error } = await supabase.from(table).update(payload as never).eq("id", row.id as string);
         if (error) throw error;
       }
     },
@@ -54,23 +58,23 @@ const CrudTable = ({ table, title, fields, orderBy = "created_at" }: CrudTablePr
       setIsNew(false);
       toast.success(isNew ? "Créé avec succès" : "Mis à jour avec succès");
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from(table as any).delete().eq("id", id);
+      const { error } = await supabase.from(table).delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", table] });
       toast.success("Supprimé");
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const startNew = () => {
-    const empty: Record<string, any> = {};
+    const empty: RowData = {};
     fields.forEach((f) => {
       empty[f.key] = f.type === "checkbox" ? false : f.type === "number" ? 0 : "";
     });
@@ -78,7 +82,7 @@ const CrudTable = ({ table, title, fields, orderBy = "created_at" }: CrudTablePr
     setIsNew(true);
   };
 
-  const renderField = (f: FieldDef, value: any, onChange: (v: any) => void) => {
+  const renderField = (f: FieldDef, value: FieldValue, onChange: (v: FieldValue) => void) => {
     if (f.type === "textarea") {
       return <Textarea value={value ?? ""} onChange={(e) => onChange(e.target.value)} placeholder={f.label} className="text-sm" />;
     }

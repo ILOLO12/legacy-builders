@@ -53,6 +53,7 @@ export const en = {
     viewAllActivities: "View All Activities",
     ourPartners: "Our Partners",
     partnersSub: "Working together for sustainable impact.",
+    testimonialsTitle: "What People Say",
     quote: "\"Compassion inspires our mission. Discipline guarantees impact. Legacy is built together.\"",
     mullersFoundation: "Muller's Foundation",
   },

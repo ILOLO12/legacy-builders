@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -6,30 +7,37 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import PublicLayout from "@/components/PublicLayout";
 import Home from "./pages/Home";
-import History from "./pages/History";
-import Founder from "./pages/Founder";
-import InMemoriam from "./pages/InMemoriam";
-import Team from "./pages/Team";
-import Activities from "./pages/Activities";
-import News from "./pages/News";
-import Donate from "./pages/Donate";
-import Membership from "./pages/Membership";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
 
-// Admin
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminLayout from "./pages/admin/AdminLayout";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminArticles from "./pages/admin/AdminArticles";
-import AdminTeam from "./pages/admin/AdminTeam";
-import AdminActivities from "./pages/admin/AdminActivities";
-import AdminPartners from "./pages/admin/AdminPartners";
-import AdminGallery from "./pages/admin/AdminGallery";
-import AdminTestimonials from "./pages/admin/AdminTestimonials";
-import AdminSettings from "./pages/admin/AdminSettings";
+const History = lazy(() => import("./pages/History"));
+const Founder = lazy(() => import("./pages/Founder"));
+const InMemoriam = lazy(() => import("./pages/InMemoriam"));
+const Team = lazy(() => import("./pages/Team"));
+const Activities = lazy(() => import("./pages/Activities"));
+const News = lazy(() => import("./pages/News"));
+const Donate = lazy(() => import("./pages/Donate"));
+const Membership = lazy(() => import("./pages/Membership"));
+const Contact = lazy(() => import("./pages/Contact"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+// Admin (split into its own chunk, only loaded for admin visitors)
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminArticles = lazy(() => import("./pages/admin/AdminArticles"));
+const AdminTeam = lazy(() => import("./pages/admin/AdminTeam"));
+const AdminActivities = lazy(() => import("./pages/admin/AdminActivities"));
+const AdminPartners = lazy(() => import("./pages/admin/AdminPartners"));
+const AdminGallery = lazy(() => import("./pages/admin/AdminGallery"));
+const AdminTestimonials = lazy(() => import("./pages/admin/AdminTestimonials"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 
 const queryClient = new QueryClient();
+
+const PageFallback = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -38,35 +46,37 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            {/* Admin routes */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="articles" element={<AdminArticles />} />
-              <Route path="team" element={<AdminTeam />} />
-              <Route path="activities" element={<AdminActivities />} />
-              <Route path="partners" element={<AdminPartners />} />
-              <Route path="gallery" element={<AdminGallery />} />
-              <Route path="testimonials" element={<AdminTestimonials />} />
-              <Route path="settings" element={<AdminSettings />} />
-            </Route>
+          <Suspense fallback={<PageFallback />}>
+            <Routes>
+              {/* Admin routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="articles" element={<AdminArticles />} />
+                <Route path="team" element={<AdminTeam />} />
+                <Route path="activities" element={<AdminActivities />} />
+                <Route path="partners" element={<AdminPartners />} />
+                <Route path="gallery" element={<AdminGallery />} />
+                <Route path="testimonials" element={<AdminTestimonials />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
 
-            {/* Public routes */}
-            <Route element={<PublicLayout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/history" element={<History />} />
-              <Route path="/founder" element={<Founder />} />
-              <Route path="/in-memoriam" element={<InMemoriam />} />
-              <Route path="/team" element={<Team />} />
-              <Route path="/activities" element={<Activities />} />
-              <Route path="/news" element={<News />} />
-              <Route path="/donate" element={<Donate />} />
-              <Route path="/membership" element={<Membership />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
+              {/* Public routes */}
+              <Route element={<PublicLayout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/founder" element={<Founder />} />
+                <Route path="/in-memoriam" element={<InMemoriam />} />
+                <Route path="/team" element={<Team />} />
+                <Route path="/activities" element={<Activities />} />
+                <Route path="/news" element={<News />} />
+                <Route path="/donate" element={<Donate />} />
+                <Route path="/membership" element={<Membership />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
     </LanguageProvider>

@@ -6,10 +6,14 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { MapPin, Mail, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useSEO } from "@/hooks/useSEO";
 
 const Contact = () => {
   const { t } = useLanguage();
+  useSEO("Contact Us", "Get in touch with Muller's Foundation (MUFO). We have offices in DR Congo, USA, France, and Canada.");
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [sending, setSending] = useState(false);
 
   const offices = [
     { country: t.contact.drCongo, city: t.contact.kinshasa, type: t.contact.headquarters },
@@ -18,9 +22,21 @@ const Contact = () => {
     { country: t.contact.canada, city: t.contact.canadaOffice, type: t.contact.representation },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+      toast.error(t.contact.errorFields);
+      return;
+    }
+    setSending(true);
+    const { error } = await supabase.from("contact_messages").insert({
+      name: form.name.trim(),
+      email: form.email.trim(),
+      subject: form.subject.trim() || null,
+      message: form.message.trim(),
+    });
+    setSending(false);
+    if (error) {
       toast.error(t.contact.errorFields);
       return;
     }
@@ -48,7 +64,7 @@ const Contact = () => {
                 <Input type="email" placeholder={t.contact.email} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} maxLength={255} />
                 <Input placeholder={t.contact.subject} value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} maxLength={200} />
                 <Textarea placeholder={t.contact.message} rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} maxLength={1000} />
-                <Button type="submit" className="w-full sm:w-auto px-8">{t.contact.send}</Button>
+                <Button type="submit" className="w-full sm:w-auto px-8" disabled={sending}>{sending ? "..." : t.contact.send}</Button>
               </form>
             </AnimatedSection>
 

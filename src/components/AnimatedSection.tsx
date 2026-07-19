@@ -19,5 +19,4 @@ const AnimatedSection = ({ children, className = "", delay = 0 }: Props) => (
   </motion.div>
 );
 
-// eslint-disable-next-line react-refresh/only-export-components
 export default AnimatedSection;

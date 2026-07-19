@@ -1,16 +1,18 @@
 import AnimatedSection from "@/components/AnimatedSection";
 import { BookOpen, Award, Heart, Stethoscope, Lightbulb, Shield, Scale, Gem } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageContent } from "@/hooks/usePageContent";
 
 const History = () => {
   const { t } = useLanguage();
+  const c = usePageContent("history", t.history as any);
 
   const values = [
-    { icon: Heart, name: t.history.compassion, desc: t.history.compassionDesc },
-    { icon: Shield, name: t.history.integrity, desc: t.history.integrityDesc },
-    { icon: Award, name: t.history.excellence, desc: t.history.excellenceDesc },
-    { icon: Scale, name: t.history.equity, desc: t.history.equityDesc },
-    { icon: Gem, name: t.history.legacy, desc: t.history.legacyDesc },
+    { icon: Heart, name: c.compassion, desc: c.compassionDesc },
+    { icon: Shield, name: c.integrity, desc: c.integrityDesc },
+    { icon: Award, name: c.excellence, desc: c.excellenceDesc },
+    { icon: Scale, name: c.equity, desc: c.equityDesc },
+    { icon: Gem, name: c.legacy, desc: c.legacyDesc },
   ];
 
   return (

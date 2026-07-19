@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -53,6 +54,25 @@ const AdminLogin = () => {
           <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={loading}>
             {loading ? "Chargement..." : "Se connecter"}
           </Button>
+          <div className="flex flex-col gap-2 pt-2">
+            <button
+              type="button"
+              className="text-sm text-accent underline text-center"
+              onClick={async () => {
+                if (!email) {
+                  toast.error("Entrez votre email d'abord");
+                  return;
+                }
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                  redirectTo: `${window.location.origin}/reset-password`,
+                });
+                if (error) toast.error(error.message);
+                else toast.success("Email de réinitialisation envoyé ! Vérifiez votre boîte mail.");
+              }}
+            >
+              Mot de passe oublié ?
+            </button>
+          </div>
         </form>
       </div>
     </div>

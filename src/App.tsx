@@ -21,8 +21,10 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Admin (split into its own chunk, only loaded for admin visitors)
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
+const ResetPassword = lazy(() => import("./pages/admin/ResetPassword"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminPages = lazy(() => import("./pages/admin/AdminPages"));
 const AdminArticles = lazy(() => import("./pages/admin/AdminArticles"));
 const AdminTeam = lazy(() => import("./pages/admin/AdminTeam"));
 const AdminActivities = lazy(() => import("./pages/admin/AdminActivities"));
@@ -50,8 +52,10 @@ const App = () => (
             <Routes>
               {/* Admin routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
+                <Route path="pages" element={<AdminPages />} />
                 <Route path="articles" element={<AdminArticles />} />
                 <Route path="team" element={<AdminTeam />} />
                 <Route path="activities" element={<AdminActivities />} />

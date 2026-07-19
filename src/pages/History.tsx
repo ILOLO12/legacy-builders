@@ -1,37 +1,39 @@
 import AnimatedSection from "@/components/AnimatedSection";
 import { BookOpen, Award, Heart, Stethoscope, Lightbulb, Shield, Scale, Gem } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageContent } from "@/hooks/usePageContent";
 import { useSEO } from "@/hooks/useSEO";
 
 const History = () => {
   const { t } = useLanguage();
   useSEO("Our History", "Discover the history and founding story of Muller's Foundation (MUFO).");
+  const c = usePageContent("history", t.history);
 
   const values = [
-    { icon: Heart, name: t.history.compassion, desc: t.history.compassionDesc },
-    { icon: Shield, name: t.history.integrity, desc: t.history.integrityDesc },
-    { icon: Award, name: t.history.excellence, desc: t.history.excellenceDesc },
-    { icon: Scale, name: t.history.equity, desc: t.history.equityDesc },
-    { icon: Gem, name: t.history.legacy, desc: t.history.legacyDesc },
+    { icon: Heart, name: c.compassion, desc: c.compassionDesc },
+    { icon: Shield, name: c.integrity, desc: c.integrityDesc },
+    { icon: Award, name: c.excellence, desc: c.excellenceDesc },
+    { icon: Scale, name: c.equity, desc: c.equityDesc },
+    { icon: Gem, name: c.legacy, desc: c.legacyDesc },
   ];
 
   return (
     <div>
       <section className="page-hero">
         <div className="section-container">
-          <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-3">{t.history.aboutMufo}</p>
-          <h1 className="page-hero-title">{t.history.title}</h1>
+          <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-3">{c.aboutMufo}</p>
+          <h1 className="page-hero-title">{c.title}</h1>
           <div className="gold-line mt-6" />
-          <p className="page-hero-subtitle mt-6">{t.history.subtitle}</p>
+          <p className="page-hero-subtitle mt-6">{c.subtitle}</p>
         </div>
       </section>
 
       <section className="py-20">
         <div className="section-container max-w-3xl mx-auto">
           <AnimatedSection>
-            <h2 className="text-3xl font-serif font-bold mb-6 text-center">{t.history.meaningTitle}</h2>
-            <p className="text-muted-foreground leading-relaxed mb-4">{t.history.meaningP1}</p>
-            <p className="text-muted-foreground leading-relaxed mb-4">{t.history.meaningP2}</p>
+            <h2 className="text-3xl font-serif font-bold mb-6 text-center">{c.meaningTitle}</h2>
+            <p className="text-muted-foreground leading-relaxed mb-4">{c.meaningP1}</p>
+            <p className="text-muted-foreground leading-relaxed mb-4">{c.meaningP2}</p>
           </AnimatedSection>
         </div>
       </section>
@@ -43,8 +45,8 @@ const History = () => {
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                 <BookOpen className="text-primary" size={24} />
               </div>
-              <h3 className="text-2xl font-serif font-bold mb-3">{t.history.vision}</h3>
-              <p className="text-muted-foreground leading-relaxed">{t.history.visionText}</p>
+              <h3 className="text-2xl font-serif font-bold mb-3">{c.vision}</h3>
+              <p className="text-muted-foreground leading-relaxed">{c.visionText}</p>
             </div>
           </AnimatedSection>
           <AnimatedSection delay={0.15}>
@@ -52,8 +54,8 @@ const History = () => {
               <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mb-4">
                 <Award className="text-accent" size={24} />
               </div>
-              <h3 className="text-2xl font-serif font-bold mb-3">{t.history.mission}</h3>
-              <p className="text-muted-foreground leading-relaxed">{t.history.missionText}</p>
+              <h3 className="text-2xl font-serif font-bold mb-3">{c.mission}</h3>
+              <p className="text-muted-foreground leading-relaxed">{c.missionText}</p>
             </div>
           </AnimatedSection>
         </div>
@@ -62,14 +64,14 @@ const History = () => {
       <section className="py-20">
         <div className="section-container">
           <AnimatedSection>
-            <h2 className="section-title">{t.history.threePillars}</h2>
+            <h2 className="section-title">{c.threePillars}</h2>
             <div className="gold-line mb-12" />
           </AnimatedSection>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {[
-              { icon: Heart, title: t.history.pillar1, desc: t.history.pillar1Desc },
-              { icon: Stethoscope, title: t.history.pillar2, desc: t.history.pillar2Desc },
-              { icon: Lightbulb, title: t.history.pillar3, desc: t.history.pillar3Desc },
+              { icon: Heart, title: c.pillar1, desc: c.pillar1Desc },
+              { icon: Stethoscope, title: c.pillar2, desc: c.pillar2Desc },
+              { icon: Lightbulb, title: c.pillar3, desc: c.pillar3Desc },
             ].map((p, i) => (
               <AnimatedSection key={p.title} delay={i * 0.15}>
                 <div className="card-hover h-full">
@@ -88,7 +90,7 @@ const History = () => {
       <section className="py-20 bg-surface">
         <div className="section-container">
           <AnimatedSection>
-            <h2 className="section-title">{t.history.coreValues}</h2>
+            <h2 className="section-title">{c.coreValues}</h2>
             <div className="gold-line mb-12" />
           </AnimatedSection>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6 max-w-5xl mx-auto">

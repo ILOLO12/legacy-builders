@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown, Globe, Home, Info, Activity, Newspaper, Users, Phone, Heart, Lock } from "lucide-react";
+import { Menu, X, ChevronDown, Globe, Home, Info, Activity, Newspaper, Users, Phone, Heart, Lock, UserRound, BookOpen, HeartHandshake } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import logoFallback from "@/assets/logo.jpeg";
@@ -21,9 +21,9 @@ const Navbar = () => {
       label: t.nav.about,
       icon: Info,
       children: [
-        { path: "/founder", label: t.nav.founder },
-        { path: "/history", label: t.nav.history },
-        { path: "/in-memoriam", label: t.nav.inMemoriam },
+        { path: "/founder", label: t.nav.founder, icon: UserRound, desc: t.founder.subtitle },
+        { path: "/history", label: t.nav.history, icon: BookOpen, desc: t.history.subtitle },
+        { path: "/in-memoriam", label: t.nav.inMemoriam, icon: HeartHandshake, desc: t.memoriam.subtitle },
       ],
     },
     { path: "/activities", label: t.nav.activities, icon: Activity },
@@ -83,20 +83,33 @@ const Navbar = () => {
                   <ChevronDown size={14} className={`transition-transform ${aboutOpen ? "rotate-180" : ""}`} />
                 </button>
                 {aboutOpen && (
-                  <div className="absolute top-full left-0 mt-1 w-48 bg-card text-card-foreground rounded-lg shadow-xl border border-border py-2 animate-fade-in-up">
-                    {link.children.map((child) => (
-                      <Link
-                        key={child.path}
-                        to={child.path}
-                        className={`block px-4 py-2 text-sm transition-colors ${
-                          location.pathname === child.path
-                            ? "bg-accent/10 text-accent font-medium"
-                            : "hover:bg-muted"
-                        }`}
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
+                  <div className="absolute top-full left-0 mt-2 w-80 bg-card text-card-foreground rounded-xl shadow-2xl border border-border overflow-hidden animate-fade-in-up">
+                    <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary" />
+                    <div className="py-2">
+                      {link.children.map((child) => (
+                        <Link
+                          key={child.path}
+                          to={child.path}
+                          className={`flex items-start gap-3 px-4 py-3 transition-colors ${
+                            location.pathname === child.path
+                              ? "bg-accent/10"
+                              : "hover:bg-muted"
+                          }`}
+                        >
+                          <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                            location.pathname === child.path ? "bg-accent/20" : "bg-primary/10"
+                          }`}>
+                            <child.icon size={16} className={location.pathname === child.path ? "text-accent" : "text-primary"} />
+                          </div>
+                          <div>
+                            <p className={`text-sm font-semibold ${location.pathname === child.path ? "text-accent" : "text-foreground"}`}>
+                              {child.label}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{child.desc}</p>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -158,13 +171,14 @@ const Navbar = () => {
                     <ChevronDown size={14} className={`transition-transform ${mobileAboutOpen ? "rotate-180" : ""}`} />
                   </button>
                   {mobileAboutOpen && (
-                    <div className="ml-4 space-y-1">
+                    <div className="ml-4 space-y-1 border-l border-primary-foreground/10 pl-3">
                       {link.children.map((child) => (
                         <Link
                           key={child.path}
                           to={child.path}
-                          className="block px-3 py-2 text-sm text-primary-foreground/70 hover:text-primary-foreground"
+                          className="flex items-center gap-2.5 px-3 py-2 text-sm text-primary-foreground/70 hover:text-primary-foreground"
                         >
+                          <child.icon size={15} />
                           {child.label}
                         </Link>
                       ))}

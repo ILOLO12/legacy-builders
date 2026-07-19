@@ -2,9 +2,11 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { Shield, Heart, Mountain, Users } from "lucide-react";
 import memorialImg from "@/assets/memorial.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageContent } from "@/hooks/usePageContent";
 
 const InMemoriam = () => {
   const { t } = useLanguage();
+  const c = usePageContent("memoriam", t.memoriam as any);
 
   const values = [
     { icon: Shield, name: c.responsibility },

@@ -51,15 +51,15 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-50 bg-primary shadow-lg">
-      <div className="section-container flex items-center justify-between h-16 lg:h-[72px]">
+      <div className="section-container flex items-center justify-between h-20 lg:h-24">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-accent/50 shadow-md">
+          <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden border-2 border-accent/60 shadow-lg ring-2 ring-accent/20">
             <img src={logo} alt="MUFO Logo" className="w-full h-full object-cover" />
           </div>
           <div className="leading-tight">
-            <span className="text-lg font-serif font-bold tracking-wide text-primary-foreground">MUFO</span>
-            <span className="hidden sm:block text-[10px] text-primary-foreground/70 tracking-wider uppercase">Muller's Foundation</span>
+            <span className="text-xl lg:text-2xl font-serif font-bold tracking-wide text-primary-foreground">MUFO</span>
+            <span className="hidden sm:block text-[11px] text-primary-foreground/70 tracking-wider uppercase">Muller's Foundation</span>
           </div>
         </Link>
 

@@ -119,6 +119,27 @@ export type Database = {
         }
         Relationships: []
       }
+      pages: {
+        Row: {
+          content: Json
+          id: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          id?: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          id?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       partners: {
         Row: {
           created_at: string

@@ -12,10 +12,10 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-accent/40">
+              <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-accent/50 shadow-md">
                 <img src={logo} alt="MUFO" className="w-full h-full object-cover" />
               </div>
-              <span className="text-xl font-serif font-bold">MUFO</span>
+              <span className="text-2xl font-serif font-bold">MUFO</span>
             </div>
             <p className="text-sm opacity-70 leading-relaxed">{t.footer.desc}</p>
           </div>

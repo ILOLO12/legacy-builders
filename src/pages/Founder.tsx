@@ -1,11 +1,13 @@
 import AnimatedSection from "@/components/AnimatedSection";
 import founderImg from "@/assets/founder.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageContent } from "@/hooks/usePageContent";
 
 const Founder = () => {
   const { t } = useLanguage();
+  const c = usePageContent("founder", t.founder as any);
 
-  const quotes = [t.founder.quote1, t.founder.quote2];
+  const quotes = [c.quote1, c.quote2];
 
   return (
     <div>

@@ -7,8 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Save, FileText } from "lucide-react";
 import { PAGE_SCHEMAS, getPageSchema } from "@/lib/pageSchemas";
-import en from "@/i18n/en";
-import fr from "@/i18n/fr";
+import { en } from "@/i18n/en";
+import { fr } from "@/i18n/fr";
 
 type LangContent = Record<string, string>;
 type PageContent = { fr?: LangContent; en?: LangContent };

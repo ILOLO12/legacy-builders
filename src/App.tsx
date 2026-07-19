@@ -22,6 +22,7 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import ResetPassword from "./pages/admin/ResetPassword";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminPages from "./pages/admin/AdminPages";
 import AdminArticles from "./pages/admin/AdminArticles";
 import AdminTeam from "./pages/admin/AdminTeam";
 import AdminActivities from "./pages/admin/AdminActivities";

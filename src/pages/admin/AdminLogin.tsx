@@ -66,9 +66,28 @@ const AdminLogin = () => {
           <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={loading}>
             {loading ? "Chargement..." : isSignUp ? "Créer le compte" : "Se connecter"}
           </Button>
-          <button type="button" className="text-sm text-muted-foreground underline w-full text-center" onClick={() => setIsSignUp(!isSignUp)}>
-            {isSignUp ? "Déjà un compte ? Se connecter" : "Créer un compte"}
-          </button>
+          <div className="flex flex-col gap-2 pt-2">
+            <button type="button" className="text-sm text-muted-foreground underline text-center" onClick={() => setIsSignUp(!isSignUp)}>
+              {isSignUp ? "Déjà un compte ? Se connecter" : "Créer un compte"}
+            </button>
+            <button
+              type="button"
+              className="text-sm text-accent underline text-center"
+              onClick={async () => {
+                if (!email) {
+                  toast.error("Entrez votre email d'abord");
+                  return;
+                }
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                  redirectTo: `${window.location.origin}/reset-password`,
+                });
+                if (error) toast.error(error.message);
+                else toast.success("Email de réinitialisation envoyé ! Vérifiez votre boîte mail.");
+              }}
+            >
+              Mot de passe oublié ?
+            </button>
+          </div>
         </form>
       </div>
     </div>

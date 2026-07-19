@@ -19,6 +19,7 @@ import NotFound from "./pages/NotFound";
 
 // Admin
 import AdminLogin from "./pages/admin/AdminLogin";
+import ResetPassword from "./pages/admin/ResetPassword";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminArticles from "./pages/admin/AdminArticles";
@@ -41,6 +42,7 @@ const App = () => (
           <Routes>
             {/* Admin routes */}
             <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="articles" element={<AdminArticles />} />

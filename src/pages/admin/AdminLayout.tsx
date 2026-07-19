@@ -3,11 +3,12 @@ import { Outlet, useNavigate, NavLink } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Newspaper, Users, Activity, Handshake, Image, MessageSquareQuote,
-  Settings, LayoutDashboard, LogOut,
+  Settings, LayoutDashboard, LogOut, FileText,
 } from "lucide-react";
 
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Tableau de bord", end: true },
+  { to: "/admin/pages", icon: FileText, label: "Pages du site" },
   { to: "/admin/articles", icon: Newspaper, label: "Articles" },
   { to: "/admin/team", icon: Users, label: "Équipe" },
   { to: "/admin/activities", icon: Activity, label: "Activités" },

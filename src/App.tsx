@@ -46,6 +46,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
+              <Route path="pages" element={<AdminPages />} />
               <Route path="articles" element={<AdminArticles />} />
               <Route path="team" element={<AdminTeam />} />
               <Route path="activities" element={<AdminActivities />} />

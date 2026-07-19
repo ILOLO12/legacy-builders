@@ -249,4 +249,12 @@ export const en = {
     news4Title: "MUFO Strategic Partnership Announcement",
     news4Desc: "Muller's Foundation signs strategic partnerships with international organizations to expand its reach and impact across Central Africa.",
   },
+
+  // Team
+  team: {
+    title: "Our Team",
+    subtitle: "Dedicated professionals united by a shared commitment to impact.",
+    governanceTitle: "Governance & Transparency",
+    governanceText: "MUFO is governed by a commitment to full transparency and accountability. Every team member upholds our core values of integrity, compassion, and excellence in serving communities.",
+  },
 };

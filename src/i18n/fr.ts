@@ -241,4 +241,12 @@ export const fr: typeof en = {
     news4Title: "Annonce de Partenariat Stratégique",
     news4Desc: "La Fondation Muller signe des partenariats stratégiques avec des organisations internationales pour étendre son impact en Afrique centrale.",
   },
+
+  // Team
+  team: {
+    title: "Notre Équipe",
+    subtitle: "Des professionnels dévoués unis par un engagement commun envers l'impact.",
+    governanceTitle: "Gouvernance et Transparence",
+    governanceText: "MUFO est gouvernée par un engagement envers la transparence et la responsabilité totales. Chaque membre de l'équipe respecte nos valeurs fondamentales d'intégrité, de compassion et d'excellence au service des communautés.",
+  },
 };

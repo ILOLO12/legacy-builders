@@ -4,23 +4,31 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { CreditCard, Smartphone, Globe, DollarSign } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSEO } from "@/hooks/useSEO";
+import { usePageContent } from "@/hooks/usePageContent";
 
 const Donate = () => {
   const { t } = useLanguage();
   useSEO("Donate", "Support Muller's Foundation (MUFO) and help us restore hope and build a lasting legacy.");
+  const c = usePageContent("donate", {
+    ...t.donateP,
+    eduPct: "60",
+    healthPct: "25",
+    philPct: "10",
+    adminPct: "5",
+  });
 
   const methods = [
-    { icon: CreditCard, name: t.donateP.bankTransfer, desc: t.donateP.bankDesc },
-    { icon: Smartphone, name: t.donateP.mobileMoney, desc: t.donateP.mobileDesc },
-    { icon: Globe, name: t.donateP.paypal, desc: t.donateP.paypalDesc },
-    { icon: DollarSign, name: t.donateP.zelle, desc: t.donateP.zelleDesc },
+    { icon: CreditCard, name: c.bankTransfer, desc: c.bankDesc },
+    { icon: Smartphone, name: c.mobileMoney, desc: c.mobileDesc },
+    { icon: Globe, name: c.paypal, desc: c.paypalDesc },
+    { icon: DollarSign, name: c.zelle, desc: c.zelleDesc },
   ];
 
   const allocation = [
-    { label: t.donateP.education, pct: 60, color: "bg-primary" },
-    { label: t.donateP.health, pct: 25, color: "bg-accent" },
-    { label: t.donateP.philanthropy, pct: 10, color: "bg-secondary" },
-    { label: t.donateP.administration, pct: 5, color: "bg-muted-foreground" },
+    { label: c.education, pct: Number(c.eduPct) || 0, color: "bg-primary" },
+    { label: c.health, pct: Number(c.healthPct) || 0, color: "bg-accent" },
+    { label: c.philanthropy, pct: Number(c.philPct) || 0, color: "bg-secondary" },
+    { label: c.administration, pct: Number(c.adminPct) || 0, color: "bg-muted-foreground" },
   ];
 
   return (
@@ -30,9 +38,9 @@ const Donate = () => {
           <AnimatedSection>
             <div className="gold-line mb-8" />
             <h1 className="text-4xl md:text-5xl font-serif font-bold text-primary-foreground mb-4">
-              {t.donateP.heroTitle}
+              {c.heroTitle}
             </h1>
-            <p className="text-primary-foreground/70 max-w-2xl mx-auto text-lg">{t.donateP.heroSub}</p>
+            <p className="text-primary-foreground/70 max-w-2xl mx-auto text-lg">{c.heroSub}</p>
           </AnimatedSection>
         </div>
       </section>
@@ -40,7 +48,7 @@ const Donate = () => {
       <section className="py-20">
         <div className="section-container">
           <AnimatedSection>
-            <h2 className="section-title">{t.donateP.howToDonate}</h2>
+            <h2 className="section-title">{c.howToDonate}</h2>
             <div className="gold-line mb-12" />
           </AnimatedSection>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
@@ -53,7 +61,7 @@ const Donate = () => {
                   <h3 className="font-serif font-semibold mb-2">{m.name}</h3>
                   <p className="text-sm text-muted-foreground mb-6 flex-1">{m.desc}</p>
                   <Button variant="gold" size="sm" className="w-full" asChild>
-                    <Link to="/contact">{t.donateP.donateNow}</Link>
+                    <Link to="/contact">{c.donateNow}</Link>
                   </Button>
                 </div>
               </AnimatedSection>
@@ -65,7 +73,7 @@ const Donate = () => {
       <section className="py-20 bg-surface">
         <div className="section-container max-w-2xl mx-auto">
           <AnimatedSection>
-            <h2 className="section-title">{t.donateP.fundsAllocation}</h2>
+            <h2 className="section-title">{c.fundsAllocation}</h2>
             <div className="gold-line mb-12" />
             <div className="space-y-5">
               {allocation.map((a) => (

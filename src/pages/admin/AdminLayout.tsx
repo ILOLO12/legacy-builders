@@ -3,7 +3,7 @@ import { Outlet, useNavigate, NavLink } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Newspaper, Users, Activity, Handshake, Image, MessageSquareQuote,
-  Settings, LayoutDashboard, LogOut, FileText,
+  Settings, LayoutDashboard, LogOut, FileText, CalendarDays, FolderOpen,
 } from "lucide-react";
 
 const navItems = [
@@ -12,9 +12,11 @@ const navItems = [
   { to: "/admin/articles", icon: Newspaper, label: "Articles" },
   { to: "/admin/team", icon: Users, label: "Équipe" },
   { to: "/admin/activities", icon: Activity, label: "Activités" },
+  { to: "/admin/events", icon: CalendarDays, label: "Événements" },
   { to: "/admin/partners", icon: Handshake, label: "Partenaires" },
   { to: "/admin/gallery", icon: Image, label: "Galerie" },
   { to: "/admin/testimonials", icon: MessageSquareQuote, label: "Témoignages" },
+  { to: "/admin/media", icon: FolderOpen, label: "Médiathèque" },
   { to: "/admin/settings", icon: Settings, label: "Paramètres" },
 ];
 

@@ -4,7 +4,7 @@ const fields: FieldDef[] = [
   { key: "name", label: "Nom", required: true },
   { key: "role", label: "Rôle", required: true },
   { key: "bio", label: "Biographie", type: "textarea" },
-  { key: "photo_url", label: "URL Photo" },
+  { key: "photo_url", label: "Photo", type: "image" },
   { key: "is_leadership", label: "Leadership", type: "checkbox" },
   { key: "display_order", label: "Ordre", type: "number" },
 ];

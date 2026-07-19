@@ -4,7 +4,7 @@ const fields: FieldDef[] = [
   { key: "author_name", label: "Auteur", required: true },
   { key: "author_role", label: "Rôle" },
   { key: "quote", label: "Citation", type: "textarea", required: true },
-  { key: "author_photo_url", label: "URL Photo" },
+  { key: "author_photo_url", label: "Photo", type: "image" },
   { key: "display_order", label: "Ordre", type: "number" },
 ];
 

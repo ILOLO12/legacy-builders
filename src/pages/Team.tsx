@@ -3,9 +3,13 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageContent } from "@/hooks/usePageContent";
 
 const Team = () => {
   useSEO("Our Team", "Meet the dedicated team behind Muller's Foundation (MUFO).");
+  const { t } = useLanguage();
+  const c = usePageContent("team", t.team);
   const { data: teamMembers = [] } = useQuery({
     queryKey: ["team_members"],
     queryFn: async () => {
@@ -22,8 +26,8 @@ const Team = () => {
     <div>
       <section className="page-hero">
         <div className="section-container">
-          <h1 className="page-hero-title">Our Team</h1>
-          <p className="page-hero-subtitle">Dedicated professionals united by a shared commitment to impact.</p>
+          <h1 className="page-hero-title">{c.title}</h1>
+          <p className="page-hero-subtitle">{c.subtitle}</p>
         </div>
       </section>
 
@@ -55,9 +59,9 @@ const Team = () => {
 
           <AnimatedSection delay={0.4}>
             <div className="mt-16 max-w-2xl mx-auto text-center">
-              <h3 className="text-2xl font-serif font-bold mb-4">Governance & Transparency</h3>
+              <h3 className="text-2xl font-serif font-bold mb-4">{c.governanceTitle}</h3>
               <p className="text-muted-foreground leading-relaxed">
-                MUFO is governed by a commitment to full transparency and accountability. Every team member upholds our core values of integrity, compassion, and excellence in serving communities.
+                {c.governanceText}
               </p>
             </div>
           </AnimatedSection>

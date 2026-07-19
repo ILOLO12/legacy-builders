@@ -1,18 +1,28 @@
+import { useQuery } from "@tanstack/react-query";
 import AnimatedSection from "@/components/AnimatedSection";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Newspaper, Calendar } from "lucide-react";
 import { useSEO } from "@/hooks/useSEO";
-
-const newsItems = [
-  { date: "2025-02-15", titleKey: "news1Title" as const, descKey: "news1Desc" as const },
-  { date: "2024-11-20", titleKey: "news2Title" as const, descKey: "news2Desc" as const },
-  { date: "2024-08-10", titleKey: "news3Title" as const, descKey: "news3Desc" as const },
-  { date: "2024-03-05", titleKey: "news4Title" as const, descKey: "news4Desc" as const },
-];
+import { supabase } from "@/integrations/supabase/client";
 
 const News = () => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   useSEO("News", "Latest news and updates from Muller's Foundation (MUFO).");
+
+  const { data: articles = [] } = useQuery({
+    queryKey: ["articles-published"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("articles")
+        .select("*")
+        .eq("published", true)
+        .order("published_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const localized = (en: string | null, fr: string | null) => (lang === "fr" && fr ? fr : en ?? "");
 
   return (
     <div>
@@ -34,26 +44,35 @@ const News = () => {
       {/* News Grid */}
       <section className="py-20">
         <div className="section-container max-w-4xl mx-auto">
-          <div className="space-y-8">
-            {newsItems.map((item, i) => (
-              <AnimatedSection key={i} delay={i * 0.1}>
-                <div className="card-hover flex flex-col md:flex-row gap-6">
-                  {/* Image placeholder */}
-                  <div className="md:w-64 flex-shrink-0 aspect-video md:aspect-[4/3] rounded-lg bg-gradient-to-br from-primary/20 to-accent/10 flex items-center justify-center">
-                    <Newspaper className="text-primary/30" size={40} />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 text-muted-foreground text-xs mb-2">
-                      <Calendar size={14} />
-                      <time>{new Date(item.date).toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" })}</time>
+          {articles.length === 0 ? (
+            <p className="text-center text-muted-foreground">{lang === "fr" ? "Aucune actualité pour le moment." : "No news yet."}</p>
+          ) : (
+            <div className="space-y-8">
+              {articles.map((item, i) => (
+                <AnimatedSection key={item.id} delay={i * 0.1}>
+                  <div className="card-hover flex flex-col md:flex-row gap-6">
+                    <div className="md:w-64 flex-shrink-0 aspect-video md:aspect-[4/3] rounded-lg bg-gradient-to-br from-primary/20 to-accent/10 flex items-center justify-center overflow-hidden">
+                      {item.image_url ? (
+                        <img src={item.image_url} alt={localized(item.title, item.title_fr)} className="w-full h-full object-cover" loading="lazy" />
+                      ) : (
+                        <Newspaper className="text-primary/30" size={40} />
+                      )}
                     </div>
-                    <h3 className="text-lg font-serif font-semibold mb-2">{t.news[item.titleKey]}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{t.news[item.descKey]}</p>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 text-muted-foreground text-xs mb-2">
+                        <Calendar size={14} />
+                        <time>
+                          {new Date(item.published_at ?? item.created_at).toLocaleDateString(lang === "fr" ? "fr-FR" : "en-US", { year: "numeric", month: "long", day: "numeric" })}
+                        </time>
+                      </div>
+                      <h3 className="text-lg font-serif font-semibold mb-2">{localized(item.title, item.title_fr)}</h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed">{localized(item.excerpt, item.excerpt_fr)}</p>
+                    </div>
                   </div>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
+                </AnimatedSection>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>

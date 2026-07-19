@@ -3,20 +3,16 @@ import CrudTable, { FieldDef } from "@/components/admin/CrudTable";
 const fields: FieldDef[] = [
   { key: "title", label: "Titre (EN)", required: true },
   { key: "title_fr", label: "Titre (FR)" },
-  { key: "category", label: "Catégorie", type: "select", options: [
-    { value: "timeline", label: "Chronologie" },
-    { value: "project", label: "Projet phare" },
-  ] },
+  { key: "event_date", label: "Date", type: "date" },
+  { key: "location", label: "Lieu" },
   { key: "description", label: "Description (EN)", type: "textarea" },
   { key: "description_fr", label: "Description (FR)", type: "textarea" },
-  { key: "icon", label: "Icône (nom Lucide)" },
   { key: "image_url", label: "Image", type: "image" },
-  { key: "year", label: "Année", type: "number" },
   { key: "display_order", label: "Ordre", type: "number" },
 ];
 
-const AdminActivities = () => (
-  <CrudTable table="activities" title="Activités" fields={fields} orderBy="display_order" />
+const AdminEvents = () => (
+  <CrudTable table="events" title="Événements" fields={fields} orderBy="event_date" />
 );
 
-export default AdminActivities;
+export default AdminEvents;

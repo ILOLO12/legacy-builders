@@ -3,7 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown, Globe, Home, Info, Activity, Newspaper, Users, Phone, Heart, Lock } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import logo from "@/assets/logo.jpeg";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
+import logoFallback from "@/assets/logo.jpeg";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -12,6 +13,7 @@ const Navbar = () => {
   const location = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { lang, setLang, t } = useLanguage();
+  const settings = useSiteSettings();
 
   const mainLinks = [
     { path: "/", label: t.nav.home, icon: Home },
@@ -54,12 +56,12 @@ const Navbar = () => {
       <div className="section-container flex items-center justify-between h-20 lg:h-24">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3">
-          <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden border-2 border-accent/60 shadow-lg ring-2 ring-accent/20">
-            <img src={logo} alt="MUFO Logo" className="w-full h-full object-cover" />
+          <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-full overflow-hidden border-2 border-accent/60 shadow-lg ring-2 ring-accent/20">
+            <img src={settings.logo_url || logoFallback} alt={`${settings.site_name} Logo`} className="w-full h-full object-cover" />
           </div>
           <div className="leading-tight">
-            <span className="text-xl lg:text-2xl font-serif font-bold tracking-wide text-primary-foreground">MUFO</span>
-            <span className="hidden sm:block text-[11px] text-primary-foreground/70 tracking-wider uppercase">Muller's Foundation</span>
+            <span className="text-xl lg:text-2xl font-serif font-bold tracking-wide text-primary-foreground">{settings.site_name}</span>
+            <span className="hidden sm:block text-[11px] text-primary-foreground/70 tracking-wider uppercase">{settings.site_tagline}</span>
           </div>
         </Link>
 

@@ -99,7 +99,7 @@ const AdminPages = () => {
                 <InputComp
                   value={draft.fr?.[f.key] ?? ""}
                   onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setField("fr", f.key, e.target.value)}
-                  placeholder={frTrans?.[f.key] ?? ""}
+                  placeholder={f.defaultHint ?? frTrans?.[f.key] ?? ""}
                   className="text-sm"
                   rows={f.multiline ? 3 : undefined}
                 />
@@ -111,7 +111,7 @@ const AdminPages = () => {
                 <InputComp
                   value={draft.en?.[f.key] ?? ""}
                   onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setField("en", f.key, e.target.value)}
-                  placeholder={enTrans?.[f.key] ?? ""}
+                  placeholder={f.defaultHint ?? enTrans?.[f.key] ?? ""}
                   className="text-sm"
                   rows={f.multiline ? 3 : undefined}
                 />

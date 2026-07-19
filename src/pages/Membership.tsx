@@ -3,29 +3,46 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { Check } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSEO } from "@/hooks/useSEO";
+import { usePageContent } from "@/hooks/usePageContent";
 
 const Membership = () => {
   const { t } = useLanguage();
   useSEO("Membership", "Become a member of Muller's Foundation (MUFO) and join our mission.");
-  const b = t.membership.benefits;
+  const { benefits: b, ...flat } = t.membership;
+  const c = usePageContent("membership", {
+    ...flat,
+    benefit_quarterly: b.quarterly,
+    benefit_annual: b.annual,
+    benefit_invitation: b.invitation,
+    benefit_certificate: b.certificate,
+    benefit_priority: b.priority,
+    benefit_recognition: b.recognition,
+    benefit_directUpdates: b.directUpdates,
+    benefit_exclusiveWebinars: b.exclusiveWebinars,
+    benefit_advisory: b.advisory,
+    benefit_fieldVisit: b.fieldVisit,
+    benefit_dashboard: b.dashboard,
+    benefit_vip: b.vip,
+    benefit_coBranding: b.coBranding,
+  });
 
   const tiers = [
     {
-      name: t.membership.standard,
-      desc: t.membership.standardDesc,
-      benefits: [b.quarterly, b.annual, b.invitation, b.certificate],
+      name: c.standard,
+      desc: c.standardDesc,
+      benefits: [c.benefit_quarterly, c.benefit_annual, c.benefit_invitation, c.benefit_certificate],
       featured: false,
     },
     {
-      name: t.membership.supporter,
-      desc: t.membership.supporterDesc,
-      benefits: [b.quarterly, b.annual, b.invitation, b.certificate, b.priority, b.recognition, b.directUpdates, b.exclusiveWebinars],
+      name: c.supporter,
+      desc: c.supporterDesc,
+      benefits: [c.benefit_quarterly, c.benefit_annual, c.benefit_invitation, c.benefit_certificate, c.benefit_priority, c.benefit_recognition, c.benefit_directUpdates, c.benefit_exclusiveWebinars],
       featured: true,
     },
     {
-      name: t.membership.ambassador,
-      desc: t.membership.ambassadorDesc,
-      benefits: [b.quarterly, b.annual, b.invitation, b.certificate, b.priority, b.recognition, b.directUpdates, b.exclusiveWebinars, b.advisory, b.fieldVisit, b.dashboard, b.vip, b.coBranding],
+      name: c.ambassador,
+      desc: c.ambassadorDesc,
+      benefits: [c.benefit_quarterly, c.benefit_annual, c.benefit_invitation, c.benefit_certificate, c.benefit_priority, c.benefit_recognition, c.benefit_directUpdates, c.benefit_exclusiveWebinars, c.benefit_advisory, c.benefit_fieldVisit, c.benefit_dashboard, c.benefit_vip, c.benefit_coBranding],
       featured: false,
     },
   ];
@@ -34,9 +51,9 @@ const Membership = () => {
     <div>
       <section className="page-hero">
         <div className="section-container">
-          <h1 className="page-hero-title">{t.membership.title}</h1>
+          <h1 className="page-hero-title">{c.title}</h1>
           <div className="gold-line mt-6" />
-          <p className="page-hero-subtitle mt-6">{t.membership.subtitle}</p>
+          <p className="page-hero-subtitle mt-6">{c.subtitle}</p>
         </div>
       </section>
 
@@ -52,7 +69,7 @@ const Membership = () => {
                 }`}>
                   {tier.featured && (
                     <span className="text-xs font-bold bg-accent text-accent-foreground px-3 py-1 rounded-full self-start mb-4">
-                      {t.membership.mostPopular}
+                      {c.mostPopular}
                     </span>
                   )}
                   <h3 className="text-xl font-serif font-bold mb-2">{tier.name}</h3>
@@ -66,7 +83,7 @@ const Membership = () => {
                     ))}
                   </ul>
                   <Button variant={tier.featured ? "gold" : "default"} className="w-full">
-                    {t.membership.joinNow}
+                    {c.joinNow}
                   </Button>
                 </div>
               </AnimatedSection>

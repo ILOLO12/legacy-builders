@@ -7,12 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, X, Save } from "lucide-react";
+import ImageUploadField from "@/components/admin/ImageUploadField";
 
 export interface FieldDef {
   key: string;
   label: string;
-  type?: "text" | "textarea" | "number" | "checkbox" | "date";
+  type?: "text" | "textarea" | "number" | "checkbox" | "date" | "select" | "image" | "file";
   required?: boolean;
+  options?: { value: string; label: string }[];
 }
 
 type FieldValue = string | number | boolean | null;
@@ -93,6 +95,22 @@ const CrudTable = ({ table, title, fields, orderBy = "created_at" }: CrudTablePr
           {f.label}
         </label>
       );
+    }
+    if (f.type === "select") {
+      return (
+        <select
+          value={(value as string) ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          {f.options?.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      );
+    }
+    if (f.type === "image" || f.type === "file") {
+      return <ImageUploadField value={(value as string) ?? ""} onChange={(v) => onChange(v)} kind={f.type} />;
     }
     return (
       <Input

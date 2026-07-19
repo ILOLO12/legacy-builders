@@ -16,35 +16,44 @@ export type Database = {
     Tables: {
       activities: {
         Row: {
+          category: string
           created_at: string
           description: string | null
+          description_fr: string | null
           display_order: number
           icon: string | null
           id: string
           image_url: string | null
           title: string
+          title_fr: string | null
           updated_at: string
           year: number | null
         }
         Insert: {
+          category?: string
           created_at?: string
           description?: string | null
+          description_fr?: string | null
           display_order?: number
           icon?: string | null
           id?: string
           image_url?: string | null
           title: string
+          title_fr?: string | null
           updated_at?: string
           year?: number | null
         }
         Update: {
+          category?: string
           created_at?: string
           description?: string | null
+          description_fr?: string | null
           display_order?: number
           icon?: string | null
           id?: string
           image_url?: string | null
           title?: string
+          title_fr?: string | null
           updated_at?: string
           year?: number | null
         }
@@ -53,38 +62,47 @@ export type Database = {
       articles: {
         Row: {
           content: string | null
+          content_fr: string | null
           created_at: string
           excerpt: string | null
+          excerpt_fr: string | null
           id: string
           image_url: string | null
           published: boolean
           published_at: string | null
           slug: string
           title: string
+          title_fr: string | null
           updated_at: string
         }
         Insert: {
           content?: string | null
+          content_fr?: string | null
           created_at?: string
           excerpt?: string | null
+          excerpt_fr?: string | null
           id?: string
           image_url?: string | null
           published?: boolean
           published_at?: string | null
           slug: string
           title: string
+          title_fr?: string | null
           updated_at?: string
         }
         Update: {
           content?: string | null
+          content_fr?: string | null
           created_at?: string
           excerpt?: string | null
+          excerpt_fr?: string | null
           id?: string
           image_url?: string | null
           published?: boolean
           published_at?: string | null
           slug?: string
           title?: string
+          title_fr?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -113,6 +131,48 @@ export type Database = {
           message?: string
           name?: string
           subject?: string | null
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          created_at: string
+          description: string | null
+          description_fr: string | null
+          display_order: number
+          event_date: string | null
+          id: string
+          image_url: string | null
+          location: string | null
+          title: string
+          title_fr: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          description_fr?: string | null
+          display_order?: number
+          event_date?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          title: string
+          title_fr?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          description_fr?: string | null
+          display_order?: number
+          event_date?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          title?: string
+          title_fr?: string | null
+          updated_at?: string
         }
         Relationships: []
       }

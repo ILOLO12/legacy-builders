@@ -16,12 +16,14 @@ import heroBg4 from "@/assets/hero-bg-4.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
+import { usePageContent } from "@/hooks/usePageContent";
 
 const heroImages = [heroBg1, heroBg2, heroBg3, heroBg4];
 
 const Home = () => {
   const { t } = useLanguage();
   useSEO("Home", "International humanitarian NGO transforming potential into sustainable opportunity through education, health, and community development.");
+  const c = usePageContent("home", t.home);
   const { data: partners = [] } = useQuery({
     queryKey: ["partners"],
     queryFn: async () => {
@@ -62,23 +64,23 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
   const pillars = [
-    { icon: BookOpen, title: t.home.pillarEdu, desc: t.home.pillarEduDesc },
-    { icon: HeartPulse, title: t.home.pillarHealth, desc: t.home.pillarHealthDesc },
-    { icon: Users, title: t.home.pillarDev, desc: t.home.pillarDevDesc },
+    { icon: BookOpen, title: c.pillarEdu, desc: c.pillarEduDesc },
+    { icon: HeartPulse, title: c.pillarHealth, desc: c.pillarHealthDesc },
+    { icon: Users, title: c.pillarDev, desc: c.pillarDevDesc },
   ];
 
   const objectives = [
-    { icon: GraduationCap, title: t.home.obj1 },
-    { icon: Stethoscope, title: t.home.obj2 },
-    { icon: Lightbulb, title: t.home.obj3 },
-    { icon: Shield, title: t.home.obj4 },
+    { icon: GraduationCap, title: c.obj1 },
+    { icon: Stethoscope, title: c.obj2 },
+    { icon: Lightbulb, title: c.obj3 },
+    { icon: Shield, title: c.obj4 },
   ];
 
   const realisations = [
-    t.home.achievement1,
-    t.home.achievement2,
-    t.home.achievement3,
-    t.home.achievement4,
+    c.achievement1,
+    c.achievement2,
+    c.achievement3,
+    c.achievement4,
   ];
 
   return (
@@ -107,10 +109,10 @@ const Home = () => {
           <AnimatedSection>
             <div className="gold-line mb-8" />
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight max-w-4xl mx-auto">
-              {t.home.heroTitle}
+              {c.heroTitle}
             </h1>
             <p className="mt-6 text-lg md:text-xl opacity-80 max-w-2xl mx-auto font-light">
-              {t.home.heroSub}
+              {c.heroSub}
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/founder">
@@ -146,10 +148,10 @@ const Home = () => {
       {/* ─── IMPACT COUNTERS ─── */}
       <section className="navy-section">
         <div className="section-container grid grid-cols-2 md:grid-cols-4 gap-10">
-          <Counter end={4000} suffix="+" label={t.home.childrenSupported} />
-          <Counter end={19} label={t.home.fieldActions} />
-          <Counter end={3} suffix="+" label={t.home.areasReached} />
-          <Counter end={2021} label={t.home.founded} />
+          <Counter end={4000} suffix="+" label={c.childrenSupported} />
+          <Counter end={19} label={c.fieldActions} />
+          <Counter end={3} suffix="+" label={c.areasReached} />
+          <Counter end={2021} label={c.founded} />
         </div>
       </section>
 
@@ -157,10 +159,10 @@ const Home = () => {
       <section className="py-20">
         <div className="section-container max-w-3xl mx-auto text-center">
           <AnimatedSection>
-            <h2 className="section-title">{t.home.whoWeAre}</h2>
+            <h2 className="section-title">{c.whoWeAre}</h2>
             <div className="gold-line mb-8" />
             <p className="text-muted-foreground leading-relaxed mb-8">
-              {t.home.whoWeAreText}
+              {c.whoWeAreText}
             </p>
             <Link to="/history">
               <Button variant="outline" className="gap-2">
@@ -175,9 +177,9 @@ const Home = () => {
       <section className="py-20 bg-surface">
         <div className="section-container max-w-3xl mx-auto text-center">
           <AnimatedSection>
-            <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-4">{t.home.ourMission}</p>
+            <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-4">{c.ourMission}</p>
             <h2 className="text-2xl md:text-3xl font-serif font-bold leading-relaxed">
-              {t.home.missionText}
+              {c.missionText}
             </h2>
           </AnimatedSection>
         </div>
@@ -187,7 +189,7 @@ const Home = () => {
       <section className="py-20">
         <div className="section-container">
           <AnimatedSection>
-            <h2 className="section-title">{t.home.ourObjectives}</h2>
+            <h2 className="section-title">{c.ourObjectives}</h2>
             <div className="gold-line mb-12" />
           </AnimatedSection>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
@@ -209,7 +211,7 @@ const Home = () => {
       <section className="py-20 bg-surface">
         <div className="section-container">
           <AnimatedSection>
-            <h2 className="section-title">{t.home.threePillars}</h2>
+            <h2 className="section-title">{c.threePillars}</h2>
             <div className="gold-line mb-12" />
           </AnimatedSection>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -232,10 +234,10 @@ const Home = () => {
       <section className="py-20">
         <div className="section-container max-w-3xl mx-auto text-center">
           <AnimatedSection>
-            <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-4">{t.home.ourStory}</p>
-            <h2 className="section-title mb-6">{t.home.millerLegacy}</h2>
+            <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-4">{c.ourStory}</p>
+            <h2 className="section-title mb-6">{c.millerLegacy}</h2>
             <p className="text-muted-foreground leading-relaxed mb-8">
-              {t.home.storyText}
+              {c.storyText}
             </p>
             <Link to="/history">
               <Button variant="outline" className="gap-2">
@@ -252,9 +254,9 @@ const Home = () => {
           <AnimatedSection>
             <div className="flex items-center justify-center gap-3 mb-4">
               <Clapperboard className="text-accent" size={24} />
-              <h2 className="section-title mb-0">{t.home.impactInAction}</h2>
+              <h2 className="section-title mb-0">{c.impactInAction}</h2>
             </div>
-            <p className="section-subtitle">{t.home.impactSub}</p>
+            <p className="section-subtitle">{c.impactSub}</p>
           </AnimatedSection>
           <AnimatedSection delay={0.2}>
             <MediaCarousel />
@@ -266,7 +268,7 @@ const Home = () => {
       <section className="py-20">
         <div className="section-container max-w-3xl mx-auto">
           <AnimatedSection>
-            <h2 className="section-title">{t.home.keyAchievements}</h2>
+            <h2 className="section-title">{c.keyAchievements}</h2>
             <div className="gold-line mb-12" />
           </AnimatedSection>
           <div className="space-y-4">
@@ -296,9 +298,9 @@ const Home = () => {
             <AnimatedSection>
               <div className="flex items-center justify-center gap-3 mb-4">
                 <Handshake className="text-accent" size={24} />
-                <h2 className="section-title mb-0">{t.home.ourPartners}</h2>
+                <h2 className="section-title mb-0">{c.ourPartners}</h2>
               </div>
-              <p className="section-subtitle">{t.home.partnersSub}</p>
+              <p className="section-subtitle">{c.partnersSub}</p>
             </AnimatedSection>
             <AnimatedSection delay={0.2}>
               <div className="grid grid-cols-3 md:grid-cols-6 gap-6 max-w-4xl mx-auto">
@@ -330,7 +332,7 @@ const Home = () => {
         <section className="py-20">
           <div className="section-container">
             <AnimatedSection>
-              <h2 className="section-title text-center">{t.home.testimonialsTitle}</h2>
+              <h2 className="section-title text-center">{c.testimonialsTitle}</h2>
               <div className="gold-line mb-12 mx-auto" />
             </AnimatedSection>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -362,10 +364,10 @@ const Home = () => {
           <AnimatedSection>
             <div className="gold-line mb-8" />
             <p className="text-2xl md:text-3xl font-serif italic text-primary-foreground leading-relaxed">
-              {t.home.quote}
+              {c.quote}
             </p>
             <div className="gold-line mt-8" />
-            <p className="mt-6 text-sm font-semibold text-accent uppercase tracking-wider">{t.home.mullersFoundation}</p>
+            <p className="mt-6 text-sm font-semibold text-accent uppercase tracking-wider">{c.mullersFoundation}</p>
           </AnimatedSection>
         </div>
       </section>

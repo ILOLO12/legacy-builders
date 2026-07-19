@@ -1,10 +1,22 @@
 import { Link } from "react-router-dom";
-import { Heart, Lock } from "lucide-react";
+import { Heart, Lock, Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import logo from "@/assets/logo.jpeg";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { usePageContent } from "@/hooks/usePageContent";
+import logoFallback from "@/assets/logo.jpeg";
 
 const Footer = () => {
   const { t } = useLanguage();
+  const settings = useSiteSettings();
+  const content = usePageContent("footer", { desc: t.footer.desc });
+
+  const socialLinks = [
+    { url: settings.social_facebook, icon: Facebook, label: "Facebook" },
+    { url: settings.social_twitter, icon: Twitter, label: "Twitter" },
+    { url: settings.social_instagram, icon: Instagram, label: "Instagram" },
+    { url: settings.social_linkedin, icon: Linkedin, label: "LinkedIn" },
+    { url: settings.social_youtube, icon: Youtube, label: "YouTube" },
+  ].filter((s) => s.url);
 
   return (
     <footer className="bg-navy-dark text-primary-foreground">
@@ -12,12 +24,28 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-accent/50 shadow-md">
-                <img src={logo} alt="MUFO" className="w-full h-full object-cover" />
+              <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-accent/50 shadow-md">
+                <img src={settings.logo_url || logoFallback} alt={settings.site_name} className="w-full h-full object-cover" />
               </div>
-              <span className="text-2xl font-serif font-bold">MUFO</span>
+              <span className="text-2xl font-serif font-bold">{settings.site_name}</span>
             </div>
-            <p className="text-sm opacity-70 leading-relaxed">{t.footer.desc}</p>
+            <p className="text-sm opacity-70 leading-relaxed">{content.desc}</p>
+            {socialLinks.length > 0 && (
+              <div className="flex items-center gap-3 mt-4">
+                {socialLinks.map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.label}
+                    className="w-8 h-8 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 flex items-center justify-center transition-colors"
+                  >
+                    <s.icon size={14} />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
           <div>
             <h4 className="font-semibold mb-4 text-accent text-sm uppercase tracking-wider">{t.footer.navigation}</h4>
@@ -39,14 +67,14 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4 text-accent text-sm uppercase tracking-wider">{t.footer.hq}</h4>
             <p className="text-sm opacity-70 leading-relaxed">
-              Kinshasa, DR Congo<br />
+              {settings.footer_hq_text}<br />
               <span className="opacity-80">{t.footer.representations}</span><br />
-              USA · France · Canada
+              {settings.footer_regions_text}
             </p>
           </div>
         </div>
         <div className="border-t border-primary-foreground/10 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs opacity-50">
-          <p>© {new Date().getFullYear()} Muller's Foundation (MUFO). {t.footer.allRights}</p>
+          <p>© {new Date().getFullYear()} {settings.site_tagline} ({settings.site_name}). {t.footer.allRights}</p>
           <div className="flex items-center gap-4">
             <Link to="/admin/login" className="flex items-center gap-1 hover:opacity-100 transition-opacity">
               <Lock size={10} /> Admin

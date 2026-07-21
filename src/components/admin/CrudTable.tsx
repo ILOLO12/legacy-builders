@@ -86,7 +86,7 @@ const CrudTable = ({ table, title, fields, orderBy = "created_at" }: CrudTablePr
 
   const renderField = (f: FieldDef, value: FieldValue, onChange: (v: FieldValue) => void) => {
     if (f.type === "textarea") {
-      return <Textarea value={value ?? ""} onChange={(e) => onChange(e.target.value)} placeholder={f.label} className="text-sm" />;
+      return <Textarea value={(value as string) ?? ""} onChange={(e) => onChange(e.target.value)} placeholder={f.label} className="text-sm" />;
     }
     if (f.type === "checkbox") {
       return (
@@ -115,7 +115,7 @@ const CrudTable = ({ table, title, fields, orderBy = "created_at" }: CrudTablePr
     return (
       <Input
         type={f.type === "number" ? "number" : f.type === "date" ? "datetime-local" : "text"}
-        value={value ?? ""}
+        value={(value as string | number) ?? ""}
         onChange={(e) => onChange(f.type === "number" ? Number(e.target.value) : e.target.value)}
         placeholder={f.label}
         className="text-sm"

@@ -72,7 +72,7 @@ const Navbar = () => {
               <div key={link.label} className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setAboutOpen(!aboutOpen)}
-                  className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold tracking-wide rounded-md transition-colors ${
+                  className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold tracking-wide whitespace-nowrap rounded-md transition-colors ${
                     isAboutActive
                       ? "bg-primary-foreground/15 text-primary-foreground"
                       : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
@@ -117,7 +117,7 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path!}
-                className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold tracking-wide rounded-md transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold tracking-wide whitespace-nowrap rounded-md transition-colors ${
                   location.pathname === link.path
                     ? "bg-primary-foreground/15 text-primary-foreground"
                     : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
@@ -167,7 +167,7 @@ const Navbar = () => {
                     onClick={() => setMobileAboutOpen(!mobileAboutOpen)}
                     className="flex items-center justify-between w-full px-3 py-2 text-sm font-semibold tracking-wide text-primary-foreground/80 rounded-md"
                   >
-                    {link.label}
+                    <span className="whitespace-nowrap">{link.label}</span>
                     <ChevronDown size={14} className={`transition-transform ${mobileAboutOpen ? "rotate-180" : ""}`} />
                   </button>
                   {mobileAboutOpen && (

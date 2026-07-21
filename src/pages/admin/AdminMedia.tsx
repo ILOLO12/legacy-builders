@@ -16,8 +16,10 @@ const formatSize = (bytes?: number) => {
 
 const AdminMedia = () => {
   const queryClient = useQueryClient();
-  const [uploading, setUploading] = useState(false);
+  const [stage, setStage] = useState<"idle" | "optimizing" | "uploading">("idle");
+  const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const uploading = stage !== "idle";
 
   const { data: files = [], isLoading } = useQuery({
     queryKey: ["media-files"],
@@ -34,15 +36,17 @@ const AdminMedia = () => {
   });
 
   const handleUpload = async (file: File) => {
-    setUploading(true);
+    setStage(file.type.startsWith("image/") ? "optimizing" : "uploading");
+    setProgress(0);
     try {
-      await uploadMedia(file);
+      await uploadMedia(file, { onProgress: (p) => { setStage("uploading"); setProgress(p); } });
       queryClient.invalidateQueries({ queryKey: ["media-files"] });
       toast.success("Fichier téléversé");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Échec du téléversement");
     } finally {
-      setUploading(false);
+      setStage("idle");
+      setProgress(0);
     }
   };
 
@@ -60,7 +64,7 @@ const AdminMedia = () => {
         </div>
         <Button onClick={() => inputRef.current?.click()} disabled={uploading} className="gap-2 bg-primary">
           {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
-          {uploading ? "Téléversement..." : "Téléverser un fichier"}
+          {stage === "optimizing" ? "Optimisation..." : stage === "uploading" ? `Téléversement... ${progress}%` : "Téléverser un fichier"}
         </Button>
         <input
           ref={inputRef}
@@ -74,6 +78,11 @@ const AdminMedia = () => {
           }}
         />
       </div>
+      {stage === "uploading" && (
+        <div className="h-1 w-full max-w-xs bg-muted rounded-full overflow-hidden mb-6 -mt-4">
+          <div className="h-full bg-accent transition-all" style={{ width: `${progress}%` }} />
+        </div>
+      )}
 
       {isLoading ? (
         <div className="text-center py-12 text-muted-foreground">Chargement...</div>

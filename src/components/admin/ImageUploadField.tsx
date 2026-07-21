@@ -14,20 +14,26 @@ interface ImageUploadFieldProps {
 const isImageUrl = (url: string) => /\.(png|jpe?g|gif|webp|svg|avif)(\?.*)?$/i.test(url);
 
 const ImageUploadField = ({ value, onChange, kind = "image" }: ImageUploadFieldProps) => {
-  const [uploading, setUploading] = useState(false);
+  const [stage, setStage] = useState<"idle" | "optimizing" | "uploading">("idle");
+  const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const accept = kind === "file" ? "image/*,video/*,application/pdf" : "image/*";
+  const uploading = stage !== "idle";
 
   const handleFile = async (file: File) => {
-    setUploading(true);
+    setStage(file.type.startsWith("image/") ? "optimizing" : "uploading");
+    setProgress(0);
     try {
-      const url = await uploadMedia(file);
+      const url = await uploadMedia(file, {
+        onProgress: (p) => { setStage("uploading"); setProgress(p); },
+      });
       onChange(url);
       toast.success("Fichier téléversé");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Échec du téléversement");
     } finally {
-      setUploading(false);
+      setStage("idle");
+      setProgress(0);
     }
   };
 
@@ -51,9 +57,14 @@ const ImageUploadField = ({ value, onChange, kind = "image" }: ImageUploadFieldP
           className="gap-1.5 flex-shrink-0"
         >
           {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-          {uploading ? "..." : "Téléverser"}
+          {stage === "optimizing" ? "Optimisation..." : stage === "uploading" ? `${progress}%` : "Téléverser"}
         </Button>
       </div>
+      {stage === "uploading" && (
+        <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+          <div className="h-full bg-accent transition-all" style={{ width: `${progress}%` }} />
+        </div>
+      )}
       <input
         ref={inputRef}
         type="file"

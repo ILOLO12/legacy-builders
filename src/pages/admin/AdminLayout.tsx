@@ -3,20 +3,23 @@ import { Outlet, useNavigate, NavLink } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Newspaper, Users, Activity, Handshake, Image, MessageSquareQuote,
-  Settings, LayoutDashboard, LogOut, FileText, CalendarDays, FolderOpen,
+  Settings, LayoutDashboard, LogOut, FileText, CalendarDays, FolderOpen, BarChart3, Share2, AlertTriangle,
 } from "lucide-react";
 
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Tableau de bord", end: true },
+  { to: "/admin/analytics", icon: BarChart3, label: "Statistiques" },
   { to: "/admin/pages", icon: FileText, label: "Pages du site" },
   { to: "/admin/articles", icon: Newspaper, label: "Articles" },
   { to: "/admin/team", icon: Users, label: "Équipe" },
   { to: "/admin/activities", icon: Activity, label: "Activités" },
   { to: "/admin/events", icon: CalendarDays, label: "Événements" },
+  { to: "/admin/social", icon: Share2, label: "Réseaux sociaux" },
   { to: "/admin/partners", icon: Handshake, label: "Partenaires" },
   { to: "/admin/gallery", icon: Image, label: "Galerie" },
   { to: "/admin/testimonials", icon: MessageSquareQuote, label: "Témoignages" },
   { to: "/admin/media", icon: FolderOpen, label: "Médiathèque" },
+  { to: "/admin/logs", icon: AlertTriangle, label: "Journal d'erreurs" },
   { to: "/admin/settings", icon: Settings, label: "Paramètres" },
 ];
 

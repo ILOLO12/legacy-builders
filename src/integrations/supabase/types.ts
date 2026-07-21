@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_rate_limit: {
+        Row: {
+          count: number
+          session_id: string
+          window_start: string
+        }
+        Insert: {
+          count?: number
+          session_id: string
+          window_start?: string
+        }
+        Update: {
+          count?: number
+          session_id?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      error_logs: {
+        Row: {
+          context: Json | null
+          created_at: string
+          id: string
+          message: string
+          source: string
+        }
+        Insert: {
+          context?: Json | null
+          created_at?: string
+          id?: string
+          message: string
+          source: string
+        }
+        Update: {
+          context?: Json | null
+          created_at?: string
+          id?: string
+          message?: string
+          source?: string
+        }
+        Relationships: []
+      }
       activities: {
         Row: {
           category: string
@@ -227,6 +269,30 @@ export type Database = {
         }
         Relationships: []
       }
+      page_views: {
+        Row: {
+          created_at: string
+          id: string
+          path: string
+          referrer: string | null
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          path: string
+          referrer?: string | null
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          path?: string
+          referrer?: string | null
+          session_id?: string
+        }
+        Relationships: []
+      }
       partners: {
         Row: {
           created_at: string
@@ -256,6 +322,71 @@ export type Database = {
           website_url?: string | null
         }
         Relationships: []
+      }
+      social_accounts: {
+        Row: {
+          display_name: string | null
+          id: string
+          is_configured: boolean
+          platform: string
+          updated_at: string
+        }
+        Insert: {
+          display_name?: string | null
+          id?: string
+          is_configured?: boolean
+          platform: string
+          updated_at?: string
+        }
+        Update: {
+          display_name?: string | null
+          id?: string
+          is_configured?: boolean
+          platform?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      social_publish_log: {
+        Row: {
+          article_id: string | null
+          attempt_count: number
+          created_at: string
+          error_message: string | null
+          id: string
+          platform: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          article_id?: string | null
+          attempt_count?: number
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          platform: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          article_id?: string | null
+          attempt_count?: number
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          platform?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_publish_log_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       site_settings: {
         Row: {
@@ -367,6 +498,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_analytics_summary: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

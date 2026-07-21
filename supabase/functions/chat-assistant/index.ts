@@ -14,9 +14,35 @@ interface ChatMessage {
   content: string;
 }
 
-async function buildSystemPrompt(): Promise<string> {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const RATE_LIMIT_MAX = 20;
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
 
+/** Simple fixed-window rate limit per client session. Fails open (allows the
+ * request) if the table isn't migrated yet or on any unexpected error. */
+async function checkRateLimit(supabase: ReturnType<typeof createClient>, sessionId: string): Promise<boolean> {
+  try {
+    const { data: row } = await supabase.from("chat_rate_limit").select("*").eq("session_id", sessionId).maybeSingle();
+    const now = Date.now();
+
+    if (!row || now - new Date(row.window_start).getTime() > RATE_LIMIT_WINDOW_MS) {
+      await supabase.from("chat_rate_limit").upsert({ session_id: sessionId, window_start: new Date().toISOString(), count: 1 });
+      return true;
+    }
+
+    if (row.count >= RATE_LIMIT_MAX) return false;
+
+    await supabase.from("chat_rate_limit").update({ count: row.count + 1 }).eq("session_id", sessionId);
+    return true;
+  } catch {
+    return true;
+  }
+}
+
+async function logError(supabase: ReturnType<typeof createClient>, message: string, context: Record<string, unknown>) {
+  await supabase.from("error_logs").insert({ source: "chat-assistant", message, context }).then(() => {}, () => {});
+}
+
+async function buildSystemPrompt(supabase: ReturnType<typeof createClient>): Promise<string> {
   const [{ data: settings }, { data: activities }, { data: articles }, { data: events }] = await Promise.all([
     supabase.from("site_settings").select("key,value"),
     supabase.from("activities").select("title,category,year").order("display_order").limit(10),
@@ -78,12 +104,21 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
   try {
-    const { messages }: { messages: ChatMessage[] } = await req.json();
+    const { messages, session_id }: { messages: ChatMessage[]; session_id?: string } = await req.json();
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return new Response(JSON.stringify({ error: "messages requis" }), {
         status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (session_id && !(await checkRateLimit(supabase, session_id))) {
+      return new Response(JSON.stringify({ error: "Trop de messages envoyés, réessayez dans quelques minutes." }), {
+        status: 429,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -95,7 +130,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const systemPrompt = await buildSystemPrompt();
+    const systemPrompt = await buildSystemPrompt(supabase);
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -124,6 +159,7 @@ Deno.serve(async (req) => {
     if (!aiResponse.ok) {
       const text = await aiResponse.text();
       console.error("AI gateway error", aiResponse.status, text);
+      await logError(supabase, `AI gateway error ${aiResponse.status}`, { body: text });
       return new Response(JSON.stringify({ error: "Erreur du service IA." }), {
         status: 502,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -138,6 +174,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error("chat-assistant error", e);
+    await logError(supabase, e instanceof Error ? e.message : "Erreur inconnue", {});
     return new Response(JSON.stringify({ error: "Erreur interne." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

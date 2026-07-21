@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
@@ -25,9 +25,11 @@ interface CrudTableProps {
   title: string;
   fields: FieldDef[];
   orderBy?: string;
+  /** Extra buttons rendered before Edit/Delete on each row, for table-specific actions. */
+  renderRowActions?: (row: RowData) => ReactNode;
 }
 
-const CrudTable = ({ table, title, fields, orderBy = "created_at" }: CrudTableProps) => {
+const CrudTable = ({ table, title, fields, orderBy = "created_at", renderRowActions }: CrudTableProps) => {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<RowData | null>(null);
   const [isNew, setIsNew] = useState(false);
@@ -181,6 +183,7 @@ const CrudTable = ({ table, title, fields, orderBy = "created_at" }: CrudTablePr
                       </td>
                     ))}
                     <td className="px-4 py-3 text-right space-x-1">
+                      {renderRowActions?.(row)}
                       <Button
                         size="sm"
                         variant="ghost"

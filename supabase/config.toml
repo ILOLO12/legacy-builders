@@ -2,3 +2,6 @@ project_id = "oocccxfmbzkvvwfhpxsf"
 
 [functions.chat-assistant]
 verify_jwt = false
+
+[functions.social-publish]
+verify_jwt = false

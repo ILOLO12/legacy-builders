@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import AnimatedSection from "@/components/AnimatedSection";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Newspaper, Calendar } from "lucide-react";
@@ -50,7 +51,7 @@ const News = () => {
             <div className="space-y-8">
               {articles.map((item, i) => (
                 <AnimatedSection key={item.id} delay={i * 0.1}>
-                  <div className="card-hover flex flex-col md:flex-row gap-6">
+                  <Link to={`/news/${item.slug}`} className="card-hover flex flex-col md:flex-row gap-6">
                     <div className="md:w-64 flex-shrink-0 aspect-video md:aspect-[4/3] rounded-lg bg-gradient-to-br from-primary/20 to-accent/10 flex items-center justify-center overflow-hidden">
                       {item.image_url ? (
                         <img src={item.image_url} alt={localized(item.title, item.title_fr)} className="w-full h-full object-cover" loading="lazy" />
@@ -68,7 +69,7 @@ const News = () => {
                       <h3 className="text-lg font-serif font-semibold mb-2">{localized(item.title, item.title_fr)}</h3>
                       <p className="text-muted-foreground text-sm leading-relaxed">{localized(item.excerpt, item.excerpt_fr)}</p>
                     </div>
-                  </div>
+                  </Link>
                 </AnimatedSection>
               ))}
             </div>

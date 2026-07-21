@@ -3,6 +3,7 @@ import { MessageCircle, X, Send, Loader2, Bot } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { getSessionId } from "@/lib/sessionId";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -43,7 +44,7 @@ const ChatWidget = () => {
 
     try {
       const { data, error } = await supabase.functions.invoke("chat-assistant", {
-        body: { messages: next },
+        body: { messages: next, session_id: getSessionId() },
       });
       if (error) throw error;
       const reply = data?.reply ?? (data?.error

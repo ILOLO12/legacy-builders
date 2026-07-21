@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import PublicLayout from "@/components/PublicLayout";
+import { usePageTracking } from "@/hooks/usePageTracking";
 import Home from "./pages/Home";
 
 const History = lazy(() => import("./pages/History"));
@@ -14,6 +15,7 @@ const InMemoriam = lazy(() => import("./pages/InMemoriam"));
 const Team = lazy(() => import("./pages/Team"));
 const Activities = lazy(() => import("./pages/Activities"));
 const News = lazy(() => import("./pages/News"));
+const NewsArticle = lazy(() => import("./pages/NewsArticle"));
 const Donate = lazy(() => import("./pages/Donate"));
 const Membership = lazy(() => import("./pages/Membership"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -24,24 +26,38 @@ const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const ResetPassword = lazy(() => import("./pages/admin/ResetPassword"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminAnalytics = lazy(() => import("./pages/admin/AdminAnalytics"));
 const AdminPages = lazy(() => import("./pages/admin/AdminPages"));
 const AdminArticles = lazy(() => import("./pages/admin/AdminArticles"));
 const AdminTeam = lazy(() => import("./pages/admin/AdminTeam"));
 const AdminActivities = lazy(() => import("./pages/admin/AdminActivities"));
 const AdminEvents = lazy(() => import("./pages/admin/AdminEvents"));
+const AdminSocialMedia = lazy(() => import("./pages/admin/AdminSocialMedia"));
+const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
 const AdminPartners = lazy(() => import("./pages/admin/AdminPartners"));
 const AdminGallery = lazy(() => import("./pages/admin/AdminGallery"));
 const AdminTestimonials = lazy(() => import("./pages/admin/AdminTestimonials"));
 const AdminMedia = lazy(() => import("./pages/admin/AdminMedia"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60_000,
+    },
+  },
+});
 
 const PageFallback = () => (
   <div className="min-h-screen flex items-center justify-center">
     <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
   </div>
 );
+
+const RouteTracker = () => {
+  usePageTracking();
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -50,6 +66,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <RouteTracker />
           <Suspense fallback={<PageFallback />}>
             <Routes>
               {/* Admin routes */}
@@ -57,11 +74,14 @@ const App = () => (
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
+                <Route path="analytics" element={<AdminAnalytics />} />
                 <Route path="pages" element={<AdminPages />} />
                 <Route path="articles" element={<AdminArticles />} />
                 <Route path="team" element={<AdminTeam />} />
                 <Route path="activities" element={<AdminActivities />} />
                 <Route path="events" element={<AdminEvents />} />
+                <Route path="social" element={<AdminSocialMedia />} />
+                <Route path="logs" element={<AdminLogs />} />
                 <Route path="partners" element={<AdminPartners />} />
                 <Route path="gallery" element={<AdminGallery />} />
                 <Route path="testimonials" element={<AdminTestimonials />} />
@@ -78,6 +98,7 @@ const App = () => (
                 <Route path="/team" element={<Team />} />
                 <Route path="/activities" element={<Activities />} />
                 <Route path="/news" element={<News />} />
+                <Route path="/news/:slug" element={<NewsArticle />} />
                 <Route path="/donate" element={<Donate />} />
                 <Route path="/membership" element={<Membership />} />
                 <Route path="/contact" element={<Contact />} />

@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import { Heart, Lock, Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
+import { Lock, Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePageContent } from "@/hooks/usePageContent";
-import logoFallback from "@/assets/logo.jpeg";
+import logoFallback from "@/assets/logo-icon.png";
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -24,8 +24,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-accent/50 shadow-md">
-                <img src={settings.logo_url || logoFallback} alt={settings.site_name} className="w-full h-full object-cover" />
+              <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-accent/50 shadow-md bg-white flex items-center justify-center p-1">
+                <img src={settings.logo_url || logoFallback} alt={settings.site_name} className="w-full h-full object-contain" />
               </div>
               <span className="text-2xl font-serif font-bold">{settings.site_name}</span>
             </div>
@@ -79,7 +79,14 @@ const Footer = () => {
             <Link to="/admin/login" className="flex items-center gap-1 hover:opacity-100 transition-opacity">
               <Lock size={10} /> Admin
             </Link>
-            <p className="flex items-center gap-1">{t.footer.builtWith} <Heart size={12} className="text-accent" /> {t.footer.forHumanity}</p>
+            <a
+              href="https://www.edunova-rdc.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-100 transition-opacity"
+            >
+              www.edunova-rdc.com
+            </a>
           </div>
         </div>
       </div>

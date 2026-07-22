@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import AnimatedSection from "@/components/AnimatedSection";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { localeFor } from "@/i18n/locale";
 import { Newspaper, Calendar } from "lucide-react";
 import { useSEO } from "@/hooks/useSEO";
 import { supabase } from "@/integrations/supabase/client";
@@ -63,7 +64,7 @@ const News = () => {
                       <div className="flex items-center gap-2 text-muted-foreground text-xs mb-2">
                         <Calendar size={14} />
                         <time>
-                          {new Date(item.published_at ?? item.created_at).toLocaleDateString(lang === "fr" ? "fr-FR" : "en-US", { year: "numeric", month: "long", day: "numeric" })}
+                          {new Date(item.published_at ?? item.created_at).toLocaleDateString(localeFor(lang), { year: "numeric", month: "long", day: "numeric" })}
                         </time>
                       </div>
                       <h3 className="text-lg font-serif font-semibold mb-2">{localized(item.title, item.title_fr)}</h3>

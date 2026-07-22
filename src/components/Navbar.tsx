@@ -2,9 +2,15 @@ import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown, Globe, Home, Info, Activity, Newspaper, Users, Phone, Heart, Lock, UserRound, BookOpen, HeartHandshake, Image } from "lucide-react";
-import { useLanguage } from "@/i18n/LanguageContext";
+import { useLanguage, LANGUAGES } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import logoFallback from "@/assets/logo.jpeg";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -133,15 +139,29 @@ const Navbar = () => {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          {/* Language toggle */}
-          <button
-            onClick={() => setLang(lang === "en" ? "fr" : "en")}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-md bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground transition-colors"
-            aria-label="Toggle language"
-          >
-            <Globe size={14} />
-            {lang === "en" ? "FR" : "EN"}
-          </button>
+          {/* Language switcher */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-md bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground transition-colors"
+                aria-label="Change language"
+              >
+                <Globe size={14} />
+                {lang.toUpperCase()}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {LANGUAGES.map((l) => (
+                <DropdownMenuItem
+                  key={l.code}
+                  onClick={() => setLang(l.code)}
+                  className={l.code === lang ? "font-semibold text-accent" : ""}
+                >
+                  {l.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Link to="/donate">
             <Button variant="gold" size="sm" className="hidden sm:inline-flex">
               {t.nav.donate}

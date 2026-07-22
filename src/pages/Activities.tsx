@@ -7,6 +7,7 @@ import {
   CalendarDays, MapPin,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { localeFor } from "@/i18n/locale";
 import { useSEO } from "@/hooks/useSEO";
 import { usePageContent } from "@/hooks/usePageContent";
 import { supabase } from "@/integrations/supabase/client";
@@ -155,7 +156,7 @@ const Activities = () => {
                       {ev.event_date && (
                         <div className="flex items-center gap-2 text-accent text-xs font-semibold mb-2">
                           <CalendarDays size={14} />
-                          <time>{new Date(ev.event_date).toLocaleDateString(lang === "fr" ? "fr-FR" : "en-US", { year: "numeric", month: "long", day: "numeric" })}</time>
+                          <time>{new Date(ev.event_date).toLocaleDateString(localeFor(lang), { year: "numeric", month: "long", day: "numeric" })}</time>
                         </div>
                       )}
                       <h3 className="font-serif font-semibold mb-2">{localized(ev.title, ev.title_fr)}</h3>

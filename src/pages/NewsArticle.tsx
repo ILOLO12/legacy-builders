@@ -2,9 +2,11 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import AnimatedSection from "@/components/AnimatedSection";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { localeFor } from "@/i18n/locale";
 import { Newspaper, Calendar, ArrowLeft } from "lucide-react";
 import { useSEO } from "@/hooks/useSEO";
 import { supabase } from "@/integrations/supabase/client";
+import ShareButtons from "@/components/ShareButtons";
 
 const NewsArticle = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -56,7 +58,7 @@ const NewsArticle = () => {
             <div className="flex items-center gap-2 text-primary-foreground/60 text-xs mb-3">
               <Calendar size={14} />
               <time>
-                {new Date(article.published_at ?? article.created_at).toLocaleDateString(lang === "fr" ? "fr-FR" : "en-US", { year: "numeric", month: "long", day: "numeric" })}
+                {new Date(article.published_at ?? article.created_at).toLocaleDateString(localeFor(lang), { year: "numeric", month: "long", day: "numeric" })}
               </time>
             </div>
             <h1 className="text-3xl md:text-4xl font-serif font-bold text-primary-foreground">
@@ -77,6 +79,13 @@ const NewsArticle = () => {
           )}
           <div className="prose-content text-foreground leading-relaxed whitespace-pre-wrap">
             {localized(article.content, article.content_fr) || localized(article.excerpt, article.excerpt_fr)}
+          </div>
+
+          <div className="mt-10 pt-6 border-t border-border">
+            <ShareButtons
+              url={typeof window !== "undefined" ? window.location.href : ""}
+              title={localized(article.title, article.title_fr)}
+            />
           </div>
         </div>
       </section>

@@ -16,6 +16,7 @@ const Team = lazy(() => import("./pages/Team"));
 const Activities = lazy(() => import("./pages/Activities"));
 const News = lazy(() => import("./pages/News"));
 const NewsArticle = lazy(() => import("./pages/NewsArticle"));
+const Gallery = lazy(() => import("./pages/Gallery"));
 const Donate = lazy(() => import("./pages/Donate"));
 const Membership = lazy(() => import("./pages/Membership"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -99,6 +100,7 @@ const App = () => (
                 <Route path="/activities" element={<Activities />} />
                 <Route path="/news" element={<News />} />
                 <Route path="/news/:slug" element={<NewsArticle />} />
+                <Route path="/gallery" element={<Gallery />} />
                 <Route path="/donate" element={<Donate />} />
                 <Route path="/membership" element={<Membership />} />
                 <Route path="/contact" element={<Contact />} />

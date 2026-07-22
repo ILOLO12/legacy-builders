@@ -8,6 +8,7 @@ export const en = {
     inMemoriam: "In Memoriam",
     activities: "ACTIVITIES",
     news: "NEWS",
+    gallery: "GALLERY",
     membership: "MEMBERSHIP",
     contact: "CONTACT",
     donate: "Donate",
@@ -256,5 +257,10 @@ export const en = {
     subtitle: "Dedicated professionals united by a shared commitment to impact.",
     governanceTitle: "Governance & Transparency",
     governanceText: "MUFO is governed by a commitment to full transparency and accountability. Every team member upholds our core values of integrity, compassion, and excellence in serving communities.",
+  },
+
+  gallery: {
+    title: "Gallery",
+    subtitle: "Photos and videos from our field operations and community programs.",
   },
 };

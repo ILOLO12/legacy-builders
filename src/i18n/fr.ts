@@ -9,6 +9,7 @@ export const fr: typeof en = {
     inMemoriam: "In Memoriam",
     activities: "ACTIVITÉS",
     news: "ACTUALITÉ",
+    gallery: "GALERIE",
     membership: "ADHÉSION",
     contact: "CONTACT",
     donate: "Faire un don",
@@ -248,5 +249,10 @@ export const fr: typeof en = {
     subtitle: "Des professionnels dévoués unis par un engagement commun envers l'impact.",
     governanceTitle: "Gouvernance et Transparence",
     governanceText: "MUFO est gouvernée par un engagement envers la transparence et la responsabilité totales. Chaque membre de l'équipe respecte nos valeurs fondamentales d'intégrité, de compassion et d'excellence au service des communautés.",
+  },
+
+  gallery: {
+    title: "Galerie",
+    subtitle: "Photos et vidéos de nos actions de terrain et programmes communautaires.",
   },
 };

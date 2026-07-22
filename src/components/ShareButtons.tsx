@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Facebook, Twitter, Linkedin, MessageCircle, Link2, Check } from "lucide-react";
+import { Link2, Check } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { FacebookIcon, XIcon, LinkedInIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
 
 interface ShareButtonsProps {
   url: string;
@@ -17,27 +18,23 @@ const ShareButtons = ({ url, title }: ShareButtonsProps) => {
   const links = [
     {
       label: "Facebook",
-      icon: Facebook,
+      Icon: FacebookIcon,
       href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-      className: "hover:bg-[#1877F2] hover:text-white hover:border-[#1877F2]",
     },
     {
       label: "X",
-      icon: Twitter,
+      Icon: XIcon,
       href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
-      className: "hover:bg-black hover:text-white hover:border-black",
     },
     {
       label: "LinkedIn",
-      icon: Linkedin,
+      Icon: LinkedInIcon,
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
-      className: "hover:bg-[#0A66C2] hover:text-white hover:border-[#0A66C2]",
     },
     {
       label: "WhatsApp",
-      icon: MessageCircle,
+      Icon: WhatsAppIcon,
       href: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
-      className: "hover:bg-[#25D366] hover:text-white hover:border-[#25D366]",
     },
   ];
 
@@ -63,9 +60,9 @@ const ShareButtons = ({ url, title }: ShareButtonsProps) => {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Share on ${l.label}`}
-          className={`w-9 h-9 rounded-full border border-border flex items-center justify-center text-muted-foreground transition-colors ${l.className}`}
+          className="w-9 h-9 rounded-full shadow-sm hover:scale-110 hover:shadow-md transition-transform"
         >
-          <l.icon size={16} />
+          <l.Icon className="w-full h-full" />
         </a>
       ))}
       <button

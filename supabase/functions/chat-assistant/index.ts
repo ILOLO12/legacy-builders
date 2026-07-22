@@ -125,7 +125,7 @@ Deno.serve(async (req) => {
 
     if (!LOVABLE_API_KEY) {
       return new Response(
-        JSON.stringify({ error: "L'assistant IA n'est pas encore activé (LOVABLE_API_KEY manquante)." }),
+        JSON.stringify({ error: "L'assistant virtuel est temporairement indisponible. Merci de réessayer plus tard." }),
         { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

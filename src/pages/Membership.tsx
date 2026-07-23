@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import AnimatedSection from "@/components/AnimatedSection";
-import { Check } from "lucide-react";
+import FormField, { fieldInputClass } from "@/components/FormField";
+import { Check, User, Mail, MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -139,28 +140,34 @@ const Membership = () => {
             <DialogTitle>{c.joinNow} — {selectedTier}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-            <Input
-              placeholder={lang === "fr" ? "Nom complet *" : "Full name *"}
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              maxLength={100}
-            />
-            <Input
-              type="email"
-              placeholder={lang === "fr" ? "Adresse e-mail *" : "Email address *"}
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              maxLength={255}
-            />
-            <Textarea
-              placeholder={lang === "fr" ? "Message (facultatif)" : "Message (optional)"}
-              rows={3}
-              value={form.message}
-              onChange={(e) => setForm({ ...form, message: e.target.value })}
-              maxLength={1000}
-            />
-            <Button type="submit" variant="gold" className="w-full" disabled={sending}>
-              {sending ? "..." : c.joinNow}
+            <FormField icon={User} label={lang === "fr" ? "Nom complet *" : "Full name *"}>
+              <Input
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                maxLength={100}
+                className={fieldInputClass}
+              />
+            </FormField>
+            <FormField icon={Mail} label={lang === "fr" ? "Adresse e-mail *" : "Email address *"}>
+              <Input
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                maxLength={255}
+                className={fieldInputClass}
+              />
+            </FormField>
+            <FormField icon={MessageSquare} label={lang === "fr" ? "Message (facultatif)" : "Message (optional)"}>
+              <Textarea
+                rows={3}
+                value={form.message}
+                onChange={(e) => setForm({ ...form, message: e.target.value })}
+                maxLength={1000}
+                className={fieldInputClass}
+              />
+            </FormField>
+            <Button type="submit" variant="gold" className="w-full gap-2" disabled={sending}>
+              {sending ? "..." : <>{c.joinNow} <Send size={16} /></>}
             </Button>
           </form>
         </DialogContent>

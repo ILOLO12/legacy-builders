@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import AnimatedSection from "@/components/AnimatedSection";
-import { MapPin, Mail, Phone } from "lucide-react";
+import FormField, { fieldInputClass } from "@/components/FormField";
+import { MapPin, Mail, Phone, User, Tag, MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -62,14 +63,34 @@ const Contact = () => {
         <div className="section-container">
           <div className="grid lg:grid-cols-2 gap-16 max-w-5xl mx-auto">
             <AnimatedSection>
-              <h2 className="text-2xl font-serif font-bold mb-6">{c.sendMessage}</h2>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <Input placeholder={c.fullName} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} maxLength={100} />
-                <Input type="email" placeholder={c.email} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} maxLength={255} />
-                <Input placeholder={c.subject} value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} maxLength={200} />
-                <Textarea placeholder={c.message} rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} maxLength={1000} />
-                <Button type="submit" className="w-full sm:w-auto px-8" disabled={sending}>{sending ? "..." : c.send}</Button>
-              </form>
+              <div className="bg-card border border-border rounded-2xl shadow-lg overflow-hidden">
+                <div className="h-1.5 bg-gradient-to-r from-gold-dark via-accent to-gold-light" />
+                <div className="p-6 sm:p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-accent to-gold-dark shadow-md shadow-accent/20 flex items-center justify-center flex-shrink-0">
+                      <Send className="text-white" size={18} strokeWidth={1.75} />
+                    </div>
+                    <h2 className="text-xl font-serif font-bold">{c.sendMessage}</h2>
+                  </div>
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <FormField icon={User} label={c.fullName}>
+                      <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} maxLength={100} className={fieldInputClass} />
+                    </FormField>
+                    <FormField icon={Mail} label={c.email}>
+                      <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} maxLength={255} className={fieldInputClass} />
+                    </FormField>
+                    <FormField icon={Tag} label={c.subject}>
+                      <Input value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} maxLength={200} className={fieldInputClass} />
+                    </FormField>
+                    <FormField icon={MessageSquare} label={c.message}>
+                      <Textarea rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} maxLength={1000} className={fieldInputClass} />
+                    </FormField>
+                    <Button type="submit" variant="gold" className="w-full gap-2" disabled={sending}>
+                      {sending ? "..." : <>{c.send} <Send size={16} /></>}
+                    </Button>
+                  </form>
+                </div>
+              </div>
             </AnimatedSection>
 
             <AnimatedSection delay={0.2}>

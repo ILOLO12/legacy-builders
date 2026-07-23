@@ -195,12 +195,12 @@ const Home = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {objectives.map((o, i) => (
               <AnimatedSection key={o.title} delay={i * 0.1}>
-                <div className="group relative h-full bg-card border border-border rounded-2xl p-7 text-center overflow-hidden hover:shadow-xl hover:-translate-y-1 hover:border-accent/40 transition-all duration-300">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 h-1 w-0 group-hover:w-2/3 bg-gradient-to-r from-transparent via-accent to-transparent transition-all duration-500" />
-                  <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-accent/25 to-accent/5 ring-1 ring-accent/20 flex items-center justify-center mx-auto mb-5 group-hover:scale-110 group-hover:ring-accent/40 transition-all duration-300">
-                    <o.icon className="text-accent" size={28} strokeWidth={1.75} />
+                <div className="group relative h-full bg-gradient-to-b from-card to-surface border border-border rounded-2xl pt-8 pb-7 px-6 text-center overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1.5 hover:border-accent/50 transition-all duration-300">
+                  <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-gold-dark via-accent to-gold-light" />
+                  <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-gold-dark shadow-lg shadow-accent/20 flex items-center justify-center mx-auto mb-5 rotate-3 group-hover:rotate-0 group-hover:scale-110 transition-all duration-300">
+                    <o.icon className="text-white" size={28} strokeWidth={1.75} />
                   </div>
-                  <p className="text-sm font-medium leading-snug">{o.title}</p>
+                  <p className="text-sm font-semibold leading-snug text-foreground">{o.title}</p>
                 </div>
               </AnimatedSection>
             ))}

@@ -73,19 +73,18 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden lg:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-0.5 xl:gap-1">
           {mainLinks.map((link) =>
             link.children ? (
               <div key={link.label} className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setAboutOpen(!aboutOpen)}
-                  className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold tracking-wide whitespace-nowrap rounded-md transition-colors ${
+                  className={`flex items-center gap-1 px-2 xl:px-3 py-2 text-[13px] xl:text-sm font-semibold tracking-wide whitespace-nowrap rounded-md transition-colors ${
                     isAboutActive
                       ? "bg-primary-foreground/15 text-primary-foreground"
                       : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
                   }`}
                 >
-                  <link.icon size={15} />
                   {link.label}
                   <ChevronDown size={14} className={`transition-transform ${aboutOpen ? "rotate-180" : ""}`} />
                 </button>
@@ -124,13 +123,12 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path!}
-                className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold tracking-wide whitespace-nowrap rounded-md transition-colors ${
+                className={`flex items-center px-2 xl:px-3 py-2 text-[13px] xl:text-sm font-semibold tracking-wide whitespace-nowrap rounded-md transition-colors ${
                   location.pathname === link.path
                     ? "bg-primary-foreground/15 text-primary-foreground"
                     : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
                 }`}
               >
-                <link.icon size={15} />
                 {link.label}
               </Link>
             )

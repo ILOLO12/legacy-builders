@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   BookOpen, HeartPulse, Users, ArrowRight, GraduationCap, Stethoscope,
-  Lightbulb, Shield, CheckCircle, Clapperboard, Handshake, Quote
+  Lightbulb, Shield, Clapperboard, Handshake, Quote, School, Rocket
 } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import Counter from "@/components/Counter";
@@ -64,9 +64,9 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
   const pillars = [
-    { icon: BookOpen, title: c.pillarEdu, desc: c.pillarEduDesc },
-    { icon: HeartPulse, title: c.pillarHealth, desc: c.pillarHealthDesc },
-    { icon: Users, title: c.pillarDev, desc: c.pillarDevDesc },
+    { icon: BookOpen, title: c.pillarEdu, desc: c.pillarEduDesc, tone: "primary" as const },
+    { icon: HeartPulse, title: c.pillarHealth, desc: c.pillarHealthDesc, tone: "accent" as const },
+    { icon: Users, title: c.pillarDev, desc: c.pillarDevDesc, tone: "primary" as const },
   ];
 
   const objectives = [
@@ -77,10 +77,10 @@ const Home = () => {
   ];
 
   const realisations = [
-    c.achievement1,
-    c.achievement2,
-    c.achievement3,
-    c.achievement4,
+    { icon: GraduationCap, text: c.achievement1 },
+    { icon: School, text: c.achievement2 },
+    { icon: HeartPulse, text: c.achievement3 },
+    { icon: Rocket, text: c.achievement4 },
   ];
 
   return (
@@ -195,11 +195,12 @@ const Home = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {objectives.map((o, i) => (
               <AnimatedSection key={o.title} delay={i * 0.1}>
-                <div className="card-hover h-full">
-                  <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
-                    <o.icon className="text-accent" size={28} />
+                <div className="group relative h-full bg-card border border-border rounded-2xl p-7 text-center overflow-hidden hover:shadow-xl hover:-translate-y-1 hover:border-accent/40 transition-all duration-300">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 h-1 w-0 group-hover:w-2/3 bg-gradient-to-r from-transparent via-accent to-transparent transition-all duration-500" />
+                  <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-accent/25 to-accent/5 ring-1 ring-accent/20 flex items-center justify-center mx-auto mb-5 group-hover:scale-110 group-hover:ring-accent/40 transition-all duration-300">
+                    <o.icon className="text-accent" size={28} strokeWidth={1.75} />
                   </div>
-                  <p className="text-sm font-medium">{o.title}</p>
+                  <p className="text-sm font-medium leading-snug">{o.title}</p>
                 </div>
               </AnimatedSection>
             ))}
@@ -215,17 +216,25 @@ const Home = () => {
             <div className="gold-line mb-12" />
           </AnimatedSection>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {pillars.map((p, i) => (
-              <AnimatedSection key={p.title} delay={i * 0.15}>
-                <div className="card-hover h-full">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
-                    <p.icon className="text-primary" size={30} />
+            {pillars.map((p, i) => {
+              const isAccent = p.tone === "accent";
+              return (
+                <AnimatedSection key={p.title} delay={i * 0.15}>
+                  <div className="group relative h-full bg-card border border-border rounded-2xl overflow-hidden hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300">
+                    <div className={`h-1.5 w-full ${isAccent ? "bg-gradient-to-r from-gold-dark via-accent to-gold-light" : "bg-gradient-to-r from-primary via-secondary to-primary"}`} />
+                    <div className="p-8 text-center">
+                      <div className={`relative w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-md group-hover:scale-110 transition-transform duration-300 ${
+                        isAccent ? "bg-gradient-to-br from-accent to-gold-dark" : "bg-gradient-to-br from-primary to-secondary"
+                      }`}>
+                        <p.icon className="text-white" size={32} strokeWidth={1.75} />
+                      </div>
+                      <h3 className="text-xl font-serif font-semibold mb-3">{p.title}</h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed">{p.desc}</p>
+                    </div>
                   </div>
-                  <h3 className="text-xl font-serif font-semibold mb-3">{p.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{p.desc}</p>
-                </div>
-              </AnimatedSection>
-            ))}
+                </AnimatedSection>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -266,17 +275,22 @@ const Home = () => {
 
       {/* ─── REALISATIONS ─── */}
       <section className="py-20">
-        <div className="section-container max-w-3xl mx-auto">
+        <div className="section-container max-w-4xl mx-auto">
           <AnimatedSection>
             <h2 className="section-title">{c.keyAchievements}</h2>
             <div className="gold-line mb-12" />
           </AnimatedSection>
-          <div className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-5">
             {realisations.map((r, i) => (
               <AnimatedSection key={i} delay={i * 0.1}>
-                <div className="flex items-start gap-4 p-5 bg-card border border-border rounded-lg hover:shadow-md transition-shadow">
-                  <CheckCircle className="text-accent flex-shrink-0 mt-0.5" size={22} />
-                  <p className="text-sm font-medium">{r}</p>
+                <div className="group relative flex items-start gap-4 p-6 bg-card border border-border rounded-2xl hover:shadow-xl hover:-translate-y-1 hover:border-accent/40 transition-all duration-300 h-full">
+                  <span className="absolute top-3 right-4 font-serif text-3xl font-bold text-muted-foreground/15 select-none">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/25 to-accent/5 ring-1 ring-accent/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <r.icon className="text-accent" size={22} strokeWidth={1.75} />
+                  </div>
+                  <p className="text-sm font-medium leading-relaxed pt-2 pr-6">{r.text}</p>
                 </div>
               </AnimatedSection>
             ))}

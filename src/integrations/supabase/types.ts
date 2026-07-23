@@ -134,6 +134,33 @@ export type Database = {
         }
         Relationships: []
       }
+      membership_signups: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          tier: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          tier: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          tier?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           created_at: string

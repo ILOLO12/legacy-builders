@@ -1,12 +1,18 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Check } from "lucide-react";
+import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSEO } from "@/hooks/useSEO";
 import { usePageContent } from "@/hooks/usePageContent";
+import { supabase } from "@/integrations/supabase/client";
 
 const Membership = () => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   useSEO("Membership", "Become a member of Muller's Foundation (MUFO) and join our mission.");
   const { benefits: b, ...flat } = t.membership;
   const c = usePageContent("membership", {
@@ -25,6 +31,10 @@ const Membership = () => {
     benefit_vip: b.vip,
     benefit_coBranding: b.coBranding,
   });
+
+  const [selectedTier, setSelectedTier] = useState<string | null>(null);
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [sending, setSending] = useState(false);
 
   const tiers = [
     {
@@ -46,6 +56,33 @@ const Membership = () => {
       featured: false,
     },
   ];
+
+  const closeDialog = () => {
+    setSelectedTier(null);
+    setForm({ name: "", email: "", message: "" });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.email.trim() || !selectedTier) {
+      toast.error(lang === "fr" ? "Merci de remplir les champs obligatoires." : "Please fill in the required fields.");
+      return;
+    }
+    setSending(true);
+    const { error } = await supabase.from("membership_signups").insert({
+      name: form.name.trim(),
+      email: form.email.trim(),
+      tier: selectedTier,
+      message: form.message.trim() || null,
+    });
+    setSending(false);
+    if (error) {
+      toast.error(lang === "fr" ? "Une erreur est survenue. Réessayez." : "Something went wrong. Please try again.");
+      return;
+    }
+    toast.success(lang === "fr" ? "Merci ! Votre demande d'adhésion a bien été envoyée." : "Thank you! Your membership request has been sent.");
+    closeDialog();
+  };
 
   return (
     <div>
@@ -82,7 +119,11 @@ const Membership = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button variant={tier.featured ? "gold" : "default"} className="w-full">
+                  <Button
+                    variant={tier.featured ? "gold" : "default"}
+                    className="w-full"
+                    onClick={() => setSelectedTier(tier.name)}
+                  >
                     {c.joinNow}
                   </Button>
                 </div>
@@ -91,6 +132,39 @@ const Membership = () => {
           </div>
         </div>
       </section>
+
+      <Dialog open={selectedTier !== null} onOpenChange={(open) => !open && closeDialog()}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{c.joinNow} — {selectedTier}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+            <Input
+              placeholder={lang === "fr" ? "Nom complet *" : "Full name *"}
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              maxLength={100}
+            />
+            <Input
+              type="email"
+              placeholder={lang === "fr" ? "Adresse e-mail *" : "Email address *"}
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              maxLength={255}
+            />
+            <Textarea
+              placeholder={lang === "fr" ? "Message (facultatif)" : "Message (optional)"}
+              rows={3}
+              value={form.message}
+              onChange={(e) => setForm({ ...form, message: e.target.value })}
+              maxLength={1000}
+            />
+            <Button type="submit" variant="gold" className="w-full" disabled={sending}>
+              {sending ? "..." : c.joinNow}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

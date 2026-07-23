@@ -35,6 +35,8 @@ const AdminActivities = lazy(() => import("./pages/admin/AdminActivities"));
 const AdminEvents = lazy(() => import("./pages/admin/AdminEvents"));
 const AdminSocialMedia = lazy(() => import("./pages/admin/AdminSocialMedia"));
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminMessages = lazy(() => import("./pages/admin/AdminMessages"));
+const AdminMemberships = lazy(() => import("./pages/admin/AdminMemberships"));
 const AdminPartners = lazy(() => import("./pages/admin/AdminPartners"));
 const AdminGallery = lazy(() => import("./pages/admin/AdminGallery"));
 const AdminTestimonials = lazy(() => import("./pages/admin/AdminTestimonials"));
@@ -83,6 +85,8 @@ const App = () => (
                 <Route path="events" element={<AdminEvents />} />
                 <Route path="social" element={<AdminSocialMedia />} />
                 <Route path="logs" element={<AdminLogs />} />
+                <Route path="messages" element={<AdminMessages />} />
+                <Route path="memberships" element={<AdminMemberships />} />
                 <Route path="partners" element={<AdminPartners />} />
                 <Route path="gallery" element={<AdminGallery />} />
                 <Route path="testimonials" element={<AdminTestimonials />} />

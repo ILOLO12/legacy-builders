@@ -4,11 +4,14 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   Newspaper, Users, Activity, Handshake, Image, MessageSquareQuote,
   Settings, LayoutDashboard, LogOut, FileText, CalendarDays, FolderOpen, BarChart3, Share2, AlertTriangle,
+  Mail, UserPlus,
 } from "lucide-react";
 
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Tableau de bord", end: true },
   { to: "/admin/analytics", icon: BarChart3, label: "Statistiques" },
+  { to: "/admin/messages", icon: Mail, label: "Messages" },
+  { to: "/admin/memberships", icon: UserPlus, label: "Adhésions" },
   { to: "/admin/pages", icon: FileText, label: "Pages du site" },
   { to: "/admin/articles", icon: Newspaper, label: "Articles" },
   { to: "/admin/team", icon: Users, label: "Équipe" },

@@ -175,19 +175,22 @@ const Home = () => {
 
       {/* ─── OUR MISSION ─── */}
       <section className="py-20 bg-surface">
-        <div className="section-container max-w-3xl mx-auto">
+        <div className="section-container max-w-4xl mx-auto">
           <AnimatedSection>
-            <div className="relative bg-card border border-border rounded-3xl shadow-lg px-8 py-14 md:px-16 md:py-16 text-center overflow-hidden">
-              <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-accent/5" />
-              <div className="absolute -bottom-16 -left-16 w-52 h-52 rounded-full bg-primary/5" />
-              <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-gold-dark shadow-lg shadow-accent/20 flex items-center justify-center mx-auto mb-6">
-                <Target className="text-white" size={28} strokeWidth={1.75} />
+            <div className="relative bg-card border border-border rounded-2xl shadow-lg px-6 py-8 md:px-12 md:py-9 overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-accent/5" />
+              <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-primary/5" />
+              <div className="relative flex flex-col md:flex-row items-center gap-5 md:gap-8">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-gold-dark shadow-lg shadow-accent/20 flex items-center justify-center flex-shrink-0">
+                  <Target className="text-white" size={28} strokeWidth={1.75} />
+                </div>
+                <div className="text-center md:text-left">
+                  <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-2">{c.ourMission}</p>
+                  <h2 className="text-xl md:text-2xl font-serif font-medium leading-relaxed text-foreground">
+                    {c.missionText}
+                  </h2>
+                </div>
               </div>
-              <p className="relative text-accent font-semibold text-sm uppercase tracking-wider mb-4">{c.ourMission}</p>
-              <h2 className="relative text-2xl md:text-3xl font-serif font-medium leading-relaxed text-foreground">
-                {c.missionText}
-              </h2>
-              <div className="gold-line mt-8" />
             </div>
           </AnimatedSection>
         </div>

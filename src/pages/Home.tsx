@@ -9,6 +9,7 @@ import {
 import AnimatedSection from "@/components/AnimatedSection";
 import Counter from "@/components/Counter";
 import MediaCarousel from "@/components/MediaCarousel";
+import founderImg from "@/assets/founder.jpg";
 import heroBg1 from "@/assets/hero-bg.jpg";
 import heroBg2 from "@/assets/hero-bg-2.jpg";
 import heroBg3 from "@/assets/hero-bg-3.jpg";
@@ -157,18 +158,39 @@ const Home = () => {
 
       {/* ─── WHO WE ARE ─── */}
       <section className="py-20">
-        <div className="section-container max-w-3xl mx-auto text-center">
+        <div className="section-container max-w-5xl mx-auto">
           <AnimatedSection>
-            <h2 className="section-title">{c.whoWeAre}</h2>
-            <div className="gold-line mb-8" />
-            <p className="text-muted-foreground leading-relaxed mb-8">
-              {c.whoWeAreText}
-            </p>
-            <Link to="/history">
-              <Button variant="outline" className="gap-2">
-                {t.home.discoverStory} <ArrowRight size={16} />
-              </Button>
-            </Link>
+            <div className="relative bg-card border border-border rounded-2xl shadow-lg overflow-hidden">
+              <div className="flex flex-col md:flex-row items-stretch">
+                <Link to="/founder" className="group relative md:w-72 flex-shrink-0 overflow-hidden">
+                  <img
+                    src={founderImg}
+                    alt={t.founder.name}
+                    className="w-full h-56 md:h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/10 to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 text-primary-foreground">
+                    <p className="text-[11px] uppercase tracking-wider opacity-80">{t.nav.founder}</p>
+                    <p className="font-serif font-semibold text-sm flex items-center gap-1.5">
+                      {t.founder.name}
+                      <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    </p>
+                  </div>
+                </Link>
+                <div className="p-8 md:p-10 text-center md:text-left flex-1 flex flex-col justify-center">
+                  <h2 className="text-2xl md:text-3xl font-serif font-bold mb-3">{c.whoWeAre}</h2>
+                  <div className="gold-line mb-6 mx-auto md:mx-0" />
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    {c.whoWeAreText}
+                  </p>
+                  <Link to="/history" className="mx-auto md:mx-0 w-fit">
+                    <Button variant="outline" className="gap-2">
+                      {t.home.discoverStory} <ArrowRight size={16} />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
           </AnimatedSection>
         </div>
       </section>

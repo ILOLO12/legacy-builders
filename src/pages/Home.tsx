@@ -166,7 +166,7 @@ const Home = () => {
                   <img
                     src={founderImg}
                     alt={t.founder.name}
-                    className="w-full h-56 md:h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-80 md:h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/10 to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4 text-primary-foreground">

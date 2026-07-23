@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   BookOpen, HeartPulse, Users, ArrowRight, GraduationCap, Stethoscope,
-  Lightbulb, Shield, Clapperboard, Handshake, Quote, School, Rocket
+  Lightbulb, Shield, Clapperboard, Handshake, Quote, School, Rocket, Target
 } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import Counter from "@/components/Counter";
@@ -175,12 +175,20 @@ const Home = () => {
 
       {/* ─── OUR MISSION ─── */}
       <section className="py-20 bg-surface">
-        <div className="section-container max-w-3xl mx-auto text-center">
+        <div className="section-container max-w-3xl mx-auto">
           <AnimatedSection>
-            <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-4">{c.ourMission}</p>
-            <h2 className="text-2xl md:text-3xl font-serif font-bold leading-relaxed">
-              {c.missionText}
-            </h2>
+            <div className="relative bg-card border border-border rounded-3xl shadow-lg px-8 py-14 md:px-16 md:py-16 text-center overflow-hidden">
+              <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-accent/5" />
+              <div className="absolute -bottom-16 -left-16 w-52 h-52 rounded-full bg-primary/5" />
+              <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-gold-dark shadow-lg shadow-accent/20 flex items-center justify-center mx-auto mb-6">
+                <Target className="text-white" size={28} strokeWidth={1.75} />
+              </div>
+              <p className="relative text-accent font-semibold text-sm uppercase tracking-wider mb-4">{c.ourMission}</p>
+              <h2 className="relative text-2xl md:text-3xl font-serif font-medium leading-relaxed text-foreground">
+                {c.missionText}
+              </h2>
+              <div className="gold-line mt-8" />
+            </div>
           </AnimatedSection>
         </div>
       </section>

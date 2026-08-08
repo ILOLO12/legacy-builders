@@ -1,10 +1,11 @@
-import { useEffect } from "react";
-import { Outlet, useNavigate, NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Outlet, useNavigate, useLocation, NavLink } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import {
   Newspaper, Users, Activity, Handshake, Image, MessageSquareQuote,
   Settings, LayoutDashboard, LogOut, FileText, CalendarDays, FolderOpen, BarChart3, Share2, AlertTriangle,
-  Mail, UserPlus, Briefcase,
+  Mail, UserPlus, Briefcase, Menu,
 } from "lucide-react";
 
 const navItems = [
@@ -30,12 +31,18 @@ const navItems = [
 const AdminLayout = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
       navigate("/admin/login");
     }
   }, [user, isAdmin, loading, navigate]);
+
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [location.pathname]);
 
   if (loading) {
     return (
@@ -47,32 +54,36 @@ const AdminLayout = () => {
 
   if (!user || !isAdmin) return null;
 
+  const navLinks = (
+    <>
+      {navItems.map(({ to, icon: Icon, label, end }) => (
+        <NavLink
+          key={to}
+          to={to}
+          end={end}
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors ${
+              isActive
+                ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+            }`
+          }
+        >
+          <Icon size={18} />
+          {label}
+        </NavLink>
+      ))}
+    </>
+  );
+
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="w-64 bg-sidebar text-sidebar-foreground flex flex-col flex-shrink-0">
+      {/* Sidebar (desktop) */}
+      <aside className="hidden lg:flex w-64 bg-sidebar text-sidebar-foreground flex-col flex-shrink-0">
         <div className="p-6 border-b border-sidebar-border">
           <h2 className="text-lg font-serif font-bold text-sidebar-primary">MUFO Admin</h2>
         </div>
-        <nav className="flex-1 p-4 space-y-1">
-          {navItems.map(({ to, icon: Icon, label, end }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={end}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors ${
-                  isActive
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-                }`
-              }
-            >
-              <Icon size={18} />
-              {label}
-            </NavLink>
-          ))}
-        </nav>
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">{navLinks}</nav>
         <div className="p-4 border-t border-sidebar-border">
           <button
             onClick={() => signOut().then(() => navigate("/admin/login"))}
@@ -84,9 +95,40 @@ const AdminLayout = () => {
         </div>
       </aside>
 
+      {/* Mobile top bar + drawer */}
+      <div className="lg:hidden fixed top-0 inset-x-0 z-40 bg-sidebar text-sidebar-foreground flex items-center justify-between px-4 h-14 border-b border-sidebar-border">
+        <h2 className="text-base font-serif font-bold text-sidebar-primary">MUFO Admin</h2>
+        <button
+          onClick={() => setMobileNavOpen(true)}
+          aria-label="Ouvrir le menu"
+          className="p-2 -mr-2 text-sidebar-foreground"
+        >
+          <Menu size={22} />
+        </button>
+      </div>
+
+      <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+        <SheetContent side="left" className="bg-sidebar text-sidebar-foreground border-sidebar-border p-0 w-72 flex flex-col">
+          <SheetTitle className="sr-only">Menu admin</SheetTitle>
+          <div className="p-6 border-b border-sidebar-border">
+            <h2 className="text-lg font-serif font-bold text-sidebar-primary">MUFO Admin</h2>
+          </div>
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">{navLinks}</nav>
+          <div className="p-4 border-t border-sidebar-border">
+            <button
+              onClick={() => signOut().then(() => navigate("/admin/login"))}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors w-full"
+            >
+              <LogOut size={18} />
+              Déconnexion
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
       {/* Main content */}
-      <main className="flex-1 bg-muted overflow-auto">
-        <div className="p-8">
+      <main className="flex-1 bg-muted overflow-auto pt-14 lg:pt-0">
+        <div className="p-4 sm:p-8">
           <Outlet />
         </div>
       </main>

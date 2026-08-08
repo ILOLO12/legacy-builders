@@ -17,6 +17,7 @@ const Activities = lazy(() => import("./pages/Activities"));
 const News = lazy(() => import("./pages/News"));
 const NewsArticle = lazy(() => import("./pages/NewsArticle"));
 const Gallery = lazy(() => import("./pages/Gallery"));
+const Volunteer = lazy(() => import("./pages/Volunteer"));
 const Donate = lazy(() => import("./pages/Donate"));
 const Membership = lazy(() => import("./pages/Membership"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -34,6 +35,7 @@ const AdminTeam = lazy(() => import("./pages/admin/AdminTeam"));
 const AdminActivities = lazy(() => import("./pages/admin/AdminActivities"));
 const AdminEvents = lazy(() => import("./pages/admin/AdminEvents"));
 const AdminSocialMedia = lazy(() => import("./pages/admin/AdminSocialMedia"));
+const AdminVolunteerPositions = lazy(() => import("./pages/admin/AdminVolunteerPositions"));
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
 const AdminMessages = lazy(() => import("./pages/admin/AdminMessages"));
 const AdminMemberships = lazy(() => import("./pages/admin/AdminMemberships"));
@@ -84,6 +86,7 @@ const App = () => (
                 <Route path="activities" element={<AdminActivities />} />
                 <Route path="events" element={<AdminEvents />} />
                 <Route path="social" element={<AdminSocialMedia />} />
+                <Route path="volunteer" element={<AdminVolunteerPositions />} />
                 <Route path="logs" element={<AdminLogs />} />
                 <Route path="messages" element={<AdminMessages />} />
                 <Route path="memberships" element={<AdminMemberships />} />
@@ -105,6 +108,7 @@ const App = () => (
                 <Route path="/news" element={<News />} />
                 <Route path="/news/:slug" element={<NewsArticle />} />
                 <Route path="/gallery" element={<Gallery />} />
+                <Route path="/volontariat" element={<Volunteer />} />
                 <Route path="/donate" element={<Donate />} />
                 <Route path="/membership" element={<Membership />} />
                 <Route path="/contact" element={<Contact />} />

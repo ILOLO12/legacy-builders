@@ -161,6 +161,51 @@ export type Database = {
         }
         Relationships: []
       }
+      volunteer_positions: {
+        Row: {
+          created_at: string
+          criteria: string | null
+          criteria_fr: string | null
+          description: string | null
+          description_fr: string | null
+          display_order: number
+          id: string
+          location: string | null
+          published: boolean
+          title: string
+          title_fr: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          criteria?: string | null
+          criteria_fr?: string | null
+          description?: string | null
+          description_fr?: string | null
+          display_order?: number
+          id?: string
+          location?: string | null
+          published?: boolean
+          title: string
+          title_fr?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          criteria?: string | null
+          criteria_fr?: string | null
+          description?: string | null
+          description_fr?: string | null
+          display_order?: number
+          id?: string
+          location?: string | null
+          published?: boolean
+          title?: string
+          title_fr?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           created_at: string

@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   Newspaper, Users, Activity, Handshake, Image, MessageSquareQuote,
   Settings, LayoutDashboard, LogOut, FileText, CalendarDays, FolderOpen, BarChart3, Share2, AlertTriangle,
-  Mail, UserPlus,
+  Mail, UserPlus, Briefcase,
 } from "lucide-react";
 
 const navItems = [
@@ -17,6 +17,7 @@ const navItems = [
   { to: "/admin/team", icon: Users, label: "Équipe" },
   { to: "/admin/activities", icon: Activity, label: "Activités" },
   { to: "/admin/events", icon: CalendarDays, label: "Événements" },
+  { to: "/admin/volunteer", icon: Briefcase, label: "Volontariat" },
   { to: "/admin/social", icon: Share2, label: "Réseaux sociaux" },
   { to: "/admin/partners", icon: Handshake, label: "Partenaires" },
   { to: "/admin/gallery", icon: Image, label: "Galerie" },

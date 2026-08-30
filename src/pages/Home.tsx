@@ -10,16 +10,18 @@ import AnimatedSection from "@/components/AnimatedSection";
 import Counter from "@/components/Counter";
 import MediaCarousel from "@/components/MediaCarousel";
 import founderImg from "@/assets/founder.jpg";
-import heroBg1 from "@/assets/hero-bg.jpg";
-import heroBg2 from "@/assets/hero-bg-2.jpg";
-import heroBg3 from "@/assets/hero-bg-3.jpg";
-import heroBg4 from "@/assets/hero-bg-4.jpg";
+import heroField1 from "@/assets/hero-field-1.jpg";
+import heroField2 from "@/assets/hero-field-2.jpg";
+import heroField3 from "@/assets/hero-field-3.jpg";
+import heroField4 from "@/assets/hero-field-4.jpg";
+import heroField5 from "@/assets/hero-field-5.jpg";
+import heroField6 from "@/assets/hero-field-6.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
 import { usePageContent } from "@/hooks/usePageContent";
 
-const heroImages = [heroBg1, heroBg2, heroBg3, heroBg4];
+const heroImages = [heroField1, heroField2, heroField3, heroField4, heroField5, heroField6];
 
 const Home = () => {
   const { t } = useLanguage();

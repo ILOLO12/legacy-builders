@@ -15,6 +15,7 @@ const navItems = [
   { to: "/admin/messages", icon: Mail, label: "Messages", adminOnly: true },
   { to: "/admin/memberships", icon: UserPlus, label: "Adhésions", adminOnly: true },
   { to: "/admin/pages", icon: FileText, label: "Pages du site", adminOnly: false },
+  { to: "/admin/contact-info", icon: Mail, label: "Coordonnées de contact", adminOnly: false },
   { to: "/admin/articles", icon: Newspaper, label: "Articles", adminOnly: false },
   { to: "/admin/team", icon: Users, label: "Équipe", adminOnly: false },
   { to: "/admin/activities", icon: Activity, label: "Activités", adminOnly: false },

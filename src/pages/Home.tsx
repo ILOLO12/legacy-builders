@@ -23,11 +23,11 @@ import { usePageContent } from "@/hooks/usePageContent";
 
 const heroImages = [
   { src: heroField1, position: "object-center" },
-  { src: heroField2, position: "object-bottom" },
+  { src: heroField2, position: "object-top" },
   { src: heroField3, position: "object-top" },
   { src: heroField4, position: "object-top" },
   { src: heroField5, position: "object-top" },
-  { src: heroField6, position: "object-top" },
+  { src: heroField6, position: "object-bottom" },
 ];
 
 const Home = () => {

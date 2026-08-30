@@ -5,24 +5,30 @@ import type { User } from "@supabase/supabase-js";
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isEditor, setIsEditor] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const applyRoles = async (u: User | null) => {
+      if (!u) {
+        setIsAdmin(false);
+        setIsEditor(false);
+        return;
+      }
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", u.id);
+      const roles = (data ?? []).map((r) => r.role);
+      setIsAdmin(roles.includes("admin"));
+      setIsEditor(roles.includes("editor") || roles.includes("admin"));
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         const u = session?.user ?? null;
         setUser(u);
-        if (u) {
-          const { data } = await supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", u.id)
-            .eq("role", "admin")
-            .maybeSingle();
-          setIsAdmin(!!data);
-        } else {
-          setIsAdmin(false);
-        }
+        await applyRoles(u);
         setLoading(false);
       }
     );
@@ -30,15 +36,7 @@ export function useAuth() {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       const u = session?.user ?? null;
       setUser(u);
-      if (u) {
-        const { data } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", u.id)
-          .eq("role", "admin")
-          .maybeSingle();
-        setIsAdmin(!!data);
-      }
+      await applyRoles(u);
       setLoading(false);
     });
 
@@ -50,5 +48,5 @@ export function useAuth() {
 
   const signOut = () => supabase.auth.signOut();
 
-  return { user, isAdmin, loading, signIn, signOut };
+  return { user, isAdmin, isEditor, loading, signIn, signOut };
 }

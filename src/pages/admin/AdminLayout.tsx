@@ -8,37 +8,46 @@ import {
   Mail, UserPlus, Briefcase, Menu,
 } from "lucide-react";
 
+// adminOnly: true = hidden from and blocked for editors (super-admin-only sections)
 const navItems = [
-  { to: "/admin", icon: LayoutDashboard, label: "Tableau de bord", end: true },
-  { to: "/admin/analytics", icon: BarChart3, label: "Statistiques" },
-  { to: "/admin/messages", icon: Mail, label: "Messages" },
-  { to: "/admin/memberships", icon: UserPlus, label: "Adhésions" },
-  { to: "/admin/pages", icon: FileText, label: "Pages du site" },
-  { to: "/admin/articles", icon: Newspaper, label: "Articles" },
-  { to: "/admin/team", icon: Users, label: "Équipe" },
-  { to: "/admin/activities", icon: Activity, label: "Activités" },
-  { to: "/admin/events", icon: CalendarDays, label: "Événements" },
-  { to: "/admin/volunteer", icon: Briefcase, label: "Volontariat" },
-  { to: "/admin/social", icon: Share2, label: "Réseaux sociaux" },
-  { to: "/admin/partners", icon: Handshake, label: "Partenaires" },
-  { to: "/admin/gallery", icon: Image, label: "Galerie" },
-  { to: "/admin/testimonials", icon: MessageSquareQuote, label: "Témoignages" },
-  { to: "/admin/media", icon: FolderOpen, label: "Médiathèque" },
-  { to: "/admin/logs", icon: AlertTriangle, label: "Journal d'erreurs" },
-  { to: "/admin/settings", icon: Settings, label: "Paramètres" },
+  { to: "/admin", icon: LayoutDashboard, label: "Tableau de bord", end: true, adminOnly: false },
+  { to: "/admin/analytics", icon: BarChart3, label: "Statistiques", adminOnly: true },
+  { to: "/admin/messages", icon: Mail, label: "Messages", adminOnly: true },
+  { to: "/admin/memberships", icon: UserPlus, label: "Adhésions", adminOnly: true },
+  { to: "/admin/pages", icon: FileText, label: "Pages du site", adminOnly: false },
+  { to: "/admin/articles", icon: Newspaper, label: "Articles", adminOnly: false },
+  { to: "/admin/team", icon: Users, label: "Équipe", adminOnly: false },
+  { to: "/admin/activities", icon: Activity, label: "Activités", adminOnly: false },
+  { to: "/admin/events", icon: CalendarDays, label: "Événements", adminOnly: false },
+  { to: "/admin/volunteer", icon: Briefcase, label: "Volontariat", adminOnly: false },
+  { to: "/admin/social", icon: Share2, label: "Réseaux sociaux", adminOnly: false },
+  { to: "/admin/partners", icon: Handshake, label: "Partenaires", adminOnly: false },
+  { to: "/admin/gallery", icon: Image, label: "Galerie", adminOnly: false },
+  { to: "/admin/testimonials", icon: MessageSquareQuote, label: "Témoignages", adminOnly: false },
+  { to: "/admin/media", icon: FolderOpen, label: "Médiathèque", adminOnly: false },
+  { to: "/admin/logs", icon: AlertTriangle, label: "Journal d'erreurs", adminOnly: true },
+  { to: "/admin/settings", icon: Settings, label: "Paramètres", adminOnly: true },
 ];
 
+const ADMIN_ONLY_PATHS = navItems.filter((i) => i.adminOnly).map((i) => i.to);
+
 const AdminLayout = () => {
-  const { user, isAdmin, loading, signOut } = useAuth();
+  const { user, isAdmin, isEditor, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   useEffect(() => {
-    if (!loading && (!user || !isAdmin)) {
+    if (!loading && (!user || !(isAdmin || isEditor))) {
       navigate("/admin/login");
     }
-  }, [user, isAdmin, loading, navigate]);
+  }, [user, isAdmin, isEditor, loading, navigate]);
+
+  useEffect(() => {
+    if (!isAdmin && isEditor && ADMIN_ONLY_PATHS.some((p) => location.pathname.startsWith(p))) {
+      navigate("/admin", { replace: true });
+    }
+  }, [isAdmin, isEditor, location.pathname, navigate]);
 
   useEffect(() => {
     setMobileNavOpen(false);
@@ -52,11 +61,13 @@ const AdminLayout = () => {
     );
   }
 
-  if (!user || !isAdmin) return null;
+  if (!user || !(isAdmin || isEditor)) return null;
+
+  const visibleNavItems = navItems.filter((item) => isAdmin || !item.adminOnly);
 
   const navLinks = (
     <>
-      {navItems.map(({ to, icon: Icon, label, end }) => (
+      {visibleNavItems.map(({ to, icon: Icon, label, end }) => (
         <NavLink
           key={to}
           to={to}

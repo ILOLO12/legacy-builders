@@ -21,7 +21,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
 import { usePageContent } from "@/hooks/usePageContent";
 
-const heroImages = [heroField1, heroField2, heroField3, heroField4, heroField5, heroField6];
+const heroImages = [
+  { src: heroField1, position: "object-top" },
+  { src: heroField2, position: "object-top" },
+  { src: heroField3, position: "object-top" },
+  { src: heroField4, position: "object-top" },
+  { src: heroField5, position: "object-top" },
+  { src: heroField6, position: "object-bottom" },
+];
 
 const Home = () => {
   const { t } = useLanguage();
@@ -43,10 +50,17 @@ const Home = () => {
       return data;
     },
   });
+  const [scrollY, setScrollY] = useState(0);
   const [currentImage, setCurrentImage] = useState(0);
   // Only the current slide plus the next one are ever mounted, so the browser
   // isn't forced to download all hero images (~800kB) on first paint.
   const [loadedImages, setLoadedImages] = useState(() => new Set([0, 1 % heroImages.length]));
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -82,21 +96,24 @@ const Home = () => {
   return (
     <div>
       {/* ─── HERO ─── */}
-      <section className="relative h-[75vh] min-h-[520px] flex items-center justify-center overflow-hidden bg-primary">
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           {heroImages.map((img, i) =>
             loadedImages.has(i) ? (
               <img
                 key={i}
-                src={img}
+                src={img.src}
                 alt={`Hero background ${i + 1}`}
                 loading={i === 0 ? "eager" : "lazy"}
-                className="absolute inset-0 w-full h-full object-contain object-center will-change-transform transition-opacity duration-1000 ease-in-out"
-                style={{ opacity: currentImage === i ? 1 : 0 }}
+                className={`absolute inset-0 w-full h-full object-cover ${img.position} will-change-transform transition-opacity duration-1000 ease-in-out`}
+                style={{
+                  transform: `translateY(${scrollY * 0.35}px) scale(1.1)`,
+                  opacity: currentImage === i ? 1 : 0,
+                }}
               />
             ) : null
           )}
-          <div className="absolute inset-0 bg-primary/55" />
+          <div className="absolute inset-0 bg-primary/65" />
         </div>
         <div className="relative z-10 section-container text-center text-primary-foreground py-20">
           <AnimatedSection>

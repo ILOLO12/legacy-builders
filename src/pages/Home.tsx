@@ -21,7 +21,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
 import { usePageContent } from "@/hooks/usePageContent";
 
-const heroImages = [heroField1, heroField2, heroField3, heroField4, heroField5, heroField6];
+const heroImages = [
+  { src: heroField1, position: "object-center" },
+  { src: heroField2, position: "object-bottom" },
+  { src: heroField3, position: "object-top" },
+  { src: heroField4, position: "object-top" },
+  { src: heroField5, position: "object-top" },
+  { src: heroField6, position: "object-top" },
+];
 
 const Home = () => {
   const { t } = useLanguage();
@@ -95,10 +102,10 @@ const Home = () => {
             loadedImages.has(i) ? (
               <img
                 key={i}
-                src={img}
+                src={img.src}
                 alt={`Hero background ${i + 1}`}
                 loading={i === 0 ? "eager" : "lazy"}
-                className="absolute inset-0 w-full h-full object-cover object-top will-change-transform transition-opacity duration-1000 ease-in-out"
+                className={`absolute inset-0 w-full h-full object-cover ${img.position} will-change-transform transition-opacity duration-1000 ease-in-out`}
                 style={{
                   transform: `translateY(${scrollY * 0.35}px) scale(1.1)`,
                   opacity: currentImage === i ? 1 : 0,

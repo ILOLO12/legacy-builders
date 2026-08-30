@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://mullersfoundation.org/sitemap.xml
+Sitemap: https://mullerfoundation.org/sitemap.xml

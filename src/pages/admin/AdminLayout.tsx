@@ -12,7 +12,7 @@ import {
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Tableau de bord", end: true, adminOnly: false },
   { to: "/admin/analytics", icon: BarChart3, label: "Statistiques", adminOnly: true },
-  { to: "/admin/messages", icon: Mail, label: "Messages", adminOnly: true },
+  { to: "/admin/messages", icon: Mail, label: "Messages", adminOnly: false },
   { to: "/admin/memberships", icon: UserPlus, label: "Adhésions", adminOnly: true },
   { to: "/admin/pages", icon: FileText, label: "Pages du site", adminOnly: false },
   { to: "/admin/contact-info", icon: Mail, label: "Coordonnées de contact", adminOnly: false },

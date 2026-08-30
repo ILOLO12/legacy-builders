@@ -22,7 +22,7 @@ import { useSEO } from "@/hooks/useSEO";
 import { usePageContent } from "@/hooks/usePageContent";
 
 const heroImages = [
-  { src: heroField1, position: "object-center" },
+  { src: heroField1, position: "object-top" },
   { src: heroField2, position: "object-top" },
   { src: heroField3, position: "object-top" },
   { src: heroField4, position: "object-top" },

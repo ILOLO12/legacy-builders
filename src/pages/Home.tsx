@@ -21,6 +21,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
 import { usePageContent } from "@/hooks/usePageContent";
 
+// Splits a CMS-editable stat string like "4000+" into the numeric value
+// Counter animates and whatever trails it (e.g. "+").
+const parseStat = (v: string) => {
+  const m = v.match(/^(\d+)(.*)$/);
+  return m ? { end: parseInt(m[1], 10), suffix: m[2] } : { end: 0, suffix: v };
+};
+
 const heroImages = [
   { src: heroField1, position: "object-top" },
   { src: heroField2, position: "object-top" },
@@ -158,10 +165,10 @@ const Home = () => {
       {/* ─── IMPACT COUNTERS ─── */}
       <section className="navy-section">
         <div className="section-container grid grid-cols-2 md:grid-cols-4 gap-10">
-          <Counter end={4000} suffix="+" label={c.childrenSupported} />
-          <Counter end={19} label={c.fieldActions} />
-          <Counter end={3} suffix="+" label={c.areasReached} />
-          <Counter end={2021} label={c.founded} />
+          <Counter {...parseStat(c.childrenSupportedValue)} label={c.childrenSupported} />
+          <Counter {...parseStat(c.fieldActionsValue)} label={c.fieldActions} />
+          <Counter {...parseStat(c.areasReachedValue)} label={c.areasReached} />
+          <Counter {...parseStat(c.foundedValue)} label={c.founded} />
         </div>
       </section>
 

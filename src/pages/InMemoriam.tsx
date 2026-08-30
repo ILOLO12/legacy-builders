@@ -33,7 +33,7 @@ const InMemoriam = () => {
           <AnimatedSection>
             <div className="text-center mb-12">
               <div className="w-48 h-48 rounded-full overflow-hidden mx-auto mb-6 border-4 border-accent/30 shadow-xl">
-                <img src={memorialImg} alt={c.name} className="w-full h-full object-cover" />
+                <img src={c.photoUrl || memorialImg} alt={c.name} className="w-full h-full object-cover" />
               </div>
               <h2 className="text-3xl md:text-4xl font-serif font-bold mb-2">{c.name}</h2>
               <p className="text-accent font-semibold uppercase tracking-wider text-sm">{c.honor}</p>

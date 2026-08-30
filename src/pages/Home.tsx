@@ -41,6 +41,7 @@ const Home = () => {
   const { t } = useLanguage();
   useSEO("Home", "International humanitarian NGO transforming potential into sustainable opportunity through education, health, and community development.");
   const c = usePageContent("home", t.home);
+  const founderContent = usePageContent("founder", t.founder);
   const { data: partners = [] } = useQuery({
     queryKey: ["partners"],
     queryFn: async () => {
@@ -180,7 +181,7 @@ const Home = () => {
               <div className="flex flex-col md:flex-row items-stretch">
                 <Link to="/founder" className="group relative md:w-72 flex-shrink-0 overflow-hidden">
                   <img
-                    src={founderImg}
+                    src={founderContent.photoUrl || founderImg}
                     alt={t.founder.name}
                     className="w-full h-80 md:h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                   />

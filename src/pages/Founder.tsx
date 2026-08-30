@@ -27,7 +27,7 @@ const Founder = () => {
           <div className="grid lg:grid-cols-2 gap-16 items-start max-w-6xl mx-auto">
             <AnimatedSection>
               <div className="relative">
-                <img src={founderImg} alt={c.name} className="rounded-xl shadow-2xl w-full max-w-md mx-auto" />
+                <img src={c.photoUrl || founderImg} alt={c.name} className="rounded-xl shadow-2xl w-full max-w-md mx-auto" />
                 <div className="absolute -bottom-4 -right-4 w-28 h-28 bg-accent/15 rounded-xl -z-10" />
                 <div className="absolute -top-4 -left-4 w-20 h-20 bg-primary/10 rounded-xl -z-10" />
               </div>

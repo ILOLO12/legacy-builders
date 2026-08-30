@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Save, FileText } from "lucide-react";
+import ImageUploadField from "@/components/admin/ImageUploadField";
 import { PAGE_SCHEMAS, getPageSchema } from "@/lib/pageSchemas";
 import { en } from "@/i18n/en";
 import { fr } from "@/i18n/fr";
@@ -60,6 +61,13 @@ const AdminPages = () => {
   const setField = (lang: "fr" | "en", key: string, value: string) =>
     setDraft((d) => ({ ...d, [lang]: { ...(d[lang] ?? {}), [key]: value } }));
 
+  // A photo has no language, so it's written to both fr and en content at once.
+  const setImageField = (key: string, value: string) =>
+    setDraft((d) => ({
+      fr: { ...(d.fr ?? {}), [key]: value },
+      en: { ...(d.en ?? {}), [key]: value },
+    }));
+
   return (
     <div>
       <div className="mb-6">
@@ -89,6 +97,15 @@ const AdminPages = () => {
 
       <div className="bg-card border border-border rounded-xl p-6 space-y-6">
         {schema.fields.map((f) => {
+          if (f.kind === "image") {
+            return (
+              <div key={f.key} className="pb-6 border-b border-border last:border-0 last:pb-0">
+                <label className="text-xs font-semibold text-accent uppercase tracking-wider mb-1 block">{f.label}</label>
+                <p className="text-xs text-muted-foreground mb-2">Laissez vide pour garder la photo par défaut du site.</p>
+                <ImageUploadField value={draft.fr?.[f.key] ?? ""} onChange={(url) => setImageField(f.key, url)} kind="image" />
+              </div>
+            );
+          }
           const InputComp = f.multiline ? Textarea : Input;
           return (
             <div key={f.key} className="grid md:grid-cols-2 gap-4 pb-6 border-b border-border last:border-0 last:pb-0">

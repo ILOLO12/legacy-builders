@@ -45,6 +45,7 @@ const AdminTestimonials = lazy(() => import("./pages/admin/AdminTestimonials"));
 const AdminMedia = lazy(() => import("./pages/admin/AdminMedia"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminContactInfo = lazy(() => import("./pages/admin/AdminContactInfo"));
+const AdminDonations = lazy(() => import("./pages/admin/AdminDonations"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -97,6 +98,7 @@ const App = () => (
                 <Route path="media" element={<AdminMedia />} />
                 <Route path="settings" element={<AdminSettings />} />
                 <Route path="contact-info" element={<AdminContactInfo />} />
+                <Route path="donations" element={<AdminDonations />} />
               </Route>
 
               {/* Public routes */}

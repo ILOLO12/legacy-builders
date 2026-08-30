@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import {
   Newspaper, Users, Activity, Handshake, Image, MessageSquareQuote,
   Settings, LayoutDashboard, LogOut, FileText, CalendarDays, FolderOpen, BarChart3, Share2, AlertTriangle,
-  Mail, UserPlus, Briefcase, Menu,
+  Mail, UserPlus, Briefcase, Menu, HeartHandshake,
 } from "lucide-react";
 
 // adminOnly: true = hidden from and blocked for editors (super-admin-only sections)
@@ -14,6 +14,7 @@ const navItems = [
   { to: "/admin/analytics", icon: BarChart3, label: "Statistiques", adminOnly: true },
   { to: "/admin/messages", icon: Mail, label: "Messages", adminOnly: false },
   { to: "/admin/memberships", icon: UserPlus, label: "Adhésions", adminOnly: true },
+  { to: "/admin/donations", icon: HeartHandshake, label: "Dons", adminOnly: false },
   { to: "/admin/pages", icon: FileText, label: "Pages du site", adminOnly: false },
   { to: "/admin/contact-info", icon: Mail, label: "Coordonnées de contact", adminOnly: false },
   { to: "/admin/articles", icon: Newspaper, label: "Articles", adminOnly: false },

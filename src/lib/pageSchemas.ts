@@ -7,6 +7,8 @@ export interface PageFieldDef {
   multiline?: boolean;
   /** Default value shown as placeholder when the field has no direct flat i18n path (e.g. nested/synthetic fields). */
   defaultHint?: string;
+  /** "image" renders a single upload field (shared across FR/EN, a photo has no language) instead of the usual FR/EN text pair. */
+  kind?: "image";
 }
 
 export interface PageSchema {
@@ -25,6 +27,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: "aboutMufo", label: "Sur-titre" },
       { key: "title", label: "Titre" },
       { key: "subtitle", label: "Sous-titre", multiline: true },
+      { key: "photoUrl", label: "Photo du fondateur", kind: "image" },
       { key: "name", label: "Nom du fondateur" },
       { key: "role", label: "Rôle" },
       { key: "bio1", label: "Biographie §1", multiline: true },
@@ -78,6 +81,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: "aboutMufo", label: "Sur-titre" },
       { key: "title", label: "Titre" },
       { key: "subtitle", label: "Sous-titre", multiline: true },
+      { key: "photoUrl", label: "Photo", kind: "image" },
       { key: "name", label: "Nom" },
       { key: "honor", label: "Mention d'honneur" },
       { key: "text1", label: "Texte §1", multiline: true },

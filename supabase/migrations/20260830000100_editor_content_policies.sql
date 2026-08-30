@@ -59,8 +59,7 @@ CREATE POLICY "Editors can insert testimonials" ON public.testimonials FOR INSER
 CREATE POLICY "Editors can update testimonials" ON public.testimonials FOR UPDATE TO authenticated USING (public.has_editor_access(auth.uid()));
 CREATE POLICY "Editors can delete testimonials" ON public.testimonials FOR DELETE TO authenticated USING (public.has_editor_access(auth.uid()));
 
--- Social accounts (structural config only, no credentials stored here)
-CREATE POLICY "Editors can read social_accounts" ON public.social_accounts FOR SELECT TO authenticated USING (public.has_editor_access(auth.uid()));
-CREATE POLICY "Editors can update social_accounts" ON public.social_accounts FOR UPDATE TO authenticated USING (public.has_editor_access(auth.uid()));
-CREATE POLICY "Editors can read social_publish_log" ON public.social_publish_log FOR SELECT TO authenticated USING (public.has_editor_access(auth.uid()));
-CREATE POLICY "Editors can insert social_publish_log" ON public.social_publish_log FOR INSERT TO authenticated WITH CHECK (public.has_editor_access(auth.uid()));
+-- Note: no policies for social_accounts/social_publish_log here — that
+-- migration (20260722000100_social_publishing_architecture.sql) was never
+-- actually applied to the live database, so those tables don't exist yet.
+-- Add editor policies for them if/when that migration is run.

@@ -98,7 +98,7 @@ const Home = () => {
                 src={img}
                 alt={`Hero background ${i + 1}`}
                 loading={i === 0 ? "eager" : "lazy"}
-                className="absolute inset-0 w-full h-full object-cover object-center will-change-transform transition-opacity duration-1000 ease-in-out"
+                className="absolute inset-0 w-full h-full object-cover object-top will-change-transform transition-opacity duration-1000 ease-in-out"
                 style={{
                   transform: `translateY(${scrollY * 0.35}px) scale(1.1)`,
                   opacity: currentImage === i ? 1 : 0,

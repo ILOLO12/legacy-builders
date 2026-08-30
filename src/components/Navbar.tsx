@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown, Globe, Home, Info, Activity, Newspaper, Users, Phone, Heart, Lock, UserRound, BookOpen, HeartHandshake, Image } from "lucide-react";
+import { Menu, X, ChevronDown, Globe, Home, Info, Activity, Newspaper, Users, Phone, Heart, UserRound, BookOpen, HeartHandshake, Image } from "lucide-react";
 import { useLanguage, LANGUAGES } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import logoFallback from "@/assets/logo-icon.png";
@@ -37,7 +37,6 @@ const Navbar = () => {
     { path: "/gallery", label: t.nav.gallery, icon: Image },
     { path: "/membership", label: t.nav.membership, icon: Users },
     { path: "/contact", label: t.nav.contact, icon: Phone },
-    { path: "/admin/login", label: "Connexion", icon: Lock },
   ];
 
   useEffect(() => {

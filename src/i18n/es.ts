@@ -11,6 +11,7 @@ export const es: typeof en = {
     news: "NOTICIAS",
     gallery: "GALERÍA",
     membership: "MEMBRESÍA",
+    volunteer: "VOLUNTARIADO",
     contact: "CONTACTO",
     donate: "Donar",
   },

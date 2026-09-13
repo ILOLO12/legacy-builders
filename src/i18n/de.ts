@@ -11,6 +11,7 @@ export const de: typeof en = {
     news: "NEUIGKEITEN",
     gallery: "GALERIE",
     membership: "MITGLIEDSCHAFT",
+    volunteer: "FREIWILLIGE",
     contact: "KONTAKT",
     donate: "Spenden",
   },

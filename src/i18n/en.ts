@@ -10,6 +10,7 @@ export const en = {
     news: "NEWS",
     gallery: "GALLERY",
     membership: "MEMBERSHIP",
+    volunteer: "VOLUNTEER",
     contact: "CONTACT",
     donate: "Donate",
   },

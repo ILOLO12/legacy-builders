@@ -22,6 +22,7 @@ const navItems = [
   { to: "/admin/activities", icon: Activity, label: "Activités", adminOnly: false },
   { to: "/admin/events", icon: CalendarDays, label: "Événements", adminOnly: false },
   { to: "/admin/volunteer", icon: Briefcase, label: "Volontariat", adminOnly: false },
+  { to: "/admin/volunteer-applications", icon: UserPlus, label: "Candidatures", adminOnly: false },
   { to: "/admin/social", icon: Share2, label: "Réseaux sociaux", adminOnly: false },
   { to: "/admin/partners", icon: Handshake, label: "Partenaires", adminOnly: false },
   { to: "/admin/gallery", icon: Image, label: "Galerie", adminOnly: false },

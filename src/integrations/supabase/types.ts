@@ -242,6 +242,50 @@ export type Database = {
         }
         Relationships: []
       }
+      volunteer_applications: {
+        Row: {
+          applicant_email: string
+          applicant_name: string
+          applicant_phone: string | null
+          created_at: string
+          id: string
+          message: string | null
+          position_id: string | null
+          position_title: string | null
+          status: string
+        }
+        Insert: {
+          applicant_email: string
+          applicant_name: string
+          applicant_phone?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          position_id?: string | null
+          position_title?: string | null
+          status?: string
+        }
+        Update: {
+          applicant_email?: string
+          applicant_name?: string
+          applicant_phone?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          position_id?: string | null
+          position_title?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "volunteer_applications_position_id_fkey"
+            columns: ["position_id"]
+            isOneToOne: false
+            referencedRelation: "volunteer_positions"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       events: {
         Row: {
           created_at: string

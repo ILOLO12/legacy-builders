@@ -46,7 +46,7 @@ const Founder = () => {
                 <div className="mt-10 space-y-4">
                   {quotes.map((q, i) => (
                     <div key={i} className="gold-border-box">
-                      <p className="font-serif italic text-foreground">"{q}"</p>
+                      <p className="font-serif italic text-foreground">{q}</p>
                       <p className="text-xs text-accent mt-2 font-semibold">— {c.name}</p>
                     </div>
                   ))}

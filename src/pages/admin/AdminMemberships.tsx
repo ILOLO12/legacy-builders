@@ -52,6 +52,9 @@ const AdminMemberships = () => {
                   <p className="font-semibold text-sm text-foreground">{s.name}</p>
                   <a href={`mailto:${s.email}`} className="text-xs text-accent hover:underline">{s.email}</a>
                   <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full font-medium">{s.tier}</span>
+                  {s.occupation && (
+                    <span className="text-xs bg-muted px-2 py-0.5 rounded-full font-medium">{s.occupation}</span>
+                  )}
                   <span className="text-xs text-muted-foreground ml-auto">
                     {new Date(s.created_at).toLocaleString("fr-FR")}
                   </span>

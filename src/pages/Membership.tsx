@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import AnimatedSection from "@/components/AnimatedSection";
 import FormField, { fieldInputClass } from "@/components/FormField";
-import { Check, User, Mail, MessageSquare, Send } from "lucide-react";
+import { Check, User, Mail, MessageSquare, Send, Briefcase } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -34,7 +34,7 @@ const Membership = () => {
   });
 
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [form, setForm] = useState({ firstName: "", lastName: "", email: "", occupation: "", message: "" });
   const [sending, setSending] = useState(false);
 
   const tiers = [
@@ -60,20 +60,22 @@ const Membership = () => {
 
   const closeDialog = () => {
     setSelectedTier(null);
-    setForm({ name: "", email: "", message: "" });
+    setForm({ firstName: "", lastName: "", email: "", occupation: "", message: "" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.email.trim() || !selectedTier) {
+    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !selectedTier) {
       toast.error(lang === "fr" ? "Merci de remplir les champs obligatoires." : "Please fill in the required fields.");
       return;
     }
     setSending(true);
+    const fullName = `${form.firstName.trim()} ${form.lastName.trim()}`;
     const { error } = await supabase.from("membership_signups").insert({
-      name: form.name.trim(),
+      name: fullName,
       email: form.email.trim(),
       tier: selectedTier,
+      occupation: form.occupation.trim() || null,
       message: form.message.trim() || null,
     });
     setSending(false);
@@ -82,6 +84,11 @@ const Membership = () => {
       return;
     }
     toast.success(lang === "fr" ? "Merci ! Votre demande d'adhésion a bien été envoyée." : "Thank you! Your membership request has been sent.");
+    // Best-effort confirmation email — the signup itself already succeeded above,
+    // so a failure here (e.g. email not configured yet) must never surface as an error.
+    supabase.functions.invoke("send-membership-confirmation", {
+      body: { name: fullName, email: form.email.trim(), tier: selectedTier },
+    }).catch(() => {});
     closeDialog();
   };
 
@@ -140,20 +147,38 @@ const Membership = () => {
             <DialogTitle>{c.joinNow} — {selectedTier}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-            <FormField icon={User} label={lang === "fr" ? "Nom complet *" : "Full name *"}>
-              <Input
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                maxLength={100}
-                className={fieldInputClass}
-              />
-            </FormField>
+            <div className="grid grid-cols-2 gap-3">
+              <FormField icon={User} label={lang === "fr" ? "Prénom *" : "First name *"}>
+                <Input
+                  value={form.firstName}
+                  onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                  maxLength={60}
+                  className={fieldInputClass}
+                />
+              </FormField>
+              <FormField icon={User} label={lang === "fr" ? "Nom *" : "Last name *"}>
+                <Input
+                  value={form.lastName}
+                  onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                  maxLength={60}
+                  className={fieldInputClass}
+                />
+              </FormField>
+            </div>
             <FormField icon={Mail} label={lang === "fr" ? "Adresse e-mail *" : "Email address *"}>
               <Input
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 maxLength={255}
+                className={fieldInputClass}
+              />
+            </FormField>
+            <FormField icon={Briefcase} label={lang === "fr" ? "Poste / profession" : "Occupation"}>
+              <Input
+                value={form.occupation}
+                onChange={(e) => setForm({ ...form, occupation: e.target.value })}
+                maxLength={100}
                 className={fieldInputClass}
               />
             </FormField>

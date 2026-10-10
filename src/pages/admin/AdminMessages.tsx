@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Mail, Trash2 } from "lucide-react";
+import { Mail, Trash2, Reply } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const AdminMessages = () => {
@@ -58,6 +58,11 @@ const AdminMessages = () => {
                 {m.subject && <p className="text-sm font-medium text-foreground mb-1">{m.subject}</p>}
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">{m.message}</p>
               </div>
+              <Button size="sm" variant="outline" className="gap-1.5 flex-shrink-0" asChild>
+                <a href={`mailto:${m.email}?subject=${encodeURIComponent(`Re: ${m.subject || "Votre message à MUFO"}`)}`}>
+                  <Reply size={14} /> Répondre
+                </a>
+              </Button>
               <Button size="sm" variant="ghost" className="text-destructive flex-shrink-0" onClick={() => deleteMutation.mutate(m.id)}>
                 <Trash2 size={14} />
               </Button>

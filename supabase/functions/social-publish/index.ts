@@ -23,6 +23,14 @@ const PUBLISHERS: Record<string, { publish: Publisher; requiredSecret: string }>
 
 const MAX_ATTEMPTS = 3;
 
+// Shape returned by public.claim_failed_publishes() for one retryable row.
+interface RetryRow {
+  id: string;
+  platform: string;
+  attempt_count: number;
+  articles: ArticleForPublishing | null;
+}
+
 async function isAdmin(supabase: ReturnType<typeof createClient>, authHeader: string | null): Promise<boolean> {
   if (!authHeader) return false;
   const token = authHeader.replace("Bearer ", "");

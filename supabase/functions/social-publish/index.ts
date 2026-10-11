@@ -74,21 +74,20 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
 
     // Cron-triggered retry pass: re-attempt failed rows under the attempt limit.
+    // claim_failed_publishes() returns the rows and bumps attempt_count in one
+    // security-definer call — the log table itself is not readable with the key
+    // this function runs with.
     if (body.mode === "retry") {
-      const { data: pending } = await supabase
-        .from("social_publish_log")
-        .select("id, platform, attempt_count, articles(title, title_fr, excerpt, excerpt_fr, slug, image_url)")
-        .eq("status", "failed")
-        .lt("attempt_count", MAX_ATTEMPTS);
+      const { data: claimed } = await supabase.rpc("claim_failed_publishes", { _max_attempts: MAX_ATTEMPTS });
+      const pending = (claimed ?? []) as unknown as RetryRow[];
 
-      for (const row of pending ?? []) {
-        const article = row.articles as unknown as ArticleForPublishing | null;
+      for (const row of pending) {
+        const article = row.articles;
         if (!article) continue;
-        await supabase.from("social_publish_log").update({ attempt_count: (row.attempt_count ?? 0) + 1 }).eq("id", row.id);
-        await attemptPublish(supabase, row.id as string, row.platform as string, article);
+        await attemptPublish(supabase, row.id, row.platform, article);
       }
 
-      return new Response(JSON.stringify({ retried: pending?.length ?? 0 }), {
+      return new Response(JSON.stringify({ retried: pending.length }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

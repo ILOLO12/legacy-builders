@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Briefcase, MapPin, ListChecks, ArrowRight, Megaphone, User, Mail, Phone, MessageSquare, Send } from "lucide-react";
+import {
+  Briefcase, MapPin, ListChecks, ArrowRight, Megaphone, User, Mail, MessageSquare, Send,
+  Globe2, GraduationCap, Building2, FileText, Upload, Loader2, X,
+} from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,10 +11,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import FormField, { fieldInputClass } from "@/components/FormField";
 import Honeypot from "@/components/Honeypot";
+import CountrySelect from "@/components/CountrySelect";
+import PhoneInput from "@/components/PhoneInput";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSEO } from "@/hooks/useSEO";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadMembershipCV } from "@/lib/mediaStorage";
 
 type VolunteerPosition = {
   id: string;
@@ -43,15 +49,38 @@ const Volunteer = () => {
 
   const localized = (en: string | null, fr: string | null) => (lang === "fr" && fr ? fr : en ?? "");
 
+  const emptyForm = {
+    firstName: "", lastName: "", email: "", phone: "", country: "",
+    occupation: "", skills: "", organization: "", message: "",
+  };
+
   const [applyingTo, setApplyingTo] = useState<{ id: string | null; title: string } | null>(null);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [form, setForm] = useState(emptyForm);
   const [sending, setSending] = useState(false);
   const [honeypot, setHoneypot] = useState("");
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [cvUploadPct, setCvUploadPct] = useState(0);
+  const cvInputRef = useRef<HTMLInputElement>(null);
 
   const closeDialog = () => {
     setApplyingTo(null);
-    setForm({ name: "", email: "", phone: "", message: "" });
+    setForm(emptyForm);
     setHoneypot("");
+    setCvFile(null);
+    setCvUploadPct(0);
+  };
+
+  const handleCvPick = (file: File | undefined) => {
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      toast.error(lang === "fr" ? "Le CV doit être un fichier PDF." : "The CV must be a PDF file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(lang === "fr" ? "Le CV ne doit pas dépasser 5 Mo." : "The CV must not exceed 5 MB.");
+      return;
+    }
+    setCvFile(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,18 +90,36 @@ const Volunteer = () => {
       closeDialog();
       return;
     }
-    if (!form.name.trim() || !form.email.trim()) {
+    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.message.trim()) {
       toast.error(lang === "fr" ? "Merci de remplir les champs obligatoires." : "Please fill in the required fields.");
       return;
     }
     setSending(true);
+
+    let cvUrl: string | null = null;
+    if (cvFile) {
+      try {
+        cvUrl = await uploadMembershipCV(cvFile, setCvUploadPct);
+      } catch (err) {
+        setSending(false);
+        toast.error(err instanceof Error ? err.message : (lang === "fr" ? "Échec de l'envoi du CV." : "CV upload failed."));
+        return;
+      }
+    }
+
+    const fullName = `${form.firstName.trim()} ${form.lastName.trim()}`;
     const { error } = await supabase.from("volunteer_applications").insert({
       position_id: applyingTo?.id ?? null,
       position_title: applyingTo?.title ?? null,
-      applicant_name: form.name.trim(),
+      applicant_name: fullName,
       applicant_email: form.email.trim(),
       applicant_phone: form.phone.trim() || null,
-      message: form.message.trim() || null,
+      country: form.country.trim() || null,
+      occupation: form.occupation.trim() || null,
+      skills: form.skills.trim() || null,
+      organization: form.organization.trim() || null,
+      cv_url: cvUrl,
+      message: form.message.trim(),
     });
     setSending(false);
     if (error) {
@@ -82,6 +129,9 @@ const Volunteer = () => {
     toast.success(
       lang === "fr" ? "Merci ! Votre candidature a bien été envoyée." : "Thank you! Your application has been sent."
     );
+    supabase.functions.invoke("send-volunteer-confirmation", {
+      body: { name: fullName, email: form.email.trim(), position: applyingTo?.title ?? "" },
+    }).catch(() => {});
     closeDialog();
   };
 
@@ -193,14 +243,16 @@ const Volunteer = () => {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
             <Honeypot value={honeypot} onChange={setHoneypot} />
-            <FormField icon={User} label={lang === "fr" ? "Nom complet *" : "Full name *"}>
-              <Input
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                maxLength={100}
-                className={fieldInputClass}
-              />
-            </FormField>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <FormField icon={User} label={lang === "fr" ? "Prénom *" : "First name *"}>
+                <Input value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} maxLength={60} className={fieldInputClass} />
+              </FormField>
+              <FormField icon={User} label={lang === "fr" ? "Nom *" : "Last name *"}>
+                <Input value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} maxLength={60} className={fieldInputClass} />
+              </FormField>
+            </div>
+
             <FormField icon={Mail} label={lang === "fr" ? "Adresse e-mail *" : "Email address *"}>
               <Input
                 type="email"
@@ -210,25 +262,83 @@ const Volunteer = () => {
                 className={fieldInputClass}
               />
             </FormField>
-            <FormField icon={Phone} label={lang === "fr" ? "Téléphone (facultatif)" : "Phone (optional)"}>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <FormField icon={Globe2} label={lang === "fr" ? "Pays de résidence" : "Country of residence"}>
+                <CountrySelect value={form.country} onChange={(code) => setForm({ ...form, country: code })} lang={lang} />
+              </FormField>
+              <FormField icon={User} label={lang === "fr" ? "Téléphone (facultatif)" : "Phone (optional)"}>
+                <PhoneInput value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} preferredCountry={form.country} lang={lang} />
+              </FormField>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <FormField icon={Briefcase} label={lang === "fr" ? "Profession actuelle" : "Current occupation"}>
+                <Input value={form.occupation} onChange={(e) => setForm({ ...form, occupation: e.target.value })} maxLength={100} className={fieldInputClass} />
+              </FormField>
+              <FormField icon={Building2} label={lang === "fr" ? "Organisation (facultatif)" : "Organization (optional)"}>
+                <Input value={form.organization} onChange={(e) => setForm({ ...form, organization: e.target.value })} maxLength={100} className={fieldInputClass} />
+              </FormField>
+            </div>
+
+            <FormField icon={GraduationCap} label={lang === "fr" ? "Compétences / domaines d'expertise" : "Skills / areas of expertise"}>
               <Input
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                maxLength={30}
+                value={form.skills}
+                onChange={(e) => setForm({ ...form, skills: e.target.value })}
+                maxLength={200}
                 className={fieldInputClass}
+                placeholder={lang === "fr" ? "Ex : gestion de projet, communication..." : "E.g. project management, communications..."}
               />
             </FormField>
-            <FormField icon={MessageSquare} label={lang === "fr" ? "Motivation / message" : "Motivation / message"}>
+
+            <FormField icon={MessageSquare} label={lang === "fr" ? "Disponibilité et motivation *" : "Availability and motivation *"}>
               <Textarea
                 rows={4}
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
                 maxLength={2000}
                 className={fieldInputClass}
+                placeholder={lang === "fr" ? "Vos disponibilités et ce qui vous motive à rejoindre MUFO" : "Your availability and what motivates you to join MUFO"}
               />
             </FormField>
+
+            <div>
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-primary uppercase tracking-wide mb-2">
+                <FileText size={13} className="text-accent" />
+                {lang === "fr" ? "CV (PDF, facultatif)" : "CV (PDF, optional)"}
+              </label>
+              {cvFile ? (
+                <div className="flex items-center gap-2 rounded-xl border-2 border-border bg-surface/60 px-3 py-2.5 text-sm">
+                  <FileText size={16} className="text-accent flex-shrink-0" />
+                  <span className="flex-1 truncate">{cvFile.name}</span>
+                  {sending && cvUploadPct > 0 && cvUploadPct < 100 && (
+                    <span className="text-xs text-muted-foreground">{cvUploadPct}%</span>
+                  )}
+                  <button type="button" onClick={() => setCvFile(null)} className="text-muted-foreground hover:text-destructive flex-shrink-0">
+                    <X size={16} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => cvInputRef.current?.click()}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-surface/40 px-3 py-3 text-sm text-muted-foreground hover:border-accent/50 hover:text-accent transition-colors"
+                >
+                  <Upload size={16} />
+                  {lang === "fr" ? "Joindre votre CV (PDF, max 5 Mo)" : "Attach your CV (PDF, max 5 MB)"}
+                </button>
+              )}
+              <input
+                ref={cvInputRef}
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                onChange={(e) => { handleCvPick(e.target.files?.[0]); e.target.value = ""; }}
+              />
+            </div>
+
             <Button type="submit" variant="gold" className="w-full gap-2" disabled={sending}>
-              {sending ? "..." : <>{lang === "fr" ? "Envoyer ma candidature" : "Send application"} <Send size={16} /></>}
+              {sending ? <Loader2 size={16} className="animate-spin" /> : <>{lang === "fr" ? "Envoyer ma candidature" : "Send application"} <Send size={16} /></>}
             </Button>
           </form>
         </DialogContent>

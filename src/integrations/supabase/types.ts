@@ -283,33 +283,48 @@ export type Database = {
           applicant_email: string
           applicant_name: string
           applicant_phone: string | null
+          country: string | null
           created_at: string
+          cv_url: string | null
           id: string
           message: string | null
+          occupation: string | null
+          organization: string | null
           position_id: string | null
           position_title: string | null
+          skills: string | null
           status: string
         }
         Insert: {
           applicant_email: string
           applicant_name: string
           applicant_phone?: string | null
+          country?: string | null
           created_at?: string
+          cv_url?: string | null
           id?: string
           message?: string | null
+          occupation?: string | null
+          organization?: string | null
           position_id?: string | null
           position_title?: string | null
+          skills?: string | null
           status?: string
         }
         Update: {
           applicant_email?: string
           applicant_name?: string
           applicant_phone?: string | null
+          country?: string | null
           created_at?: string
+          cv_url?: string | null
           id?: string
           message?: string | null
+          occupation?: string | null
+          organization?: string | null
           position_id?: string | null
           position_title?: string | null
+          skills?: string | null
           status?: string
         }
         Relationships: [

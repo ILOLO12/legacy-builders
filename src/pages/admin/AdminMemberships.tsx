@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Users, Trash2, FileText, Loader2, Globe2, Briefcase, Linkedin, Phone, Building2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getMembershipCVUrl } from "@/lib/mediaStorage";
+import { findCountry, countryFlag } from "@/data/countries";
 
 const STATUS_OPTIONS = [
   { value: "pending", label: "En attente" },
@@ -101,7 +102,15 @@ const AdminMemberships = () => {
 
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground mb-2">
                     {s.phone && <span className="flex items-center gap-1"><Phone size={11} /> {s.phone}</span>}
-                    {s.country && <span className="flex items-center gap-1"><Globe2 size={11} /> {s.country}</span>}
+                    {s.country && (
+                      <span className="flex items-center gap-1">
+                        <Globe2 size={11} />
+                        {(() => {
+                          const c = findCountry(s.country);
+                          return c ? <>{countryFlag(c.code)} {c.fr}</> : s.country;
+                        })()}
+                      </span>
+                    )}
                     {s.organization && <span className="flex items-center gap-1"><Building2 size={11} /> {s.organization}</span>}
                     {s.linkedin_url && (
                       <a href={s.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-accent hover:underline">

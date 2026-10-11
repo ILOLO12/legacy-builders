@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import AnimatedSection from "@/components/AnimatedSection";
 import FormField, { fieldInputClass } from "@/components/FormField";
 import Honeypot from "@/components/Honeypot";
+import CountrySelect from "@/components/CountrySelect";
+import PhoneInput from "@/components/PhoneInput";
 import {
   Check, User, Mail, MessageSquare, Send, Briefcase, Globe2, Building2,
   Linkedin, Phone, GraduationCap, FileText, Upload, Loader2, X, ShieldCheck,
@@ -245,13 +247,18 @@ const Membership = () => {
                   <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} maxLength={255} className={fieldInputClass} />
                 </FormField>
                 <FormField icon={Phone} label={lang === "fr" ? "Téléphone" : "Phone"}>
-                  <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} maxLength={30} className={fieldInputClass} />
+                  <PhoneInput
+                    value={form.phone}
+                    onChange={(v) => setForm({ ...form, phone: v })}
+                    preferredCountry={form.country}
+                    lang={lang}
+                  />
                 </FormField>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <FormField icon={Globe2} label={lang === "fr" ? "Pays de résidence" : "Country of residence"}>
-                  <Input value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} maxLength={80} className={fieldInputClass} />
+                  <CountrySelect value={form.country} onChange={(code) => setForm({ ...form, country: code })} lang={lang} />
                 </FormField>
                 <FormField icon={Building2} label={lang === "fr" ? "Organisation" : "Organization"}>
                   <Input value={form.organization} onChange={(e) => setForm({ ...form, organization: e.target.value })} maxLength={100} className={fieldInputClass} />

@@ -662,6 +662,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_failed_publishes: {
+        Args: { _max_attempts?: number }
+        Returns: Json
+      }
       get_analytics_summary: { Args: never; Returns: Json }
       has_editor_access: { Args: { _user_id: string }; Returns: boolean }
       has_role: {

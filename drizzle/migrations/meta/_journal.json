@@ -8,6 +8,13 @@
       "when": 1791688750415,
       "tag": "0000_create_donations_pageviews_errorlogs_social_and_analytics",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791688775753,
+      "tag": "0001_create_claim_failed_publishes",
+      "breakpoints": true
     }
   ]
 }

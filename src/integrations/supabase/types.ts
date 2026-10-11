@@ -143,6 +143,66 @@ export type Database = {
         }
         Relationships: []
       }
+      donations: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          donor_email: string
+          donor_name: string
+          id: string
+          message: string | null
+          method: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          donor_email: string
+          donor_name: string
+          id?: string
+          message?: string | null
+          method: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          donor_email?: string
+          donor_name?: string
+          id?: string
+          message?: string | null
+          method?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      error_logs: {
+        Row: {
+          context: Json
+          created_at: string
+          id: string
+          message: string
+          source: string
+        }
+        Insert: {
+          context?: Json
+          created_at?: string
+          id?: string
+          message: string
+          source: string
+        }
+        Update: {
+          context?: Json
+          created_at?: string
+          id?: string
+          message?: string
+          source?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           created_at: string
@@ -266,6 +326,30 @@ export type Database = {
         }
         Relationships: []
       }
+      page_views: {
+        Row: {
+          created_at: string
+          id: string
+          path: string
+          referrer: string | null
+          session_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          path: string
+          referrer?: string | null
+          session_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          path?: string
+          referrer?: string | null
+          session_id?: string | null
+        }
+        Relationships: []
+      }
       pages: {
         Row: {
           content: Json
@@ -337,6 +421,68 @@ export type Database = {
           value?: string | null
         }
         Relationships: []
+      }
+      social_accounts: {
+        Row: {
+          created_at: string
+          id: string
+          is_configured: boolean
+          platform: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_configured?: boolean
+          platform: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_configured?: boolean
+          platform?: string
+        }
+        Relationships: []
+      }
+      social_publish_log: {
+        Row: {
+          article_id: string | null
+          attempt_count: number
+          created_at: string
+          error_message: string | null
+          id: string
+          platform: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          article_id?: string | null
+          attempt_count?: number
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          platform: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          article_id?: string | null
+          attempt_count?: number
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          platform?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_publish_log_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       team_members: {
         Row: {
@@ -516,6 +662,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_analytics_summary: { Args: never; Returns: Json }
       has_editor_access: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {

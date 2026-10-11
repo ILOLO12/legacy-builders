@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import AnimatedSection from "@/components/AnimatedSection";
 import FormField, { fieldInputClass } from "@/components/FormField";
+import Honeypot from "@/components/Honeypot";
 import { CreditCard, Smartphone, Globe, DollarSign, User, Mail, MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -30,6 +31,7 @@ const Donate = () => {
   const [selectedMethod, setSelectedMethod] = useState<{ key: string; name: string } | null>(null);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sending, setSending] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
 
   const methods = [
     { key: "bank_transfer", icon: CreditCard, name: c.bankTransfer, desc: c.bankDesc },
@@ -43,10 +45,16 @@ const Donate = () => {
   const closeDialog = () => {
     setSelectedMethod(null);
     setForm({ name: "", email: "", message: "" });
+    setHoneypot("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (honeypot.trim() !== "") {
+      toast.success(lang === "fr" ? "Merci ! Nous avons bien reçu votre intention de don." : "Thank you! We've recorded your donation.");
+      closeDialog();
+      return;
+    }
     if (!form.name.trim() || !form.email.trim() || !selectedMethod || !finalAmount || finalAmount <= 0) {
       toast.error(lang === "fr" ? "Merci de remplir les champs obligatoires." : "Please fill in the required fields.");
       return;
@@ -192,6 +200,7 @@ const Donate = () => {
               : "We record your donation pledge and follow up with payment instructions — nothing is charged here."}
           </p>
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+            <Honeypot value={honeypot} onChange={setHoneypot} />
             <FormField icon={User} label={lang === "fr" ? "Nom complet *" : "Full name *"}>
               <Input
                 value={form.name}

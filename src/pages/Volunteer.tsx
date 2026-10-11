@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import FormField, { fieldInputClass } from "@/components/FormField";
+import Honeypot from "@/components/Honeypot";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -45,14 +46,21 @@ const Volunteer = () => {
   const [applyingTo, setApplyingTo] = useState<{ id: string | null; title: string } | null>(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [sending, setSending] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
 
   const closeDialog = () => {
     setApplyingTo(null);
     setForm({ name: "", email: "", phone: "", message: "" });
+    setHoneypot("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (honeypot.trim() !== "") {
+      toast.success(lang === "fr" ? "Merci ! Votre candidature a bien été envoyée." : "Thank you! Your application has been sent.");
+      closeDialog();
+      return;
+    }
     if (!form.name.trim() || !form.email.trim()) {
       toast.error(lang === "fr" ? "Merci de remplir les champs obligatoires." : "Please fill in the required fields.");
       return;
@@ -184,6 +192,7 @@ const Volunteer = () => {
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+            <Honeypot value={honeypot} onChange={setHoneypot} />
             <FormField icon={User} label={lang === "fr" ? "Nom complet *" : "Full name *"}>
               <Input
                 value={form.name}

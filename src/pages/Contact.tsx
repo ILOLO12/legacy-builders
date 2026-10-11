@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import AnimatedSection from "@/components/AnimatedSection";
 import FormField, { fieldInputClass } from "@/components/FormField";
+import Honeypot from "@/components/Honeypot";
 import { MapPin, Mail, Phone, User, Tag, MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -19,6 +20,7 @@ const Contact = () => {
   const settings = useSiteSettings();
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [sending, setSending] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
 
   const offices = [
     { country: c.drCongo, city: c.kinshasa, type: c.headquarters },
@@ -29,6 +31,11 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (honeypot.trim() !== "") {
+      toast.success(t.contact.successMsg);
+      setForm({ name: "", email: "", subject: "", message: "" });
+      return;
+    }
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
       toast.error(t.contact.errorFields);
       return;
@@ -73,6 +80,7 @@ const Contact = () => {
                     <h2 className="text-xl font-serif font-bold">{c.sendMessage}</h2>
                   </div>
                   <form onSubmit={handleSubmit} className="space-y-5">
+                    <Honeypot value={honeypot} onChange={setHoneypot} />
                     <FormField icon={User} label={c.fullName}>
                       <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} maxLength={100} className={fieldInputClass} />
                     </FormField>

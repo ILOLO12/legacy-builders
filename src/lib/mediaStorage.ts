@@ -11,10 +11,10 @@ function sanitizeExt(filename: string): string {
 }
 
 /** Uploads via XHR (not the JS SDK) purely to get real upload-progress events. */
-function uploadWithProgress(path: string, file: File, token: string, onProgress?: (percent: number) => void): Promise<void> {
+function uploadWithProgress(bucket: string, path: string, file: File, token: string, onProgress?: (percent: number) => void): Promise<void> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`);
+    xhr.open("POST", `${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`);
     xhr.setRequestHeader("Authorization", `Bearer ${token}`);
     xhr.setRequestHeader("apikey", SUPABASE_ANON_KEY);
     xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
@@ -51,10 +51,31 @@ export async function uploadMedia(file: File, opts: UploadOptions = {}): Promise
   const token = sessionData.session?.access_token ?? SUPABASE_ANON_KEY;
 
   const path = `${crypto.randomUUID()}.${sanitizeExt(toUpload.name)}`;
-  await uploadWithProgress(path, toUpload, token, opts.onProgress);
+  await uploadWithProgress(BUCKET, path, toUpload, token, opts.onProgress);
 
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
   return data.publicUrl;
+}
+
+const CV_BUCKET = "membership-cv";
+const CV_MAX_BYTES = 5 * 1024 * 1024; // 5 MB, matches the bucket's own file_size_limit
+
+/**
+ * Uploads a CV to the dedicated, private membership-cv bucket (PDF only,
+ * anyone can upload but only admins/editors can read). Returns the storage
+ * path (not a public URL — the bucket isn't public, so reading it back
+ * needs a signed URL, generated on the admin side).
+ */
+export async function uploadMembershipCV(file: File, onProgress?: (percent: number) => void): Promise<string> {
+  if (file.type !== "application/pdf") {
+    throw new Error("Le CV doit être un fichier PDF.");
+  }
+  validateFileSize(file, CV_MAX_BYTES);
+
+  const token = SUPABASE_ANON_KEY; // public, unauthenticated upload by design
+  const path = `${crypto.randomUUID()}.pdf`;
+  await uploadWithProgress(CV_BUCKET, path, file, token, onProgress);
+  return path;
 }
 
 export async function deleteMedia(path: string): Promise<void> {
@@ -72,4 +93,11 @@ export async function listMedia() {
 
 export function mediaPublicUrl(path: string): string {
   return supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+}
+
+/** The CV bucket is private — admins/editors need a short-lived signed URL to view a given CV. */
+export async function getMembershipCVUrl(path: string): Promise<string> {
+  const { data, error } = await supabase.storage.from(CV_BUCKET).createSignedUrl(path, 60 * 10);
+  if (error || !data) throw error ?? new Error("Impossible de générer le lien du CV.");
+  return data.signedUrl;
 }

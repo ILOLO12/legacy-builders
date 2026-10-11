@@ -114,6 +114,9 @@ export type Database = {
           id: string
           message: string
           name: string
+          read_at: string | null
+          replied_at: string | null
+          reply_text: string | null
           subject: string | null
         }
         Insert: {
@@ -122,6 +125,9 @@ export type Database = {
           id?: string
           message: string
           name: string
+          read_at?: string | null
+          replied_at?: string | null
+          reply_text?: string | null
           subject?: string | null
         }
         Update: {
@@ -130,6 +136,9 @@ export type Database = {
           id?: string
           message?: string
           name?: string
+          read_at?: string | null
+          replied_at?: string | null
+          reply_text?: string | null
           subject?: string | null
         }
         Relationships: []
@@ -172,30 +181,54 @@ export type Database = {
       }
       membership_signups: {
         Row: {
+          country: string | null
           created_at: string
+          cv_url: string | null
           email: string
+          expertise_field: string | null
           id: string
+          linkedin_url: string | null
           message: string | null
           name: string
           occupation: string | null
+          organization: string | null
+          phone: string | null
+          status: string
+          terms_accepted: boolean
           tier: string
         }
         Insert: {
+          country?: string | null
           created_at?: string
+          cv_url?: string | null
           email: string
+          expertise_field?: string | null
           id?: string
+          linkedin_url?: string | null
           message?: string | null
           name: string
           occupation?: string | null
+          organization?: string | null
+          phone?: string | null
+          status?: string
+          terms_accepted?: boolean
           tier: string
         }
         Update: {
+          country?: string | null
           created_at?: string
+          cv_url?: string | null
           email?: string
+          expertise_field?: string | null
           id?: string
+          linkedin_url?: string | null
           message?: string | null
           name?: string
           occupation?: string | null
+          organization?: string | null
+          phone?: string | null
+          status?: string
+          terms_accepted?: boolean
           tier?: string
         }
         Relationships: []

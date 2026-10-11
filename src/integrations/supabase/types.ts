@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.4"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -179,148 +179,29 @@ export type Database = {
         }
         Relationships: []
       }
-      membership_signups: {
+      error_logs: {
         Row: {
-          country: string | null
+          context: Json
           created_at: string
-          cv_url: string | null
-          email: string
-          expertise_field: string | null
           id: string
-          linkedin_url: string | null
-          message: string | null
-          name: string
-          occupation: string | null
-          organization: string | null
-          phone: string | null
-          status: string
-          terms_accepted: boolean
-          tier: string
+          message: string
+          source: string
         }
         Insert: {
-          country?: string | null
+          context?: Json
           created_at?: string
-          cv_url?: string | null
-          email: string
-          expertise_field?: string | null
           id?: string
-          linkedin_url?: string | null
-          message?: string | null
-          name: string
-          occupation?: string | null
-          organization?: string | null
-          phone?: string | null
-          status?: string
-          terms_accepted?: boolean
-          tier: string
+          message: string
+          source: string
         }
         Update: {
-          country?: string | null
+          context?: Json
           created_at?: string
-          cv_url?: string | null
-          email?: string
-          expertise_field?: string | null
           id?: string
-          linkedin_url?: string | null
-          message?: string | null
-          name?: string
-          occupation?: string | null
-          organization?: string | null
-          phone?: string | null
-          status?: string
-          terms_accepted?: boolean
-          tier?: string
+          message?: string
+          source?: string
         }
         Relationships: []
-      }
-      volunteer_positions: {
-        Row: {
-          created_at: string
-          criteria: string | null
-          criteria_fr: string | null
-          description: string | null
-          description_fr: string | null
-          display_order: number
-          id: string
-          location: string | null
-          published: boolean
-          title: string
-          title_fr: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          criteria?: string | null
-          criteria_fr?: string | null
-          description?: string | null
-          description_fr?: string | null
-          display_order?: number
-          id?: string
-          location?: string | null
-          published?: boolean
-          title: string
-          title_fr?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          criteria?: string | null
-          criteria_fr?: string | null
-          description?: string | null
-          description_fr?: string | null
-          display_order?: number
-          id?: string
-          location?: string | null
-          published?: boolean
-          title?: string
-          title_fr?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      volunteer_applications: {
-        Row: {
-          applicant_email: string
-          applicant_name: string
-          applicant_phone: string | null
-          created_at: string
-          id: string
-          message: string | null
-          position_id: string | null
-          position_title: string | null
-          status: string
-        }
-        Insert: {
-          applicant_email: string
-          applicant_name: string
-          applicant_phone?: string | null
-          created_at?: string
-          id?: string
-          message?: string | null
-          position_id?: string | null
-          position_title?: string | null
-          status?: string
-        }
-        Update: {
-          applicant_email?: string
-          applicant_name?: string
-          applicant_phone?: string | null
-          created_at?: string
-          id?: string
-          message?: string | null
-          position_id?: string | null
-          position_title?: string | null
-          status?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "volunteer_applications_position_id_fkey"
-            columns: ["position_id"]
-            isOneToOne: false
-            referencedRelation: "volunteer_positions"
-            referencedColumns: ["id"]
-          }
-        ]
       }
       events: {
         Row: {
@@ -391,6 +272,84 @@ export type Database = {
           media_type?: string
           media_url?: string
           title?: string | null
+        }
+        Relationships: []
+      }
+      membership_signups: {
+        Row: {
+          country: string | null
+          created_at: string
+          cv_url: string | null
+          email: string
+          expertise_field: string | null
+          id: string
+          linkedin_url: string | null
+          message: string | null
+          name: string
+          occupation: string | null
+          organization: string | null
+          phone: string | null
+          status: string
+          terms_accepted: boolean
+          tier: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          cv_url?: string | null
+          email: string
+          expertise_field?: string | null
+          id?: string
+          linkedin_url?: string | null
+          message?: string | null
+          name: string
+          occupation?: string | null
+          organization?: string | null
+          phone?: string | null
+          status?: string
+          terms_accepted?: boolean
+          tier: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          cv_url?: string | null
+          email?: string
+          expertise_field?: string | null
+          id?: string
+          linkedin_url?: string | null
+          message?: string | null
+          name?: string
+          occupation?: string | null
+          organization?: string | null
+          phone?: string | null
+          status?: string
+          terms_accepted?: boolean
+          tier?: string
+        }
+        Relationships: []
+      }
+      page_views: {
+        Row: {
+          created_at: string
+          id: string
+          path: string
+          referrer: string | null
+          session_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          path: string
+          referrer?: string | null
+          session_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          path?: string
+          referrer?: string | null
+          session_id?: string | null
         }
         Relationships: []
       }
@@ -465,6 +424,68 @@ export type Database = {
           value?: string | null
         }
         Relationships: []
+      }
+      social_accounts: {
+        Row: {
+          created_at: string
+          id: string
+          is_configured: boolean
+          platform: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_configured?: boolean
+          platform: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_configured?: boolean
+          platform?: string
+        }
+        Relationships: []
+      }
+      social_publish_log: {
+        Row: {
+          article_id: string | null
+          attempt_count: number
+          created_at: string
+          error_message: string | null
+          id: string
+          platform: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          article_id?: string | null
+          attempt_count?: number
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          platform: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          article_id?: string | null
+          attempt_count?: number
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          platform?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_publish_log_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       team_members: {
         Row: {
@@ -550,11 +571,106 @@ export type Database = {
         }
         Relationships: []
       }
+      volunteer_applications: {
+        Row: {
+          applicant_email: string
+          applicant_name: string
+          applicant_phone: string | null
+          created_at: string
+          id: string
+          message: string | null
+          position_id: string | null
+          position_title: string | null
+          status: string
+        }
+        Insert: {
+          applicant_email: string
+          applicant_name: string
+          applicant_phone?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          position_id?: string | null
+          position_title?: string | null
+          status?: string
+        }
+        Update: {
+          applicant_email?: string
+          applicant_name?: string
+          applicant_phone?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          position_id?: string | null
+          position_title?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "volunteer_applications_position_id_fkey"
+            columns: ["position_id"]
+            isOneToOne: false
+            referencedRelation: "volunteer_positions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      volunteer_positions: {
+        Row: {
+          created_at: string
+          criteria: string | null
+          criteria_fr: string | null
+          description: string | null
+          description_fr: string | null
+          display_order: number
+          id: string
+          location: string | null
+          published: boolean
+          title: string
+          title_fr: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          criteria?: string | null
+          criteria_fr?: string | null
+          description?: string | null
+          description_fr?: string | null
+          display_order?: number
+          id?: string
+          location?: string | null
+          published?: boolean
+          title: string
+          title_fr?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          criteria?: string | null
+          criteria_fr?: string | null
+          description?: string | null
+          description_fr?: string | null
+          display_order?: number
+          id?: string
+          location?: string | null
+          published?: boolean
+          title?: string
+          title_fr?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      claim_failed_publishes: {
+        Args: { _max_attempts?: number }
+        Returns: Json
+      }
+      get_analytics_summary: { Args: never; Returns: Json }
+      has_editor_access: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -580,12 +696,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -609,11 +725,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -634,11 +750,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -659,11 +775,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -676,11 +792,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }

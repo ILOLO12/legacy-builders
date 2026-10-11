@@ -15,6 +15,13 @@
       "when": 1791688775753,
       "tag": "0001_create_claim_failed_publishes",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791688808505,
+      "tag": "0002_add_occupation_to_membership_signups",
+      "breakpoints": true
     }
   ]
 }

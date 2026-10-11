@@ -286,6 +286,7 @@ export type Database = {
           linkedin_url: string | null
           message: string | null
           name: string
+          occupation: string | null
           organization: string | null
           phone: string | null
           status: string
@@ -302,6 +303,7 @@ export type Database = {
           linkedin_url?: string | null
           message?: string | null
           name: string
+          occupation?: string | null
           organization?: string | null
           phone?: string | null
           status?: string
@@ -318,6 +320,7 @@ export type Database = {
           linkedin_url?: string | null
           message?: string | null
           name?: string
+          occupation?: string | null
           organization?: string | null
           phone?: string | null
           status?: string

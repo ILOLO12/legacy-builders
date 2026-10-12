@@ -241,7 +241,7 @@ const Volunteer = () => {
       </section>
 
       <Dialog open={applyingTo !== null} onOpenChange={(open) => !open && closeDialog()}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {lang === "fr" ? "Postuler" : "Apply"} — {applyingTo?.title}

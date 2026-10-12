@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation, NavLink } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdminTheme } from "@/hooks/useAdminTheme";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import {
   Newspaper, Users, Activity, Handshake, Image, MessageSquareQuote,
   Settings, LayoutDashboard, LogOut, FileText, CalendarDays, FolderOpen, BarChart3, Share2, AlertTriangle,
-  Mail, UserPlus, Briefcase, Menu, HeartHandshake,
+  Mail, UserPlus, Briefcase, Menu, HeartHandshake, Sun, Moon,
 } from "lucide-react";
 
 // adminOnly: true = hidden from and blocked for editors (super-admin-only sections)
@@ -39,6 +40,7 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const { theme, toggleTheme } = useAdminTheme();
 
   useEffect(() => {
     if (!loading && (!user || !(isAdmin || isEditor))) {
@@ -90,12 +92,24 @@ const AdminLayout = () => {
     </>
   );
 
+  const ThemeToggleButton = ({ className = "" }: { className?: string }) => (
+    <button
+      onClick={toggleTheme}
+      aria-label={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
+      title={theme === "dark" ? "Mode clair" : "Mode sombre"}
+      className={`p-2 rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors ${className}`}
+    >
+      {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+    </button>
+  );
+
   return (
-    <div className="flex min-h-screen">
+    <div className={`flex min-h-screen ${theme === "dark" ? "dark" : ""}`}>
       {/* Sidebar (desktop) */}
       <aside className="hidden lg:flex w-64 bg-sidebar text-sidebar-foreground flex-col flex-shrink-0">
-        <div className="p-6 border-b border-sidebar-border">
+        <div className="p-6 border-b border-sidebar-border flex items-center justify-between">
           <h2 className="text-lg font-serif font-bold text-sidebar-primary">MUFO Admin</h2>
+          <ThemeToggleButton />
         </div>
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">{navLinks}</nav>
         <div className="p-4 border-t border-sidebar-border">
@@ -112,13 +126,16 @@ const AdminLayout = () => {
       {/* Mobile top bar + drawer */}
       <div className="lg:hidden fixed top-0 inset-x-0 z-40 bg-sidebar text-sidebar-foreground flex items-center justify-between px-4 h-14 border-b border-sidebar-border">
         <h2 className="text-base font-serif font-bold text-sidebar-primary">MUFO Admin</h2>
-        <button
-          onClick={() => setMobileNavOpen(true)}
-          aria-label="Ouvrir le menu"
-          className="p-2 -mr-2 text-sidebar-foreground"
-        >
-          <Menu size={22} />
-        </button>
+        <div className="flex items-center gap-1">
+          <ThemeToggleButton />
+          <button
+            onClick={() => setMobileNavOpen(true)}
+            aria-label="Ouvrir le menu"
+            className="p-2 text-sidebar-foreground"
+          >
+            <Menu size={22} />
+          </button>
+        </div>
       </div>
 
       <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>

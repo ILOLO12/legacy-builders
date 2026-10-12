@@ -59,6 +59,37 @@
     --sidebar-border: 215 60% 25%;
     --sidebar-ring: 40 45% 57%;
   }
+
+  /* Admin-only dark theme — scoped via a `.dark` class on the admin shell, never applied to public pages */
+  .dark {
+    --background: 215 45% 9%;
+    --foreground: 210 20% 96%;
+
+    --card: 215 38% 13%;
+    --card-foreground: 210 20% 96%;
+
+    --popover: 215 38% 13%;
+    --popover-foreground: 210 20% 96%;
+
+    --primary: 215 65% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 215 40% 24%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 215 30% 17%;
+    --muted-foreground: 215 15% 65%;
+
+    --accent: 40 60% 58%;
+    --accent-foreground: 215 45% 10%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 215 28% 21%;
+    --input: 215 28% 21%;
+    --ring: 40 60% 58%;
+  }
 }
 
 @layer base {

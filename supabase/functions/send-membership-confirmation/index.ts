@@ -51,6 +51,21 @@ Deno.serve(async (req) => {
       });
     }
 
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Post-payment activation switch (Admin -> Paramètres, super-admin only).
+    // Enforced here server-side — the frontend has no way to bypass this.
+    const { data: notifRow } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "notifications_enabled")
+      .maybeSingle();
+    if (notifRow?.value !== "true") {
+      return new Response(JSON.stringify({ sent: false, reason: "notifications_disabled" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     if (!RESEND_API_KEY) {
       return new Response(JSON.stringify({ sent: false, reason: "not_configured" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -70,7 +85,6 @@ Deno.serve(async (req) => {
 
     // Notify the org's own contact address, read from site_settings (public, no auth required to read it).
     let adminSent = false;
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const { data: settingRow } = await supabase
       .from("site_settings")
       .select("value")

@@ -49,6 +49,18 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Post-payment activation switch (Admin -> Paramètres, super-admin only).
+    const { data: notifRow } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "notifications_enabled")
+      .maybeSingle();
+    if (notifRow?.value !== "true") {
+      return new Response(JSON.stringify({ sent: false, reason: "notifications_disabled" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     if (!RESEND_API_KEY) {
       return new Response(JSON.stringify({ sent: false, reason: "not_configured" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

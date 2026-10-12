@@ -1,8 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { HeartHandshake, Trash2 } from "lucide-react";
+import { HeartHandshake, Trash2, Phone, Globe2, Smartphone, Landmark } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { findCountry, countryFlag } from "@/data/countries";
 
 const METHOD_LABELS: Record<string, string> = {
   bank_transfer: "Virement bancaire",
@@ -79,7 +80,9 @@ const AdminDonations = () => {
         <div className="text-center py-12 text-muted-foreground">Aucun don pour le moment.</div>
       ) : (
         <div className="space-y-3">
-          {donations.map((d) => (
+          {donations.map((d) => {
+            const country = d.donor_country ? findCountry(d.donor_country) : null;
+            return (
             <div key={d.id} className="bg-card border border-border rounded-xl p-4 flex items-start gap-3">
               <HeartHandshake size={16} className="text-primary mt-1 flex-shrink-0" />
               <div className="flex-1 min-w-0">
@@ -96,6 +99,24 @@ const AdminDonations = () => {
                     {new Date(d.created_at).toLocaleString("fr-FR")}
                   </span>
                 </div>
+
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground mb-1">
+                  {d.donor_phone && <span className="flex items-center gap-1"><Phone size={11} /> {d.donor_phone}</span>}
+                  {country && <span className="flex items-center gap-1"><Globe2 size={11} /> {countryFlag(country.code)} {country.fr}</span>}
+                </div>
+
+                {d.method === "mobile_money" && d.payment_network && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
+                    <Smartphone size={11} /> Réseau : {d.payment_network}
+                  </p>
+                )}
+                {d.method === "bank_transfer" && (d.bank_name || d.bank_account_number) && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
+                    <Landmark size={11} />
+                    {[d.bank_name, d.bank_account_holder, d.bank_account_number, d.bank_swift].filter(Boolean).join(" · ")}
+                  </p>
+                )}
+
                 {d.message && <p className="text-sm text-muted-foreground whitespace-pre-wrap mt-1">{d.message}</p>}
               </div>
               <select
@@ -111,7 +132,7 @@ const AdminDonations = () => {
                 <Trash2 size={14} />
               </Button>
             </div>
-          ))}
+          );})}
         </div>
       )}
     </div>

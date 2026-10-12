@@ -146,35 +146,56 @@ export type Database = {
       donations: {
         Row: {
           amount: number
+          bank_account_holder: string | null
+          bank_account_number: string | null
+          bank_name: string | null
+          bank_swift: string | null
           created_at: string
           currency: string
+          donor_country: string | null
           donor_email: string
           donor_name: string
+          donor_phone: string | null
           id: string
           message: string | null
           method: string
+          payment_network: string | null
           status: string
         }
         Insert: {
           amount: number
+          bank_account_holder?: string | null
+          bank_account_number?: string | null
+          bank_name?: string | null
+          bank_swift?: string | null
           created_at?: string
           currency?: string
+          donor_country?: string | null
           donor_email: string
           donor_name: string
+          donor_phone?: string | null
           id?: string
           message?: string | null
           method: string
+          payment_network?: string | null
           status?: string
         }
         Update: {
           amount?: number
+          bank_account_holder?: string | null
+          bank_account_number?: string | null
+          bank_name?: string | null
+          bank_swift?: string | null
           created_at?: string
           currency?: string
+          donor_country?: string | null
           donor_email?: string
           donor_name?: string
+          donor_phone?: string | null
           id?: string
           message?: string | null
           method?: string
+          payment_network?: string | null
           status?: string
         }
         Relationships: []
@@ -285,6 +306,7 @@ export type Database = {
           id: string
           linkedin_url: string | null
           message: string | null
+          motivation_letter_url: string | null
           name: string
           occupation: string | null
           organization: string | null
@@ -302,6 +324,7 @@ export type Database = {
           id?: string
           linkedin_url?: string | null
           message?: string | null
+          motivation_letter_url?: string | null
           name: string
           occupation?: string | null
           organization?: string | null
@@ -319,6 +342,7 @@ export type Database = {
           id?: string
           linkedin_url?: string | null
           message?: string | null
+          motivation_letter_url?: string | null
           name?: string
           occupation?: string | null
           organization?: string | null
@@ -576,11 +600,13 @@ export type Database = {
           applicant_email: string
           applicant_name: string
           applicant_phone: string | null
+          availability: string | null
           country: string | null
           created_at: string
           cv_url: string | null
           id: string
           message: string | null
+          motivation_letter_url: string | null
           occupation: string | null
           organization: string | null
           position_id: string | null
@@ -592,11 +618,13 @@ export type Database = {
           applicant_email: string
           applicant_name: string
           applicant_phone?: string | null
+          availability?: string | null
           country?: string | null
           created_at?: string
           cv_url?: string | null
           id?: string
           message?: string | null
+          motivation_letter_url?: string | null
           occupation?: string | null
           organization?: string | null
           position_id?: string | null
@@ -608,11 +636,13 @@ export type Database = {
           applicant_email?: string
           applicant_name?: string
           applicant_phone?: string | null
+          availability?: string | null
           country?: string | null
           created_at?: string
           cv_url?: string | null
           id?: string
           message?: string | null
+          motivation_letter_url?: string | null
           occupation?: string | null
           organization?: string | null
           position_id?: string | null

@@ -61,10 +61,11 @@ const CV_BUCKET = "membership-cv";
 const CV_MAX_BYTES = 5 * 1024 * 1024; // 5 MB, matches the bucket's own file_size_limit
 
 /**
- * Uploads a CV to the dedicated, private membership-cv bucket (PDF only,
- * anyone can upload but only admins/editors can read). Returns the storage
- * path (not a public URL — the bucket isn't public, so reading it back
- * needs a signed URL, generated on the admin side).
+ * Uploads a CV (or any other applicant PDF document — cover letter included)
+ * to the dedicated, private membership-cv bucket (PDF only, anyone can
+ * upload but only admins/editors can read). Returns the storage path (not a
+ * public URL — the bucket isn't public, so reading it back needs a signed
+ * URL, generated on the admin side).
  */
 export async function uploadMembershipCV(file: File, onProgress?: (percent: number) => void): Promise<string> {
   if (file.type !== "application/pdf") {
@@ -73,6 +74,19 @@ export async function uploadMembershipCV(file: File, onProgress?: (percent: numb
   validateFileSize(file, CV_MAX_BYTES);
 
   const token = SUPABASE_ANON_KEY; // public, unauthenticated upload by design
+  const path = `${crypto.randomUUID()}.pdf`;
+  await uploadWithProgress(CV_BUCKET, path, file, token, onProgress);
+  return path;
+}
+
+/** Same storage/validation as uploadMembershipCV, used for cover-letter uploads. */
+export async function uploadMotivationLetter(file: File, onProgress?: (percent: number) => void): Promise<string> {
+  if (file.type !== "application/pdf") {
+    throw new Error("La lettre de motivation doit être un fichier PDF.");
+  }
+  validateFileSize(file, CV_MAX_BYTES);
+
+  const token = SUPABASE_ANON_KEY;
   const path = `${crypto.randomUUID()}.pdf`;
   await uploadWithProgress(CV_BUCKET, path, file, token, onProgress);
   return path;

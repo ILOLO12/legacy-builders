@@ -1,7 +1,6 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -9,16 +8,17 @@ import FormField, { fieldInputClass } from "@/components/FormField";
 import Honeypot from "@/components/Honeypot";
 import CountrySelect from "@/components/CountrySelect";
 import PhoneInput from "@/components/PhoneInput";
+import PdfUploadField from "@/components/PdfUploadField";
 import {
-  Check, User, Mail, MessageSquare, Send, Briefcase, Globe2, Building2,
-  Linkedin, Phone, GraduationCap, FileText, Upload, Loader2, X, ShieldCheck,
+  Check, User, Mail, Send, Briefcase, Globe2, Building2,
+  Linkedin, Phone, GraduationCap, Loader2, ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSEO } from "@/hooks/useSEO";
 import { usePageContent } from "@/hooks/usePageContent";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadMembershipCV } from "@/lib/mediaStorage";
+import { uploadMembershipCV, uploadMotivationLetter } from "@/lib/mediaStorage";
 
 const emptyForm = {
   firstName: "",
@@ -30,7 +30,6 @@ const emptyForm = {
   occupation: "",
   expertiseField: "",
   linkedin: "",
-  message: "",
 };
 
 const Membership = () => {
@@ -60,8 +59,9 @@ const Membership = () => {
   const [honeypot, setHoneypot] = useState("");
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [cvUploadPct, setCvUploadPct] = useState(0);
+  const [letterFile, setLetterFile] = useState<File | null>(null);
+  const [letterUploadPct, setLetterUploadPct] = useState(0);
   const [sending, setSending] = useState(false);
-  const cvInputRef = useRef<HTMLInputElement>(null);
 
   const tiers = [
     {
@@ -91,19 +91,8 @@ const Membership = () => {
     setHoneypot("");
     setCvFile(null);
     setCvUploadPct(0);
-  };
-
-  const handleCvPick = (file: File | undefined) => {
-    if (!file) return;
-    if (file.type !== "application/pdf") {
-      toast.error(lang === "fr" ? "Le CV doit être un fichier PDF." : "The CV must be a PDF file.");
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error(lang === "fr" ? "Le CV ne doit pas dépasser 5 Mo." : "The CV must not exceed 5 MB.");
-      return;
-    }
-    setCvFile(file);
+    setLetterFile(null);
+    setLetterUploadPct(0);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -116,8 +105,12 @@ const Membership = () => {
       return;
     }
 
-    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.occupation.trim() || !form.message.trim() || !selectedTier) {
+    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.occupation.trim() || !selectedTier) {
       toast.error(lang === "fr" ? "Merci de remplir tous les champs obligatoires." : "Please fill in all required fields.");
+      return;
+    }
+    if (!letterFile) {
+      toast.error(lang === "fr" ? "Merci de joindre votre lettre de motivation." : "Please attach your cover letter.");
       return;
     }
     if (!termsAccepted) {
@@ -138,6 +131,15 @@ const Membership = () => {
       }
     }
 
+    let letterUrl: string;
+    try {
+      letterUrl = await uploadMotivationLetter(letterFile, setLetterUploadPct);
+    } catch (err) {
+      setSending(false);
+      toast.error(err instanceof Error ? err.message : (lang === "fr" ? "Échec de l'envoi de la lettre." : "Cover letter upload failed."));
+      return;
+    }
+
     const fullName = `${form.firstName.trim()} ${form.lastName.trim()}`;
     const { error } = await supabase.from("membership_signups").insert({
       name: fullName,
@@ -150,8 +152,8 @@ const Membership = () => {
       expertise_field: form.expertiseField.trim() || null,
       linkedin_url: form.linkedin.trim() || null,
       cv_url: cvUrl,
+      motivation_letter_url: letterUrl,
       terms_accepted: termsAccepted,
-      message: form.message.trim(),
     });
     setSending(false);
     if (error) {
@@ -278,51 +280,24 @@ const Membership = () => {
                 <Input value={form.linkedin} onChange={(e) => setForm({ ...form, linkedin: e.target.value })} maxLength={255} className={fieldInputClass} placeholder="https://" />
               </FormField>
 
-              <FormField icon={MessageSquare} label={lang === "fr" ? "Motivation *" : "Motivation *"}>
-                <Textarea
-                  rows={3}
-                  value={form.message}
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  maxLength={1000}
-                  className={fieldInputClass}
-                  placeholder={lang === "fr" ? "Pourquoi souhaitez-vous rejoindre MUFO ?" : "Why would you like to join MUFO?"}
-                />
-              </FormField>
+              <PdfUploadField
+                label={lang === "fr" ? "Lettre de motivation (PDF) *" : "Cover letter (PDF) *"}
+                file={letterFile}
+                onFileChange={setLetterFile}
+                uploading={sending}
+                uploadPct={letterUploadPct}
+                required
+                lang={lang}
+              />
 
-              <div>
-                <label className="flex items-center gap-1.5 text-xs font-semibold text-primary uppercase tracking-wide mb-2">
-                  <FileText size={13} className="text-accent" />
-                  {lang === "fr" ? "CV (PDF, facultatif)" : "CV (PDF, optional)"}
-                </label>
-                {cvFile ? (
-                  <div className="flex items-center gap-2 rounded-xl border-2 border-border bg-surface/60 px-3 py-2.5 text-sm">
-                    <FileText size={16} className="text-accent flex-shrink-0" />
-                    <span className="flex-1 truncate">{cvFile.name}</span>
-                    {sending && cvUploadPct > 0 && cvUploadPct < 100 && (
-                      <span className="text-xs text-muted-foreground">{cvUploadPct}%</span>
-                    )}
-                    <button type="button" onClick={() => setCvFile(null)} className="text-muted-foreground hover:text-destructive flex-shrink-0">
-                      <X size={16} />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => cvInputRef.current?.click()}
-                    className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-surface/40 px-3 py-3 text-sm text-muted-foreground hover:border-accent/50 hover:text-accent transition-colors"
-                  >
-                    <Upload size={16} />
-                    {lang === "fr" ? "Joindre votre CV (PDF, max 5 Mo)" : "Attach your CV (PDF, max 5 MB)"}
-                  </button>
-                )}
-                <input
-                  ref={cvInputRef}
-                  type="file"
-                  accept="application/pdf"
-                  className="hidden"
-                  onChange={(e) => { handleCvPick(e.target.files?.[0]); e.target.value = ""; }}
-                />
-              </div>
+              <PdfUploadField
+                label={lang === "fr" ? "CV (PDF, facultatif)" : "CV (PDF, optional)"}
+                file={cvFile}
+                onFileChange={setCvFile}
+                uploading={sending}
+                uploadPct={cvUploadPct}
+                lang={lang}
+              />
 
               <label className="flex items-start gap-2.5 text-xs text-muted-foreground leading-relaxed cursor-pointer">
                 <Checkbox checked={termsAccepted} onCheckedChange={(v) => setTermsAccepted(v === true)} className="mt-0.5" />

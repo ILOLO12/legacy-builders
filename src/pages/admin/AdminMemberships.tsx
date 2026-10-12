@@ -62,7 +62,7 @@ const AdminMemberships = () => {
       const url = await getMembershipCVUrl(path);
       window.open(url, "_blank", "noopener,noreferrer");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Impossible d'ouvrir le CV.");
+      toast.error(e instanceof Error ? e.message : "Impossible d'ouvrir le document.");
     } finally {
       setOpeningCv(null);
     }
@@ -122,16 +122,28 @@ const AdminMemberships = () => {
 
                   {s.message && <p className="text-sm text-muted-foreground whitespace-pre-wrap mt-1">{s.message}</p>}
 
-                  {s.cv_url && (
-                    <button
-                      onClick={() => openCv(s.cv_url!)}
-                      disabled={openingCv === s.cv_url}
-                      className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-accent hover:underline"
-                    >
-                      {openingCv === s.cv_url ? <Loader2 size={12} className="animate-spin" /> : <FileText size={12} />}
-                      Voir le CV
-                    </button>
-                  )}
+                  <div className="flex items-center gap-4 mt-2">
+                    {s.motivation_letter_url && (
+                      <button
+                        onClick={() => openCv(s.motivation_letter_url!)}
+                        disabled={openingCv === s.motivation_letter_url}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-accent hover:underline"
+                      >
+                        {openingCv === s.motivation_letter_url ? <Loader2 size={12} className="animate-spin" /> : <FileText size={12} />}
+                        Voir la lettre de motivation
+                      </button>
+                    )}
+                    {s.cv_url && (
+                      <button
+                        onClick={() => openCv(s.cv_url!)}
+                        disabled={openingCv === s.cv_url}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-accent hover:underline"
+                      >
+                        {openingCv === s.cv_url ? <Loader2 size={12} className="animate-spin" /> : <FileText size={12} />}
+                        Voir le CV
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <select

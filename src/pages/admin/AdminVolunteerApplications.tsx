@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Briefcase, Trash2, Phone, Globe2, GraduationCap, Building2, FileText, Loader2 } from "lucide-react";
+import { Briefcase, Trash2, Phone, Globe2, GraduationCap, Building2, FileText, Loader2, CalendarClock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { findCountry, countryFlag } from "@/data/countries";
 import { getMembershipCVUrl } from "@/lib/mediaStorage";
@@ -111,20 +111,33 @@ const AdminVolunteerApplications = () => {
                       {a.occupation && <span className="flex items-center gap-1"><Briefcase size={11} /> {a.occupation}</span>}
                       {a.organization && <span className="flex items-center gap-1"><Building2 size={11} /> {a.organization}</span>}
                       {a.skills && <span className="flex items-center gap-1"><GraduationCap size={11} /> {a.skills}</span>}
+                      {a.availability && <span className="flex items-center gap-1"><CalendarClock size={11} /> {a.availability}</span>}
                     </div>
 
                     {a.message && <p className="text-sm text-muted-foreground whitespace-pre-wrap mt-1">{a.message}</p>}
 
-                    {a.cv_url && (
-                      <button
-                        onClick={() => openCv(a.cv_url!)}
-                        disabled={openingCv === a.cv_url}
-                        className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-accent hover:underline"
-                      >
-                        {openingCv === a.cv_url ? <Loader2 size={12} className="animate-spin" /> : <FileText size={12} />}
-                        Voir le CV
-                      </button>
-                    )}
+                    <div className="flex items-center gap-4 mt-2">
+                      {a.motivation_letter_url && (
+                        <button
+                          onClick={() => openCv(a.motivation_letter_url!)}
+                          disabled={openingCv === a.motivation_letter_url}
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-accent hover:underline"
+                        >
+                          {openingCv === a.motivation_letter_url ? <Loader2 size={12} className="animate-spin" /> : <FileText size={12} />}
+                          Voir la lettre de motivation
+                        </button>
+                      )}
+                      {a.cv_url && (
+                        <button
+                          onClick={() => openCv(a.cv_url!)}
+                          disabled={openingCv === a.cv_url}
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-accent hover:underline"
+                        >
+                          {openingCv === a.cv_url ? <Loader2 size={12} className="animate-spin" /> : <FileText size={12} />}
+                          Voir le CV
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   <select

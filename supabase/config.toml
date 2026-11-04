@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.send-volunteer-confirmation]
 verify_jwt = false
+
+[functions.send-donation-confirmation]
+verify_jwt = false

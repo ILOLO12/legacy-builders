@@ -35,12 +35,18 @@ const BANK_FIELDS: { key: string; label: string }[] = [
 ];
 const BANK_DEFAULTS: Record<string, string> = Object.fromEntries(BANK_FIELDS.map((f) => [f.key, ""]));
 
+const MOBILE_FIELDS: { key: string; label: string }[] = [
+  { key: "donation_mobile_number", label: "Numéro Mobile Money (réception des dons)" },
+];
+const MOBILE_DEFAULTS: Record<string, string> = Object.fromEntries(MOBILE_FIELDS.map((f) => [f.key, ""]));
+
 const AdminSettings = () => {
   const queryClient = useQueryClient();
   const [newKey, setNewKey] = useState("");
   const [newValue, setNewValue] = useState("");
   const [identity, setIdentity] = useState<Record<string, string>>({ ...SITE_SETTINGS_DEFAULTS });
   const [bankInfo, setBankInfo] = useState<Record<string, string>>({ ...BANK_DEFAULTS });
+  const [mobileInfo, setMobileInfo] = useState<Record<string, string>>({ ...MOBILE_DEFAULTS });
 
   const { data: settings = [], isLoading } = useQuery({
     queryKey: ["admin", "site_settings"],
@@ -64,6 +70,13 @@ const AdminSettings = () => {
       const next = { ...prev };
       for (const s of settings) {
         if (s.key in BANK_DEFAULTS) next[s.key] = s.value ?? "";
+      }
+      return next;
+    });
+    setMobileInfo((prev) => {
+      const next = { ...prev };
+      for (const s of settings) {
+        if (s.key in MOBILE_DEFAULTS) next[s.key] = s.value ?? "";
       }
       return next;
     });
@@ -92,6 +105,19 @@ const AdminSettings = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "site_settings"] });
       toast.success("Coordonnées bancaires mises à jour");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const saveMobileInfoMutation = useMutation({
+    mutationFn: async () => {
+      const rows = MOBILE_FIELDS.map((f) => ({ key: f.key, value: mobileInfo[f.key] ?? "" }));
+      const { error } = await supabase.from("site_settings").upsert(rows, { onConflict: "key" });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "site_settings"] });
+      toast.success("Numéro Mobile Money mis à jour");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -152,7 +178,7 @@ const AdminSettings = () => {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const knownKeys = new Set([...IDENTITY_FIELDS.map((f) => f.key as string), ...BANK_FIELDS.map((f) => f.key), NOTIFICATIONS_KEY]);
+  const knownKeys = new Set([...IDENTITY_FIELDS.map((f) => f.key as string), ...BANK_FIELDS.map((f) => f.key), ...MOBILE_FIELDS.map((f) => f.key), NOTIFICATIONS_KEY]);
   const otherSettings = settings.filter((s) => !knownKeys.has(s.key));
 
   return (
@@ -233,6 +259,32 @@ const AdminSettings = () => {
         </div>
         <Button onClick={() => saveBankInfoMutation.mutate()} disabled={saveBankInfoMutation.isPending} className="gap-2 bg-primary mt-4">
           <Save size={14} /> Enregistrer les coordonnées bancaires
+        </Button>
+      </div>
+
+      {/* Mobile Money details for donations */}
+      <div className="bg-card border border-border rounded-xl p-6 mb-6">
+        <div className="flex items-center gap-2 mb-1">
+          <Mail size={16} className="text-accent" />
+          <h3 className="font-semibold text-foreground">Mobile Money (dons)</h3>
+        </div>
+        <p className="text-xs text-muted-foreground mb-4">
+          Numéro envoyé automatiquement par e-mail au donateur ayant choisi "Mobile Money".
+        </p>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {MOBILE_FIELDS.map((f) => (
+            <div key={f.key}>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">{f.label}</label>
+              <Input
+                value={mobileInfo[f.key] ?? ""}
+                onChange={(e) => setMobileInfo((d) => ({ ...d, [f.key]: e.target.value }))}
+                className="text-sm"
+              />
+            </div>
+          ))}
+        </div>
+        <Button onClick={() => saveMobileInfoMutation.mutate()} disabled={saveMobileInfoMutation.isPending} className="gap-2 bg-primary mt-4">
+          <Save size={14} /> Enregistrer le numéro Mobile Money
         </Button>
       </div>
 

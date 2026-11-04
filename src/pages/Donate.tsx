@@ -91,6 +91,15 @@ const Donate = () => {
         ? "Merci ! Nous avons bien reçu votre intention de don et allons vous recontacter avec les instructions."
         : "Thank you! We've recorded your donation and will follow up with instructions."
     );
+    supabase.functions.invoke("send-donation-confirmation", {
+      body: {
+        name: fullName,
+        email: form.email.trim(),
+        amount: finalAmount,
+        method: selectedMethod.key,
+        network: selectedMethod.key === "mobile_money" ? form.mobileNetwork : undefined,
+      },
+    }).catch(() => {});
     closeDialog();
   };
 

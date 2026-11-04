@@ -20,7 +20,11 @@ async function hasEditorAccess(supabase: ReturnType<typeof createClient>, authHe
   const token = authHeader.replace("Bearer ", "");
   const { data: userData } = await supabase.auth.getUser(token);
   if (!userData?.user) return false;
-  const { data } = await supabase
+  // Roles must be read as the caller: RLS hides user_roles from the anon key.
+  const asUser = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: { headers: { Authorization: authHeader } },
+  });
+  const { data } = await asUser
     .from("user_roles")
     .select("role")
     .eq("user_id", userData.user.id)

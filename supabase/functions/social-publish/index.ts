@@ -13,6 +13,12 @@ const corsHeaders = {
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Matches the client the handlers actually build, so table names stay untyped
+// inside the helpers below (ReturnType<typeof createClient> resolves to a
+// never-typed client and rejects every .from() call).
+type Client = typeof supabase;
+
 // Adding a new platform = one file in ./platforms + one entry here.
 const PUBLISHERS: Record<string, { publish: Publisher; requiredSecret: string }> = {
   facebook: { publish: publishFacebook, requiredSecret: fbSecret },
@@ -31,7 +37,7 @@ interface RetryRow {
   articles: ArticleForPublishing | null;
 }
 
-async function isAdmin(supabase: ReturnType<typeof createClient>, authHeader: string | null): Promise<boolean> {
+async function isAdmin(supabase: Client, authHeader: string | null): Promise<boolean> {
   if (!authHeader) return false;
   const token = authHeader.replace("Bearer ", "");
   const { data: userData } = await supabase.auth.getUser(token);
@@ -46,7 +52,7 @@ async function isAdmin(supabase: ReturnType<typeof createClient>, authHeader: st
 }
 
 async function attemptPublish(
-  supabase: ReturnType<typeof createClient>,
+  supabase: Client,
   logId: string,
   platform: string,
   article: ArticleForPublishing,

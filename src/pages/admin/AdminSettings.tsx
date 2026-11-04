@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Save, Plus, Trash2, Mail, ShieldAlert } from "lucide-react";
+import { Save, Plus, Trash2, Mail, ShieldAlert, Landmark } from "lucide-react";
 import ImageUploadField from "@/components/admin/ImageUploadField";
 import { Switch } from "@/components/ui/switch";
 import { SITE_SETTINGS_DEFAULTS } from "@/hooks/useSiteSettings";
@@ -27,11 +27,20 @@ const IDENTITY_FIELDS: { key: keyof typeof SITE_SETTINGS_DEFAULTS; label: string
   { key: "social_youtube", label: "Lien YouTube" },
 ];
 
+const BANK_FIELDS: { key: string; label: string }[] = [
+  { key: "donation_bank_name", label: "Nom de la banque" },
+  { key: "donation_bank_holder", label: "Nom du titulaire du compte" },
+  { key: "donation_bank_account", label: "Numéro de compte / IBAN" },
+  { key: "donation_bank_swift", label: "Code SWIFT / BIC" },
+];
+const BANK_DEFAULTS: Record<string, string> = Object.fromEntries(BANK_FIELDS.map((f) => [f.key, ""]));
+
 const AdminSettings = () => {
   const queryClient = useQueryClient();
   const [newKey, setNewKey] = useState("");
   const [newValue, setNewValue] = useState("");
   const [identity, setIdentity] = useState<Record<string, string>>({ ...SITE_SETTINGS_DEFAULTS });
+  const [bankInfo, setBankInfo] = useState<Record<string, string>>({ ...BANK_DEFAULTS });
 
   const { data: settings = [], isLoading } = useQuery({
     queryKey: ["admin", "site_settings"],
@@ -51,6 +60,13 @@ const AdminSettings = () => {
       }
       return next;
     });
+    setBankInfo((prev) => {
+      const next = { ...prev };
+      for (const s of settings) {
+        if (s.key in BANK_DEFAULTS) next[s.key] = s.value ?? "";
+      }
+      return next;
+    });
   }, [settings]);
 
   const saveIdentityMutation = useMutation({
@@ -63,6 +79,19 @@ const AdminSettings = () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "site_settings"] });
       queryClient.invalidateQueries({ queryKey: ["site-settings"] });
       toast.success("Identité du site mise à jour");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const saveBankInfoMutation = useMutation({
+    mutationFn: async () => {
+      const rows = BANK_FIELDS.map((f) => ({ key: f.key, value: bankInfo[f.key] ?? "" }));
+      const { error } = await supabase.from("site_settings").upsert(rows, { onConflict: "key" });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "site_settings"] });
+      toast.success("Coordonnées bancaires mises à jour");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -123,7 +152,7 @@ const AdminSettings = () => {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const knownKeys = new Set([...IDENTITY_FIELDS.map((f) => f.key as string), NOTIFICATIONS_KEY]);
+  const knownKeys = new Set([...IDENTITY_FIELDS.map((f) => f.key as string), ...BANK_FIELDS.map((f) => f.key), NOTIFICATIONS_KEY]);
   const otherSettings = settings.filter((s) => !knownKeys.has(s.key));
 
   return (
@@ -177,6 +206,33 @@ const AdminSettings = () => {
         </div>
         <Button onClick={() => saveIdentityMutation.mutate()} disabled={saveIdentityMutation.isPending} className="gap-2 bg-primary mt-4">
           <Save size={14} /> Enregistrer l'identité du site
+        </Button>
+      </div>
+
+      {/* Bank details for manual bank-transfer donations */}
+      <div className="bg-card border border-border rounded-xl p-6 mb-6">
+        <div className="flex items-center gap-2 mb-1">
+          <Landmark size={16} className="text-accent" />
+          <h3 className="font-semibold text-foreground">Coordonnées bancaires (dons par virement)</h3>
+        </div>
+        <p className="text-xs text-muted-foreground mb-4">
+          Partagées manuellement avec un donateur ayant choisi "Virement bancaire" (encadré copiable dans Admin → Dons).
+          Laissez vide tant que vous n'avez pas les informations définitives.
+        </p>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {BANK_FIELDS.map((f) => (
+            <div key={f.key}>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">{f.label}</label>
+              <Input
+                value={bankInfo[f.key] ?? ""}
+                onChange={(e) => setBankInfo((d) => ({ ...d, [f.key]: e.target.value }))}
+                className="text-sm"
+              />
+            </div>
+          ))}
+        </div>
+        <Button onClick={() => saveBankInfoMutation.mutate()} disabled={saveBankInfoMutation.isPending} className="gap-2 bg-primary mt-4">
+          <Save size={14} /> Enregistrer les coordonnées bancaires
         </Button>
       </div>
 

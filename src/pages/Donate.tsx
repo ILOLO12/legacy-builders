@@ -9,7 +9,7 @@ import FormField, { fieldInputClass } from "@/components/FormField";
 import Honeypot from "@/components/Honeypot";
 import CountrySelect from "@/components/CountrySelect";
 import PhoneInput from "@/components/PhoneInput";
-import { CreditCard, Smartphone, User, Mail, Phone, Globe2, MessageSquare, Send, Landmark, Loader2 } from "lucide-react";
+import { CreditCard, Smartphone, User, Mail, Phone, Globe2, MessageSquare, Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -36,7 +36,7 @@ const Donate = () => {
   const [selectedMethod, setSelectedMethod] = useState<{ key: string; name: string } | null>(null);
   const [form, setForm] = useState({
     firstName: "", lastName: "", email: "", phone: "", country: "", message: "",
-    mobileNetwork: "", bankName: "", bankHolder: "", bankNumber: "", bankSwift: "",
+    mobileNetwork: "",
   });
   const [sending, setSending] = useState(false);
   const [honeypot, setHoneypot] = useState("");
@@ -50,7 +50,7 @@ const Donate = () => {
 
   const closeDialog = () => {
     setSelectedMethod(null);
-    setForm({ firstName: "", lastName: "", email: "", phone: "", country: "", message: "", mobileNetwork: "", bankName: "", bankHolder: "", bankNumber: "", bankSwift: "" });
+    setForm({ firstName: "", lastName: "", email: "", phone: "", country: "", message: "", mobileNetwork: "" });
     setHoneypot("");
   };
 
@@ -69,10 +69,6 @@ const Donate = () => {
       toast.error(lang === "fr" ? "Merci de choisir un réseau Mobile Money." : "Please choose a Mobile Money network.");
       return;
     }
-    if (selectedMethod.key === "bank_transfer" && (!form.bankName.trim() || !form.bankHolder.trim() || !form.bankNumber.trim())) {
-      toast.error(lang === "fr" ? "Merci de remplir les coordonnées bancaires." : "Please fill in the bank details.");
-      return;
-    }
     setSending(true);
     const fullName = `${form.firstName.trim()} ${form.lastName.trim()}`;
     const { error } = await supabase.from("donations").insert({
@@ -83,10 +79,6 @@ const Donate = () => {
       amount: finalAmount,
       method: selectedMethod.key,
       payment_network: selectedMethod.key === "mobile_money" ? form.mobileNetwork : null,
-      bank_name: selectedMethod.key === "bank_transfer" ? form.bankName.trim() : null,
-      bank_account_holder: selectedMethod.key === "bank_transfer" ? form.bankHolder.trim() : null,
-      bank_account_number: selectedMethod.key === "bank_transfer" ? form.bankNumber.trim() : null,
-      bank_swift: selectedMethod.key === "bank_transfer" ? (form.bankSwift.trim() || null) : null,
       message: form.message.trim() || null,
     });
     setSending(false);
@@ -265,31 +257,6 @@ const Donate = () => {
                   </SelectContent>
                 </Select>
               </FormField>
-            )}
-
-            {selectedMethod?.key === "bank_transfer" && (
-              <div className="space-y-4 rounded-xl border-2 border-dashed border-border p-4">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-primary uppercase tracking-wide">
-                  <Landmark size={13} className="text-accent" />
-                  {lang === "fr" ? "Coordonnées bancaires" : "Bank details"}
-                </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <FormField icon={Landmark} label={lang === "fr" ? "Nom de la banque *" : "Bank name *"}>
-                    <Input value={form.bankName} onChange={(e) => setForm({ ...form, bankName: e.target.value })} maxLength={100} className={fieldInputClass} />
-                  </FormField>
-                  <FormField icon={User} label={lang === "fr" ? "Nom du titulaire *" : "Account holder *"}>
-                    <Input value={form.bankHolder} onChange={(e) => setForm({ ...form, bankHolder: e.target.value })} maxLength={100} className={fieldInputClass} />
-                  </FormField>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <FormField icon={CreditCard} label={lang === "fr" ? "Numéro de compte / IBAN *" : "Account number / IBAN *"}>
-                    <Input value={form.bankNumber} onChange={(e) => setForm({ ...form, bankNumber: e.target.value })} maxLength={64} className={fieldInputClass} />
-                  </FormField>
-                  <FormField icon={CreditCard} label={lang === "fr" ? "Code SWIFT / BIC" : "SWIFT / BIC code"}>
-                    <Input value={form.bankSwift} onChange={(e) => setForm({ ...form, bankSwift: e.target.value })} maxLength={20} className={fieldInputClass} />
-                  </FormField>
-                </div>
-              </div>
             )}
 
             <FormField icon={MessageSquare} label={lang === "fr" ? "Message (facultatif)" : "Message (optional)"}>

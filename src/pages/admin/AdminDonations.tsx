@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { HeartHandshake, Trash2, Phone, Globe2, Smartphone, Landmark } from "lucide-react";
+import { HeartHandshake, Trash2, Phone, Globe2, Smartphone, Landmark, Copy, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { findCountry, countryFlag } from "@/data/countries";
+
+const BANK_SETTING_KEYS = ["donation_bank_name", "donation_bank_holder", "donation_bank_account", "donation_bank_swift"] as const;
 
 const METHOD_LABELS: Record<string, string> = {
   bank_transfer: "Virement bancaire",
@@ -21,6 +24,7 @@ const STATUS_OPTIONS = [
 
 const AdminDonations = () => {
   const queryClient = useQueryClient();
+  const [copied, setCopied] = useState(false);
 
   const { data: donations = [], isLoading } = useQuery({
     queryKey: ["donations"],
@@ -33,6 +37,33 @@ const AdminDonations = () => {
       return data;
     },
   });
+
+  const { data: bankSettings = {} } = useQuery({
+    queryKey: ["admin", "donation_bank_settings"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("key,value")
+        .in("key", BANK_SETTING_KEYS);
+      if (error) throw error;
+      return Object.fromEntries((data ?? []).map((r) => [r.key, r.value ?? ""])) as Record<string, string>;
+    },
+  });
+
+  const bankIsConfigured = BANK_SETTING_KEYS.some((k) => bankSettings[k]?.trim());
+
+  const copyBankDetails = () => {
+    const lines = [
+      bankSettings.donation_bank_name && `Banque : ${bankSettings.donation_bank_name}`,
+      bankSettings.donation_bank_holder && `Titulaire : ${bankSettings.donation_bank_holder}`,
+      bankSettings.donation_bank_account && `Numéro de compte / IBAN : ${bankSettings.donation_bank_account}`,
+      bankSettings.donation_bank_swift && `SWIFT / BIC : ${bankSettings.donation_bank_swift}`,
+    ].filter(Boolean);
+    navigator.clipboard.writeText(lines.join("\n"));
+    setCopied(true);
+    toast.success("Coordonnées copiées");
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const statusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
@@ -72,6 +103,36 @@ const AdminDonations = () => {
         {donations.length > 0 && (
           <p className="text-sm font-semibold text-accent mt-2">Total reçu confirmé : {total.toLocaleString()} $</p>
         )}
+      </div>
+
+      <div className="bg-card border border-border rounded-xl p-5 mb-6">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <Landmark size={16} className="text-accent" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">Coordonnées bancaires MUFO</h3>
+              {bankIsConfigured ? (
+                <div className="text-xs text-muted-foreground space-y-0.5">
+                  {bankSettings.donation_bank_name && <p>Banque : {bankSettings.donation_bank_name}</p>}
+                  {bankSettings.donation_bank_holder && <p>Titulaire : {bankSettings.donation_bank_holder}</p>}
+                  {bankSettings.donation_bank_account && <p>Compte / IBAN : {bankSettings.donation_bank_account}</p>}
+                  {bankSettings.donation_bank_swift && <p>SWIFT / BIC : {bankSettings.donation_bank_swift}</p>}
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground max-w-md">
+                  Pas encore renseignées — ajoutez-les dans Admin → Paramètres pour pouvoir les partager avec un donateur ayant choisi "Virement bancaire".
+                </p>
+              )}
+            </div>
+          </div>
+          {bankIsConfigured && (
+            <Button size="sm" variant="outline" className="gap-1.5 flex-shrink-0" onClick={copyBankDetails}>
+              {copied ? <Check size={13} /> : <Copy size={13} />} Copier
+            </Button>
+          )}
+        </div>
       </div>
 
       {isLoading ? (

@@ -13,6 +13,10 @@ addresses) live in project memory, not here.
 - Staff-only reads and writes go through `public.has_editor_access(auth.uid())` (or
   `has_role`), never through client-side storage, and roles stay in `public.user_roles`.
   Why: roles on a profile row or in the browser can be forged.
+- An edge function that checks the caller's staff role must query `user_roles` with a
+  client carrying that caller's own token, never the anon-key client it was built with.
+  Why: RLS hides `user_roles` from `anon`, so an anon-key lookup silently returns zero
+  rows and every caller — including a real admin — is refused.
 - When background code (an edge function) must find, claim and update rows that the
   public API role cannot read, do it in a `security definer` function in `public` that
   the function calls, instead of widening the public role's read access. Why: the

@@ -82,7 +82,6 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   try {
     const body = await req.json().catch(() => ({}));

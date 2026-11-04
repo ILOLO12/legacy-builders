@@ -66,9 +66,12 @@ const AdminDonations = () => {
   };
 
   const statusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+    mutationFn: async ({ id, status, name, email, amount }: { id: string; status: string; name: string; email: string; amount: number }) => {
       const { error } = await supabase.from("donations").update({ status }).eq("id", id);
       if (error) throw error;
+      if (status === "received") {
+        await supabase.functions.invoke("send-donation-status", { body: { name, email, amount, status } }).catch(() => {});
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["donations"] });
@@ -182,7 +185,7 @@ const AdminDonations = () => {
               </div>
               <select
                 value={d.status}
-                onChange={(e) => statusMutation.mutate({ id: d.id, status: e.target.value })}
+                onChange={(e) => statusMutation.mutate({ id: d.id, status: e.target.value, name: d.donor_name, email: d.donor_email, amount: Number(d.amount) })}
                 className="text-xs border border-border rounded-md px-2 py-1.5 bg-background flex-shrink-0"
               >
                 {STATUS_OPTIONS.map((s) => (

@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { FileText, Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import type { Lang } from "@/i18n/LanguageContext";
 
 interface PdfUploadFieldProps {
   label: string;
@@ -10,7 +11,7 @@ interface PdfUploadFieldProps {
   uploadPct?: number;
   required?: boolean;
   maxSizeMb?: number;
-  lang: "fr" | "en";
+  lang: Lang;
 }
 
 /** Labeled PDF file picker used for CVs and cover letters across public forms. */

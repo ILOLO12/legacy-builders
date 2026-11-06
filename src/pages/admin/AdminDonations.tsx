@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { PieChart, Pie, Cell, Legend, Tooltip as RTooltip, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { HeartHandshake, Trash2, Phone, Globe2, Smartphone, Landmark, Copy, Check } from "lucide-react";
+import {
+  HeartHandshake, Trash2, Phone, Globe2, Smartphone, Landmark, Copy, Check,
+  Wallet, CheckCircle2, Clock3, TrendingUp, XCircle,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { findCountry, countryFlag } from "@/data/countries";
 
@@ -21,6 +25,29 @@ const STATUS_OPTIONS = [
   { value: "received", label: "Reçu" },
   { value: "cancelled", label: "Annulé" },
 ];
+
+const METHOD_PIE_COLORS = ["hsl(var(--accent))", "hsl(var(--primary))", "hsl(var(--secondary))", "hsl(var(--destructive))"];
+
+const StatTile = ({ label, value, suffix, icon: Icon, tone = "default" }: {
+  label: string; value: number; suffix?: string; icon: typeof Wallet; tone?: "default" | "positive" | "warning";
+}) => (
+  <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+    <div
+      className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${
+        tone === "positive" ? "bg-green-500/10" : tone === "warning" ? "bg-amber-500/10" : "bg-accent/10"
+      }`}
+    >
+      <Icon size={16} className={tone === "positive" ? "text-green-600" : tone === "warning" ? "text-amber-600" : "text-accent"} />
+    </div>
+    <p className="text-2xl font-serif font-bold text-foreground">
+      {value.toLocaleString()}
+      {suffix ? <span className="text-sm font-sans font-normal text-muted-foreground ml-1">{suffix}</span> : null}
+    </p>
+    <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">{label}</p>
+  </div>
+);
+
+const chartTooltipStyle = { background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 };
 
 const AdminDonations = () => {
   const queryClient = useQueryClient();
@@ -92,7 +119,35 @@ const AdminDonations = () => {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const total = donations.filter((d) => d.status === "received").reduce((sum, d) => sum + Number(d.amount), 0);
+  const currencies = Array.from(new Set(donations.map((d) => d.currency || "USD")));
+  const mainCurrency = currencies[0] ?? "USD";
+
+  const receivedDonations = donations.filter((d) => d.status === "received");
+  const pendingDonations = donations.filter((d) => d.status === "pending");
+  const cancelledDonations = donations.filter((d) => d.status === "cancelled");
+
+  const receivedTotal = receivedDonations.reduce((sum, d) => sum + Number(d.amount), 0);
+  const pendingTotal = pendingDonations.reduce((sum, d) => sum + Number(d.amount), 0);
+  const cancelledTotal = cancelledDonations.reduce((sum, d) => sum + Number(d.amount), 0);
+  const pledgedTotal = receivedTotal + pendingTotal; // intentions encore valables (hors annulés)
+  const completionRate = pledgedTotal > 0 ? Math.round((receivedTotal / pledgedTotal) * 100) : 0;
+
+  const statusBreakdown = [
+    { name: "Reçu", value: receivedTotal, fill: "hsl(142 60% 42%)" },
+    { name: "En attente", value: pendingTotal, fill: "hsl(var(--primary))" },
+    { name: "Annulé", value: cancelledTotal, fill: "hsl(var(--destructive))" },
+  ].filter((s) => s.value > 0);
+
+  const methodTotals = receivedDonations.reduce((acc, d) => {
+    const label = METHOD_LABELS[d.method] ?? d.method;
+    acc[label] = (acc[label] ?? 0) + Number(d.amount);
+    return acc;
+  }, {} as Record<string, number>);
+  const methodBreakdown = Object.entries(methodTotals).map(([name, value], i) => ({
+    name,
+    value,
+    fill: METHOD_PIE_COLORS[i % METHOD_PIE_COLORS.length],
+  }));
 
   return (
     <div>
@@ -103,10 +158,88 @@ const AdminDonations = () => {
           aucune plateforme (PayPal, Zelle, M-Pesa...) n'est encore connectée. Chaque ligne est une promesse de don à
           suivre manuellement ; passe le statut à "Reçu" une fois l'argent effectivement reçu.
         </p>
-        {donations.length > 0 && (
-          <p className="text-sm font-semibold text-accent mt-2">Total reçu confirmé : {total.toLocaleString()} $</p>
-        )}
       </div>
+
+      {!isLoading && (
+        <div className="mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <StatTile label="Intentions de dons" value={pledgedTotal} suffix={mainCurrency} icon={Wallet} />
+            <StatTile label="Dons reçus" value={receivedTotal} suffix={mainCurrency} icon={CheckCircle2} tone="positive" />
+            <StatTile label="En attente" value={pendingTotal} suffix={mainCurrency} icon={Clock3} tone="warning" />
+            <StatTile label="Taux de réalisation" value={completionRate} suffix="%" icon={TrendingUp} />
+          </div>
+
+          <div className="bg-card border border-border rounded-xl p-6 mb-6 shadow-sm">
+            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+              <h3 className="font-semibold text-foreground flex items-center gap-2">
+                <TrendingUp size={16} className="text-accent" /> Situation financière
+              </h3>
+              <span className="text-xs text-muted-foreground">
+                {receivedTotal.toLocaleString()} {mainCurrency} reçus sur {pledgedTotal.toLocaleString()} {mainCurrency} attendus
+              </span>
+            </div>
+            <div className="h-4 rounded-full bg-muted overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all"
+                style={{ width: `${Math.min(100, completionRate)}%`, background: "hsl(142 60% 42%)" }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
+              <span>{completionRate}% atteint</span>
+              {pendingTotal > 0 && (
+                <span>
+                  Écart restant à collecter : <strong className="text-foreground">{pendingTotal.toLocaleString()} {mainCurrency}</strong>
+                </span>
+              )}
+            </div>
+            {cancelledTotal > 0 && (
+              <p className="text-xs text-muted-foreground flex items-center gap-1 mt-2">
+                <XCircle size={11} /> {cancelledTotal.toLocaleString()} {mainCurrency} annulés (non comptabilisés ci-dessus)
+              </p>
+            )}
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+              <h3 className="font-semibold text-foreground mb-2">Répartition par statut</h3>
+              {statusBreakdown.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-12 text-center">Pas encore de dons.</p>
+              ) : (
+                <ResponsiveContainer width="100%" height={240}>
+                  <PieChart>
+                    <Pie data={statusBreakdown} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3}>
+                      {statusBreakdown.map((s, i) => (
+                        <Cell key={i} fill={s.fill} />
+                      ))}
+                    </Pie>
+                    <RTooltip formatter={(v: number) => `${v.toLocaleString()} ${mainCurrency}`} contentStyle={chartTooltipStyle} />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+
+            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+              <h3 className="font-semibold text-foreground mb-2">Dons reçus par méthode de paiement</h3>
+              {methodBreakdown.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-12 text-center">Aucun don reçu pour le moment.</p>
+              ) : (
+                <ResponsiveContainer width="100%" height={240}>
+                  <PieChart>
+                    <Pie data={methodBreakdown} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3}>
+                      {methodBreakdown.map((s, i) => (
+                        <Cell key={i} fill={s.fill} />
+                      ))}
+                    </Pie>
+                    <RTooltip formatter={(v: number) => `${v.toLocaleString()} ${mainCurrency}`} contentStyle={chartTooltipStyle} />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="bg-card border border-border rounded-xl p-5 mb-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">

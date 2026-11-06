@@ -176,6 +176,18 @@ const AdminDonations = () => {
         </p>
       </div>
 
+      {!isLoading && donations.length > 0 && (
+        <div className="relative mb-6">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Rechercher par code de référence, référence de paiement, nom ou e-mail..."
+            className="pl-9"
+          />
+        </div>
+      )}
+
       {!isLoading && (
         <div className="mb-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -286,18 +298,6 @@ const AdminDonations = () => {
           )}
         </div>
       </div>
-
-      {!isLoading && donations.length > 0 && (
-        <div className="relative mb-4">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher par code de référence, référence de paiement, nom ou e-mail..."
-            className="pl-9"
-          />
-        </div>
-      )}
 
       {isLoading ? (
         <div className="text-center py-12 text-muted-foreground">Chargement...</div>

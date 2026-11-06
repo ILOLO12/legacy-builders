@@ -92,7 +92,15 @@ const Donate = () => {
     });
     setSending(false);
     if (error) {
-      toast.error(lang === "fr" ? "Une erreur est survenue. Réessayez." : "Something went wrong. Please try again.");
+      if (error.code === "23505") {
+        toast.error(
+          lang === "fr"
+            ? "Vous avez déjà une intention de don en attente avec cette adresse e-mail. Merci de finaliser le paiement correspondant (voir l'e-mail reçu) avant d'en soumettre une nouvelle."
+            : "You already have a pending donation with this email address. Please complete that payment (see the email you received) before submitting a new one."
+        );
+      } else {
+        toast.error(lang === "fr" ? "Une erreur est survenue. Réessayez." : "Something went wrong. Please try again.");
+      }
       return;
     }
     supabase.functions.invoke("send-donation-confirmation", {

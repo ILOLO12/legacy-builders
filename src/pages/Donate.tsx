@@ -63,7 +63,7 @@ const Donate = () => {
       closeDialog();
       return;
     }
-    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !selectedMethod || !finalAmount || finalAmount <= 0) {
+    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.phone.trim() || !selectedMethod || !finalAmount || finalAmount <= 0) {
       toast.error(lang === "fr" ? "Merci de remplir les champs obligatoires." : "Please fill in the required fields.");
       return;
     }
@@ -277,7 +277,7 @@ const Donate = () => {
                   className={fieldInputClass}
                 />
               </FormField>
-              <FormField icon={Phone} label={lang === "fr" ? "Téléphone" : "Phone"}>
+              <FormField icon={Phone} label={lang === "fr" ? "Téléphone *" : "Phone *"}>
                 <PhoneInput value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} preferredCountry={form.country} lang={lang} />
               </FormField>
             </div>

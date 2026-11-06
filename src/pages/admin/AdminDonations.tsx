@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import {
   HeartHandshake, Trash2, Phone, Globe2, Smartphone, Landmark, Copy, Check,
-  Wallet, CheckCircle2, Clock3, TrendingUp, XCircle, ShieldCheck,
+  Wallet, CheckCircle2, Clock3, TrendingUp, XCircle, ShieldCheck, Search,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { findCountry, countryFlag } from "@/data/countries";
@@ -54,6 +54,7 @@ const AdminDonations = () => {
   const queryClient = useQueryClient();
   const [copied, setCopied] = useState(false);
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
   const [refInput, setRefInput] = useState("");
 
   const { data: donations = [], isLoading } = useQuery({
@@ -155,6 +156,14 @@ const AdminDonations = () => {
     value,
     fill: METHOD_PIE_COLORS[i % METHOD_PIE_COLORS.length],
   }));
+
+  const searchQuery = search.trim().toLowerCase();
+  const filteredDonations = searchQuery
+    ? donations.filter((d) =>
+        [d.reference_code, d.payment_reference, d.donor_name, d.donor_email]
+          .some((v) => v?.toLowerCase().includes(searchQuery))
+      )
+    : donations;
 
   return (
     <div>
@@ -278,13 +287,27 @@ const AdminDonations = () => {
         </div>
       </div>
 
+      {!isLoading && donations.length > 0 && (
+        <div className="relative mb-4">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Rechercher par code de référence, référence de paiement, nom ou e-mail..."
+            className="pl-9"
+          />
+        </div>
+      )}
+
       {isLoading ? (
         <div className="text-center py-12 text-muted-foreground">Chargement...</div>
       ) : donations.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">Aucun don pour le moment.</div>
+      ) : filteredDonations.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">Aucun don ne correspond à « {search} ».</div>
       ) : (
         <div className="space-y-3">
-          {donations.map((d) => {
+          {filteredDonations.map((d) => {
             const country = d.donor_country ? findCountry(d.donor_country) : null;
             return (
             <div key={d.id} className="bg-card border border-border rounded-xl p-4 flex items-start gap-3">

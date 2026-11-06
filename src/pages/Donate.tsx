@@ -73,22 +73,25 @@ const Donate = () => {
     }
     setSending(true);
     const fullName = `${form.firstName.trim()} ${form.lastName.trim()}`;
-    const { data: inserted, error } = await supabase
-      .from("donations")
-      .insert({
-        donor_name: fullName,
-        donor_email: form.email.trim(),
-        donor_phone: form.phone.trim() || null,
-        donor_country: form.country.trim() || null,
-        amount: finalAmount,
-        method: selectedMethod.key,
-        payment_network: selectedMethod.key === "mobile_money" ? form.mobileNetwork : null,
-        message: form.message.trim() || null,
-      })
-      .select("reference_code")
-      .single();
+    // Generated client-side (not read back after insert): donors have no SELECT
+    // access to the donations table — that table holds other donors' contact
+    // details too, so RLS only grants admins/editors read access. Reading our
+    // own row back via .select() would make Postgres enforce that same SELECT
+    // policy on the RETURNING clause and reject the insert outright.
+    const referenceCode = `MUFO-${crypto.randomUUID().replace(/-/g, "").slice(0, 6).toUpperCase()}`;
+    const { error } = await supabase.from("donations").insert({
+      donor_name: fullName,
+      donor_email: form.email.trim(),
+      donor_phone: form.phone.trim() || null,
+      donor_country: form.country.trim() || null,
+      amount: finalAmount,
+      method: selectedMethod.key,
+      payment_network: selectedMethod.key === "mobile_money" ? form.mobileNetwork : null,
+      message: form.message.trim() || null,
+      reference_code: referenceCode,
+    });
     setSending(false);
-    if (error || !inserted) {
+    if (error) {
       toast.error(lang === "fr" ? "Une erreur est survenue. Réessayez." : "Something went wrong. Please try again.");
       return;
     }
@@ -99,10 +102,10 @@ const Donate = () => {
         amount: finalAmount,
         method: selectedMethod.key,
         network: selectedMethod.key === "mobile_money" ? form.mobileNetwork : undefined,
-        referenceCode: inserted.reference_code,
+        referenceCode,
       },
     }).catch(() => {});
-    setSuccessInfo({ code: inserted.reference_code });
+    setSuccessInfo({ code: referenceCode });
   };
 
   const allocation = [

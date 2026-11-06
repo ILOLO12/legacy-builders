@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { name, email, amount, method, network } = await req.json();
+    const { name, email, amount, method, network, referenceCode } = await req.json();
 
     if (!name || !email || !amount || !method) {
       return new Response(JSON.stringify({ error: "name, email, amount et method sont requis." }), {
@@ -103,10 +103,20 @@ Deno.serve(async (req) => {
       paymentInstructions = `<p>Notre équipe vous recontactera très prochainement avec les instructions de paiement.</p>`;
     }
 
+    const referenceBlock = referenceCode
+      ? `
+        <div style="background:#f4ede1; border:1px solid #d9c8a5; border-radius:8px; padding:14px 16px; margin:16px 0;">
+          <p style="margin:0 0 6px; font-size:13px; color:#555;">Important : indiquez ce code en référence / motif de votre virement ou de votre transaction Mobile Money, pour que nous puissions confirmer que le paiement vient bien de vous :</p>
+          <p style="margin:0; font-size:20px; font-weight:bold; letter-spacing:1px; color:#1a2b4c;">${referenceCode}</p>
+        </div>
+      `
+      : "";
+
     const donorHtml = `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
         <h2 style="color:#1a2b4c;">Merci pour votre don, ${name} !</h2>
         <p>Nous avons bien enregistré votre intention de don de <strong>${amount} $</strong> à Muller's Foundation (MUFO).</p>
+        ${referenceBlock}
         ${paymentInstructions}
         <p style="margin-top:24px;">Merci pour votre générosité et votre engagement à nos côtés.</p>
         <p style="color:#888; font-size:12px; margin-top:32px;">Muller's Foundation (MUFO) — mullerfoundation.org</p>
@@ -121,6 +131,7 @@ Deno.serve(async (req) => {
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
           <h2 style="color:#1a2b4c;">Nouvelle intention de don</h2>
           <p><strong>${name}</strong> (${email}) vient de promettre un don de <strong>${amount} $</strong> via ${method === "bank_transfer" ? "virement bancaire" : "Mobile Money" + (network ? ` (${network})` : "")}.</p>
+          ${referenceCode ? `<p>Code de référence à retrouver sur le relevé : <strong>${referenceCode}</strong></p>` : ""}
           <p>Consultez-la dans l'administration du site, section Dons.</p>
         </div>
       `;

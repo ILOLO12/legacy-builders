@@ -160,6 +160,8 @@ export type Database = {
           message: string | null
           method: string
           payment_network: string | null
+          payment_reference: string | null
+          reference_code: string
           status: string
         }
         Insert: {
@@ -178,6 +180,8 @@ export type Database = {
           message?: string | null
           method: string
           payment_network?: string | null
+          payment_reference?: string | null
+          reference_code?: string
           status?: string
         }
         Update: {
@@ -196,6 +200,8 @@ export type Database = {
           message?: string | null
           method?: string
           payment_network?: string | null
+          payment_reference?: string | null
+          reference_code?: string
           status?: string
         }
         Relationships: []

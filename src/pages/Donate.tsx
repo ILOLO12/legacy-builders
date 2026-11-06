@@ -9,7 +9,7 @@ import FormField, { fieldInputClass } from "@/components/FormField";
 import Honeypot from "@/components/Honeypot";
 import CountrySelect from "@/components/CountrySelect";
 import PhoneInput from "@/components/PhoneInput";
-import { CreditCard, Smartphone, User, Mail, Phone, Globe2, MessageSquare, Send, Loader2 } from "lucide-react";
+import { CreditCard, Smartphone, User, Mail, Phone, Globe2, MessageSquare, Send, Loader2, CheckCircle2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -40,6 +40,7 @@ const Donate = () => {
   });
   const [sending, setSending] = useState(false);
   const [honeypot, setHoneypot] = useState("");
+  const [successInfo, setSuccessInfo] = useState<{ code: string } | null>(null);
 
   const methods = [
     { key: "mobile_money", icon: Smartphone, name: c.mobileMoney, desc: c.mobileDesc },
@@ -52,6 +53,7 @@ const Donate = () => {
     setSelectedMethod(null);
     setForm({ firstName: "", lastName: "", email: "", phone: "", country: "", message: "", mobileNetwork: "" });
     setHoneypot("");
+    setSuccessInfo(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,26 +73,25 @@ const Donate = () => {
     }
     setSending(true);
     const fullName = `${form.firstName.trim()} ${form.lastName.trim()}`;
-    const { error } = await supabase.from("donations").insert({
-      donor_name: fullName,
-      donor_email: form.email.trim(),
-      donor_phone: form.phone.trim() || null,
-      donor_country: form.country.trim() || null,
-      amount: finalAmount,
-      method: selectedMethod.key,
-      payment_network: selectedMethod.key === "mobile_money" ? form.mobileNetwork : null,
-      message: form.message.trim() || null,
-    });
+    const { data: inserted, error } = await supabase
+      .from("donations")
+      .insert({
+        donor_name: fullName,
+        donor_email: form.email.trim(),
+        donor_phone: form.phone.trim() || null,
+        donor_country: form.country.trim() || null,
+        amount: finalAmount,
+        method: selectedMethod.key,
+        payment_network: selectedMethod.key === "mobile_money" ? form.mobileNetwork : null,
+        message: form.message.trim() || null,
+      })
+      .select("reference_code")
+      .single();
     setSending(false);
-    if (error) {
+    if (error || !inserted) {
       toast.error(lang === "fr" ? "Une erreur est survenue. Réessayez." : "Something went wrong. Please try again.");
       return;
     }
-    toast.success(
-      lang === "fr"
-        ? "Merci ! Nous avons bien reçu votre intention de don et allons vous recontacter avec les instructions."
-        : "Thank you! We've recorded your donation and will follow up with instructions."
-    );
     supabase.functions.invoke("send-donation-confirmation", {
       body: {
         name: fullName,
@@ -98,9 +99,10 @@ const Donate = () => {
         amount: finalAmount,
         method: selectedMethod.key,
         network: selectedMethod.key === "mobile_money" ? form.mobileNetwork : undefined,
+        referenceCode: inserted.reference_code,
       },
     }).catch(() => {});
-    closeDialog();
+    setSuccessInfo({ code: inserted.reference_code });
   };
 
   const allocation = [
@@ -222,6 +224,42 @@ const Donate = () => {
               ? "Nous enregistrons votre intention de don et vous recontactons avec les instructions de paiement — aucun paiement n'est prélevé ici."
               : "We record your donation pledge and follow up with payment instructions — nothing is charged here."}
           </p>
+          {successInfo ? (
+            <div className="space-y-4 pt-2 text-center">
+              <div className="w-14 h-14 rounded-full bg-green-500/10 flex items-center justify-center mx-auto">
+                <CheckCircle2 className="text-green-600" size={28} />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {lang === "fr"
+                  ? "Merci ! Votre intention de don est enregistrée. Pour que nous puissions confirmer votre paiement, merci d'indiquer ce code en référence / motif de votre virement ou de votre transaction Mobile Money :"
+                  : "Thank you! Your donation intent is recorded. To let us confirm your payment, please include this code as the reference / memo of your bank transfer or Mobile Money transaction:"}
+              </p>
+              <div className="flex items-center justify-center gap-2">
+                <code className="text-lg font-mono font-bold bg-accent/10 text-accent px-4 py-2 rounded-lg tracking-wider">
+                  {successInfo.code}
+                </code>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  onClick={() => {
+                    navigator.clipboard.writeText(successInfo.code);
+                    toast.success(lang === "fr" ? "Code copié" : "Code copied");
+                  }}
+                >
+                  <Copy size={14} />
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {lang === "fr"
+                  ? "Vous le retrouverez aussi dans l'e-mail de confirmation que nous venons de vous envoyer."
+                  : "You'll also find it in the confirmation email we just sent you."}
+              </p>
+              <Button type="button" variant="gold" className="w-full" onClick={closeDialog}>
+                {lang === "fr" ? "Fermer" : "Close"}
+              </Button>
+            </div>
+          ) : (
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
             <Honeypot value={honeypot} onChange={setHoneypot} />
 
@@ -282,6 +320,7 @@ const Donate = () => {
               {sending ? <Loader2 size={16} className="animate-spin" /> : <>{c.donateNow} <Send size={16} /></>}
             </Button>
           </form>
+          )}
         </DialogContent>
       </Dialog>
     </div>

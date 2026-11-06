@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { PieChart, Pie, Cell, Legend, Tooltip as RTooltip, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import {
   HeartHandshake, Trash2, Phone, Globe2, Smartphone, Landmark, Copy, Check,
-  Wallet, CheckCircle2, Clock3, TrendingUp, XCircle,
+  Wallet, CheckCircle2, Clock3, TrendingUp, XCircle, ShieldCheck,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { findCountry, countryFlag } from "@/data/countries";
@@ -52,6 +53,8 @@ const chartTooltipStyle = { background: "hsl(var(--card))", border: "1px solid h
 const AdminDonations = () => {
   const queryClient = useQueryClient();
   const [copied, setCopied] = useState(false);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [refInput, setRefInput] = useState("");
 
   const { data: donations = [], isLoading } = useQuery({
     queryKey: ["donations"],
@@ -93,8 +96,12 @@ const AdminDonations = () => {
   };
 
   const statusMutation = useMutation({
-    mutationFn: async ({ id, status, name, email, amount }: { id: string; status: string; name: string; email: string; amount: number }) => {
-      const { error } = await supabase.from("donations").update({ status }).eq("id", id);
+    mutationFn: async ({ id, status, name, email, amount, payment_reference }: {
+      id: string; status: string; name: string; email: string; amount: number; payment_reference?: string;
+    }) => {
+      const update: { status: string; payment_reference?: string } = { status };
+      if (payment_reference !== undefined) update.payment_reference = payment_reference;
+      const { error } = await supabase.from("donations").update(update).eq("id", id);
       if (error) throw error;
       if (status === "received") {
         await supabase.functions.invoke("send-donation-status", { body: { name, email, amount, status } }).catch(() => {});
@@ -292,6 +299,12 @@ const AdminDonations = () => {
                   <span className="text-xs bg-muted px-2 py-0.5 rounded-full font-medium">
                     {METHOD_LABELS[d.method] ?? d.method}
                   </span>
+                  <span
+                    className="text-xs bg-muted px-2 py-0.5 rounded-full font-mono"
+                    title="Code que le donateur doit indiquer dans le motif de son virement / Mobile Money"
+                  >
+                    {d.reference_code}
+                  </span>
                   <span className="text-xs text-muted-foreground ml-auto">
                     {new Date(d.created_at).toLocaleString("fr-FR")}
                   </span>
@@ -314,11 +327,57 @@ const AdminDonations = () => {
                   </p>
                 )}
 
+                {d.payment_reference && (
+                  <p className="text-xs text-green-700 flex items-center gap-1 mt-1">
+                    <ShieldCheck size={11} /> Référence confirmée sur relevé : <code className="text-foreground">{d.payment_reference}</code>
+                  </p>
+                )}
+
                 {d.message && <p className="text-sm text-muted-foreground whitespace-pre-wrap mt-1">{d.message}</p>}
+
+                {confirmingId === d.id && (
+                  <div className="mt-2 flex items-center gap-2 bg-muted/60 border border-border rounded-lg p-2">
+                    <Input
+                      autoFocus
+                      value={refInput}
+                      onChange={(e) => setRefInput(e.target.value)}
+                      placeholder="Référence exacte trouvée sur le relevé bancaire / Mobile Money"
+                      className="h-8 text-xs"
+                    />
+                    <Button
+                      size="sm"
+                      disabled={!refInput.trim() || statusMutation.isPending}
+                      onClick={() => {
+                        statusMutation.mutate({
+                          id: d.id,
+                          status: "received",
+                          name: d.donor_name,
+                          email: d.donor_email,
+                          amount: Number(d.amount),
+                          payment_reference: refInput.trim(),
+                        });
+                        setConfirmingId(null);
+                      }}
+                    >
+                      Confirmer
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setConfirmingId(null)}>
+                      Annuler
+                    </Button>
+                  </div>
+                )}
               </div>
               <select
                 value={d.status}
-                onChange={(e) => statusMutation.mutate({ id: d.id, status: e.target.value, name: d.donor_name, email: d.donor_email, amount: Number(d.amount) })}
+                onChange={(e) => {
+                  const newStatus = e.target.value;
+                  if (newStatus === "received" && !d.payment_reference) {
+                    setConfirmingId(d.id);
+                    setRefInput("");
+                    return;
+                  }
+                  statusMutation.mutate({ id: d.id, status: newStatus, name: d.donor_name, email: d.donor_email, amount: Number(d.amount) });
+                }}
                 className="text-xs border border-border rounded-md px-2 py-1.5 bg-background flex-shrink-0"
               >
                 {STATUS_OPTIONS.map((s) => (

@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Save, Plus, Trash2, Mail, ShieldAlert, Landmark } from "lucide-react";
+import { Save, Plus, Trash2, Mail, ShieldAlert, Landmark, HeartHandshake } from "lucide-react";
 import ImageUploadField from "@/components/admin/ImageUploadField";
 import { Switch } from "@/components/ui/switch";
 import { SITE_SETTINGS_DEFAULTS } from "@/hooks/useSiteSettings";
 
 const NOTIFICATIONS_KEY = "notifications_enabled";
+const DONATE_KEY = "donate_enabled";
 
 const IDENTITY_FIELDS: { key: keyof typeof SITE_SETTINGS_DEFAULTS; label: string; kind?: "image" }[] = [
   { key: "site_name", label: "Nom de l'organisation" },
@@ -178,7 +179,24 @@ const AdminSettings = () => {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const knownKeys = new Set([...IDENTITY_FIELDS.map((f) => f.key as string), ...BANK_FIELDS.map((f) => f.key), ...MOBILE_FIELDS.map((f) => f.key), NOTIFICATIONS_KEY]);
+  const donateRow = settings.find((s) => s.key === DONATE_KEY);
+  const donateEnabled = donateRow?.value === "true";
+  const donateMutation = useMutation({
+    mutationFn: async (nextEnabled: boolean) => {
+      const { error } = await supabase
+        .from("site_settings")
+        .upsert({ key: DONATE_KEY, value: String(nextEnabled) }, { onConflict: "key" });
+      if (error) throw error;
+    },
+    onSuccess: (_data, nextEnabled) => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "site_settings"] });
+      queryClient.invalidateQueries({ queryKey: ["site-settings"] });
+      toast.success(nextEnabled ? "Page de dons activée" : "Page de dons désactivée");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const knownKeys = new Set([...IDENTITY_FIELDS.map((f) => f.key as string), ...BANK_FIELDS.map((f) => f.key), ...MOBILE_FIELDS.map((f) => f.key), NOTIFICATIONS_KEY, DONATE_KEY]);
   const otherSettings = settings.filter((s) => !knownKeys.has(s.key));
 
   return (
@@ -210,6 +228,35 @@ const AdminSettings = () => {
             checked={notificationsEnabled}
             onCheckedChange={(v) => notificationsMutation.mutate(v)}
             disabled={notificationsMutation.isPending}
+          />
+        </div>
+      </div>
+
+      {/* Donate page — super-admin only switch, off until the client has paid for this feature */}
+      <div className="bg-card border border-border rounded-xl p-6 mb-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <HeartHandshake size={16} className="text-accent" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">Page de dons (Faire un don)</h3>
+              <p className="text-xs text-muted-foreground max-w-xl">
+                Contrôle la visibilité de la page /donate et de tous les boutons "Faire un don" sur le site (menu,
+                accueil, pied de page). Tant que c'est désactivé, la page affiche "Bientôt disponible" aux visiteurs.
+                Réservé à ton compte super-admin.
+              </p>
+              {!donateEnabled && (
+                <p className="text-xs text-amber-600 flex items-center gap-1 mt-2">
+                  <ShieldAlert size={12} /> Actuellement désactivée — la page et les boutons sont masqués au public.
+                </p>
+              )}
+            </div>
+          </div>
+          <Switch
+            checked={donateEnabled}
+            onCheckedChange={(v) => donateMutation.mutate(v)}
+            disabled={donateMutation.isPending}
           />
         </div>
       </div>

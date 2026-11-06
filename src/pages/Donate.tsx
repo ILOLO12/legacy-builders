@@ -9,19 +9,39 @@ import FormField, { fieldInputClass } from "@/components/FormField";
 import Honeypot from "@/components/Honeypot";
 import CountrySelect from "@/components/CountrySelect";
 import PhoneInput from "@/components/PhoneInput";
-import { CreditCard, Smartphone, User, Mail, Phone, Globe2, MessageSquare, Send, Loader2, CheckCircle2 } from "lucide-react";
+import { CreditCard, Smartphone, User, Mail, Phone, Globe2, MessageSquare, Send, Loader2, CheckCircle2, HeartHandshake } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSEO } from "@/hooks/useSEO";
 import { usePageContent } from "@/hooks/usePageContent";
+import { useDonateEnabled } from "@/hooks/useSiteSettings";
 import { supabase } from "@/integrations/supabase/client";
 
 const PRESET_AMOUNTS = [10, 25, 50, 100, 250];
 
 const MOBILE_NETWORKS = ["M-Pesa", "Orange Money", "Airtel Money", "Autre"];
 
+const DonateComingSoon = ({ lang }: { lang: string }) => (
+  <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="text-center max-w-md px-6">
+      <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6">
+        <HeartHandshake className="text-accent" size={28} />
+      </div>
+      <h1 className="text-2xl font-serif font-bold text-foreground mb-3">
+        {lang === "fr" ? "Bientôt disponible" : "Coming soon"}
+      </h1>
+      <p className="text-sm text-muted-foreground">
+        {lang === "fr"
+          ? "La page de dons en ligne est en cours de mise en place. Revenez bientôt, ou contactez-nous directement pour soutenir MUFO dès maintenant."
+          : "Our online donation page is being set up. Check back soon, or contact us directly to support MUFO right away."}
+      </p>
+    </div>
+  </div>
+);
+
 const Donate = () => {
   const { t, lang } = useLanguage();
+  const donateEnabled = useDonateEnabled();
   useSEO("Donate", "Support Muller's Foundation (MUFO) and help us restore hope and build a lasting legacy.");
   const c = usePageContent("donate", {
     ...t.donateP,
@@ -122,6 +142,10 @@ const Donate = () => {
     { label: c.philanthropy, pct: Number(c.philPct) || 0, color: "bg-secondary" },
     { label: c.administration, pct: Number(c.adminPct) || 0, color: "bg-muted-foreground" },
   ];
+
+  if (!donateEnabled) {
+    return <DonateComingSoon lang={lang} />;
+  }
 
   return (
     <div>

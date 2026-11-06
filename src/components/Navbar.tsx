@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown, Globe, Home, Info, Activity, Newspaper, Users, Phone, Heart, UserRound, BookOpen, HeartHandshake, Image, Briefcase } from "lucide-react";
 import { useLanguage, LANGUAGES } from "@/i18n/LanguageContext";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useSiteSettings, useDonateEnabled } from "@/hooks/useSiteSettings";
 import logoFallback from "@/assets/logo-icon.png";
 import {
   DropdownMenu,
@@ -20,6 +20,7 @@ const Navbar = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { lang, setLang, t } = useLanguage();
   const settings = useSiteSettings();
+  const donateEnabled = useDonateEnabled();
 
   const mainLinks = [
     { path: "/", label: t.nav.home, icon: Home },
@@ -160,11 +161,13 @@ const Navbar = () => {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Link to="/donate">
-            <Button variant="gold" size="sm" className="hidden sm:inline-flex">
-              {t.nav.donate}
-            </Button>
-          </Link>
+          {donateEnabled && (
+            <Link to="/donate">
+              <Button variant="gold" size="sm" className="hidden sm:inline-flex">
+                {t.nav.donate}
+              </Button>
+            </Link>
+          )}
           <button
             className="lg:hidden p-2 text-primary-foreground"
             onClick={() => setOpen(!open)}
@@ -214,9 +217,11 @@ const Navbar = () => {
                 </Link>
               )
             )}
-            <Link to="/donate" className="mt-2">
-              <Button variant="gold" className="w-full">{t.nav.donate}</Button>
-            </Link>
+            {donateEnabled && (
+              <Link to="/donate" className="mt-2">
+                <Button variant="gold" className="w-full">{t.nav.donate}</Button>
+              </Link>
+            )}
           </div>
         </div>
       )}

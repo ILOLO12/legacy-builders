@@ -20,6 +20,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
 import { usePageContent } from "@/hooks/usePageContent";
+import { useDonateEnabled } from "@/hooks/useSiteSettings";
 
 // Splits a CMS-editable stat string like "4000+" into the numeric value
 // Counter animates and whatever trails it (e.g. "+").
@@ -39,6 +40,7 @@ const heroImages = [
 
 const Home = () => {
   const { t } = useLanguage();
+  const donateEnabled = useDonateEnabled();
   useSEO("Home", "International humanitarian NGO transforming potential into sustainable opportunity through education, health, and community development.");
   const c = usePageContent("home", t.home);
   const founderContent = usePageContent("founder", t.founder);
@@ -138,11 +140,13 @@ const Home = () => {
                   {t.home.learnMore}
                 </Button>
               </Link>
-              <Link to="/donate">
-                <Button variant="gold" size="lg" className="text-base px-8">
-                  {t.home.donate}
-                </Button>
-              </Link>
+              {donateEnabled && (
+                <Link to="/donate">
+                  <Button variant="gold" size="lg" className="text-base px-8">
+                    {t.home.donate}
+                  </Button>
+                </Link>
+              )}
             </div>
             {/* Dot indicators */}
             <div className="mt-8 flex justify-center gap-2">

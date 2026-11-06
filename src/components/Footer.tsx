@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
 import { Lock, Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useSiteSettings, useDonateEnabled } from "@/hooks/useSiteSettings";
 import { usePageContent } from "@/hooks/usePageContent";
 import logoFallback from "@/assets/logo-icon.png";
 
 const Footer = () => {
   const { t } = useLanguage();
   const settings = useSiteSettings();
+  const donateEnabled = useDonateEnabled();
   const content = usePageContent("footer", { desc: t.footer.desc });
 
   const socialLinks = [
@@ -60,7 +61,9 @@ const Footer = () => {
             <h4 className="font-semibold mb-4 text-accent text-sm uppercase tracking-wider">{t.footer.getInvolved}</h4>
             <ul className="space-y-2 text-sm opacity-70">
               <li><Link to="/membership" className="hover:opacity-100 transition-opacity">{t.footer.becomeMember}</Link></li>
-              <li><Link to="/donate" className="hover:opacity-100 transition-opacity">{t.footer.makeDonation}</Link></li>
+              {donateEnabled && (
+                <li><Link to="/donate" className="hover:opacity-100 transition-opacity">{t.footer.makeDonation}</Link></li>
+              )}
               <li><Link to="/team" className="hover:opacity-100 transition-opacity">{t.footer.ourTeam}</Link></li>
             </ul>
           </div>

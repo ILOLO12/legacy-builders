@@ -15,6 +15,7 @@ export const SITE_SETTINGS_DEFAULTS = {
   social_instagram: "",
   social_linkedin: "",
   social_youtube: "",
+  donate_enabled: "false",
 } as const;
 
 export type SiteSettings = typeof SITE_SETTINGS_DEFAULTS;
@@ -37,4 +38,9 @@ export function useSiteSettings(): SiteSettings {
     }
     return merged as SiteSettings;
   }, [data]);
+}
+
+/** Donate page/CTAs stay hidden site-wide until a super-admin turns this on (Admin -> Paramètres). */
+export function useDonateEnabled(): boolean {
+  return useSiteSettings().donate_enabled === "true";
 }

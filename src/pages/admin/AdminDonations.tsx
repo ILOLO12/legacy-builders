@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { PieChart, Pie, Cell, Legend, Tooltip as RTooltip, ResponsiveContainer } from "recharts";
+import {
+  PieChart, Pie, Cell, Legend, Tooltip as RTooltip, ResponsiveContainer,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+} from "recharts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
   HeartHandshake, Trash2, Phone, Globe2, Smartphone, Landmark, Copy, Check,
@@ -10,6 +14,9 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { findCountry, countryFlag } from "@/data/countries";
+import type { Tables } from "@/integrations/supabase/types";
+
+type Donation = Tables<"donations">;
 
 const BANK_SETTING_KEYS = ["donation_bank_name", "donation_bank_holder", "donation_bank_account", "donation_bank_swift"] as const;
 
@@ -27,7 +34,8 @@ const STATUS_OPTIONS = [
   { value: "cancelled", label: "Annulé" },
 ];
 
-const METHOD_PIE_COLORS = ["hsl(var(--accent))", "hsl(var(--primary))", "hsl(var(--secondary))", "hsl(var(--destructive))"];
+const METHOD_PIE_COLORS = ["hsl(217 91% 60%)", "hsl(271 81% 56%)", "hsl(173 58% 39%)", "hsl(24 95% 53%)"];
+const STATUS_COLORS = { received: "hsl(142 71% 45%)", pending: "hsl(38 92% 50%)", cancelled: "hsl(0 72% 51%)" };
 
 const StatTile = ({ label, value, suffix, icon: Icon, tone = "default" }: {
   label: string; value: number; suffix?: string; icon: typeof Wallet; tone?: "default" | "positive" | "warning";
@@ -53,7 +61,7 @@ const chartTooltipStyle = { background: "hsl(var(--card))", border: "1px solid h
 const AdminDonations = () => {
   const queryClient = useQueryClient();
   const [copied, setCopied] = useState(false);
-  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [confirmDonation, setConfirmDonation] = useState<Donation | null>(null);
   const [search, setSearch] = useState("");
   const [refInput, setRefInput] = useState("");
 
@@ -141,9 +149,9 @@ const AdminDonations = () => {
   const completionRate = pledgedTotal > 0 ? Math.round((receivedTotal / pledgedTotal) * 100) : 0;
 
   const statusBreakdown = [
-    { name: "Reçu", value: receivedTotal, fill: "hsl(142 60% 42%)" },
-    { name: "En attente", value: pendingTotal, fill: "hsl(var(--primary))" },
-    { name: "Annulé", value: cancelledTotal, fill: "hsl(var(--destructive))" },
+    { name: "Reçu", value: receivedTotal, fill: STATUS_COLORS.received },
+    { name: "En attente", value: pendingTotal, fill: STATUS_COLORS.pending },
+    { name: "Annulé", value: cancelledTotal, fill: STATUS_COLORS.cancelled },
   ].filter((s) => s.value > 0);
 
   const methodTotals = receivedDonations.reduce((acc, d) => {
@@ -156,6 +164,24 @@ const AdminDonations = () => {
     value,
     fill: METHOD_PIE_COLORS[i % METHOD_PIE_COLORS.length],
   }));
+
+  const monthlySeries = (() => {
+    const now = new Date();
+    const months = Array.from({ length: 6 }, (_, i) => {
+      const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+      return { key: `${d.getFullYear()}-${d.getMonth()}`, label: d.toLocaleDateString("fr-FR", { month: "short" }), pledged: 0, received: 0 };
+    });
+    donations.forEach((d) => {
+      if (d.status === "cancelled") return;
+      const created = new Date(d.created_at);
+      const bucket = months.find((m) => m.key === `${created.getFullYear()}-${created.getMonth()}`);
+      if (!bucket) return;
+      bucket.pledged += Number(d.amount);
+      if (d.status === "received") bucket.received += Number(d.amount);
+    });
+    return months;
+  })();
+  const hasMonthlyData = monthlySeries.some((m) => m.pledged > 0);
 
   const searchQuery = search.trim().toLowerCase();
   const filteredDonations = searchQuery
@@ -209,7 +235,7 @@ const AdminDonations = () => {
             <div className="h-4 rounded-full bg-muted overflow-hidden">
               <div
                 className="h-full rounded-full transition-all"
-                style={{ width: `${Math.min(100, completionRate)}%`, background: "hsl(142 60% 42%)" }}
+                style={{ width: `${Math.min(100, completionRate)}%`, background: STATUS_COLORS.received }}
               />
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
@@ -265,6 +291,25 @@ const AdminDonations = () => {
                 </ResponsiveContainer>
               )}
             </div>
+          </div>
+
+          <div className="bg-card border border-border rounded-xl p-6 mt-6 shadow-sm">
+            <h3 className="font-semibold text-foreground mb-2">Évolution sur 6 mois — promis vs reçu</h3>
+            {!hasMonthlyData ? (
+              <p className="text-sm text-muted-foreground py-12 text-center">Pas encore assez de dons pour une tendance.</p>
+            ) : (
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={monthlySeries}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border" />
+                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                  <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} allowDecimals={false} />
+                  <RTooltip formatter={(v: number) => `${v.toLocaleString()} ${mainCurrency}`} contentStyle={chartTooltipStyle} />
+                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                  <Bar dataKey="pledged" name="Promis" fill="hsl(38 92% 65%)" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="received" name="Reçu" fill={STATUS_COLORS.received} radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
       )}
@@ -357,45 +402,13 @@ const AdminDonations = () => {
                 )}
 
                 {d.message && <p className="text-sm text-muted-foreground whitespace-pre-wrap mt-1">{d.message}</p>}
-
-                {confirmingId === d.id && (
-                  <div className="mt-2 flex items-center gap-2 bg-muted/60 border border-border rounded-lg p-2">
-                    <Input
-                      autoFocus
-                      value={refInput}
-                      onChange={(e) => setRefInput(e.target.value)}
-                      placeholder="Référence exacte trouvée sur le relevé bancaire / Mobile Money"
-                      className="h-8 text-xs"
-                    />
-                    <Button
-                      size="sm"
-                      disabled={!refInput.trim() || statusMutation.isPending}
-                      onClick={() => {
-                        statusMutation.mutate({
-                          id: d.id,
-                          status: "received",
-                          name: d.donor_name,
-                          email: d.donor_email,
-                          amount: Number(d.amount),
-                          payment_reference: refInput.trim(),
-                        });
-                        setConfirmingId(null);
-                      }}
-                    >
-                      Confirmer
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => setConfirmingId(null)}>
-                      Annuler
-                    </Button>
-                  </div>
-                )}
               </div>
               <select
                 value={d.status}
                 onChange={(e) => {
                   const newStatus = e.target.value;
                   if (newStatus === "received" && !d.payment_reference) {
-                    setConfirmingId(d.id);
+                    setConfirmDonation(d);
                     setRefInput("");
                     return;
                   }
@@ -414,6 +427,52 @@ const AdminDonations = () => {
           );})}
         </div>
       )}
+
+      <Dialog open={!!confirmDonation} onOpenChange={(open) => !open && setConfirmDonation(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ShieldCheck size={18} className="text-accent" /> Confirmer la réception du don
+            </DialogTitle>
+            <DialogDescription>
+              {confirmDonation && (
+                <>
+                  {confirmDonation.donor_name} · {confirmDonation.amount.toLocaleString()} {confirmDonation.currency} · code{" "}
+                  <code className="font-mono text-foreground">{confirmDonation.reference_code}</code>
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            autoFocus
+            value={refInput}
+            onChange={(e) => setRefInput(e.target.value)}
+            placeholder="Référence exacte trouvée sur le relevé bancaire / Mobile Money"
+          />
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="ghost" onClick={() => setConfirmDonation(null)}>
+              Annuler
+            </Button>
+            <Button
+              disabled={!refInput.trim() || statusMutation.isPending}
+              onClick={() => {
+                if (!confirmDonation) return;
+                statusMutation.mutate({
+                  id: confirmDonation.id,
+                  status: "received",
+                  name: confirmDonation.donor_name,
+                  email: confirmDonation.donor_email,
+                  amount: Number(confirmDonation.amount),
+                  payment_reference: refInput.trim(),
+                });
+                setConfirmDonation(null);
+              }}
+            >
+              Confirmer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

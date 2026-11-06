@@ -9,7 +9,7 @@ import FormField, { fieldInputClass } from "@/components/FormField";
 import Honeypot from "@/components/Honeypot";
 import CountrySelect from "@/components/CountrySelect";
 import PhoneInput from "@/components/PhoneInput";
-import { CreditCard, Smartphone, User, Mail, Phone, Globe2, MessageSquare, Send, Loader2, CheckCircle2, Copy } from "lucide-react";
+import { CreditCard, Smartphone, User, Mail, Phone, Globe2, MessageSquare, Send, Loader2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -234,29 +234,13 @@ const Donate = () => {
               </div>
               <p className="text-sm text-muted-foreground">
                 {lang === "fr"
-                  ? "Merci ! Votre intention de don est enregistrée. Pour que nous puissions confirmer votre paiement, merci d'indiquer ce code en référence / motif de votre virement ou de votre transaction Mobile Money :"
-                  : "Thank you! Your donation intent is recorded. To let us confirm your payment, please include this code as the reference / memo of your bank transfer or Mobile Money transaction:"}
+                  ? "Merci ! Votre intention de don est enregistrée. Nous venons de vous envoyer un e-mail de confirmation avec un code de référence personnel — indiquez-le en référence / motif de votre virement ou de votre transaction Mobile Money pour que nous puissions confirmer votre paiement."
+                  : "Thank you! Your donation intent is recorded. We've just sent you a confirmation email with a personal reference code — include it as the reference / memo of your bank transfer or Mobile Money transaction so we can confirm your payment."}
               </p>
-              <div className="flex items-center justify-center gap-2">
-                <code className="text-lg font-mono font-bold bg-accent/10 text-accent px-4 py-2 rounded-lg tracking-wider">
-                  {successInfo.code}
-                </code>
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="outline"
-                  onClick={() => {
-                    navigator.clipboard.writeText(successInfo.code);
-                    toast.success(lang === "fr" ? "Code copié" : "Code copied");
-                  }}
-                >
-                  <Copy size={14} />
-                </Button>
-              </div>
               <p className="text-xs text-muted-foreground">
                 {lang === "fr"
-                  ? "Vous le retrouverez aussi dans l'e-mail de confirmation que nous venons de vous envoyer."
-                  : "You'll also find it in the confirmation email we just sent you."}
+                  ? "Pensez à vérifier vos courriers indésirables si vous ne le voyez pas d'ici quelques minutes."
+                  : "Check your spam folder if you don't see it within a few minutes."}
               </p>
               <Button type="button" variant="gold" className="w-full" onClick={closeDialog}>
                 {lang === "fr" ? "Fermer" : "Close"}

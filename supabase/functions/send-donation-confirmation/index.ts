@@ -40,7 +40,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { name, email, amount, method, network, referenceCode } = await req.json();
+    const { name, email, amount, method, network, referenceCode, donorType, companyName } = await req.json();
+    const isCompany = donorType === "company" && companyName;
 
     if (!name || !email || !amount || !method) {
       return new Response(JSON.stringify({ error: "name, email, amount et method sont requis." }), {
@@ -115,7 +116,7 @@ Deno.serve(async (req) => {
     const donorHtml = `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
         <h2 style="color:#1a2b4c;">Merci pour votre don, ${name} !</h2>
-        <p>Nous avons bien enregistré votre intention de don de <strong>${amount} $</strong> à Muller's Foundation (MUFO).</p>
+        <p>Nous avons bien enregistré ${isCompany ? `l'intention de don de <strong>${companyName}</strong> (contact : ${name})` : "votre intention de don"} de <strong>${amount} $</strong> à Muller's Foundation (MUFO).</p>
         ${referenceBlock}
         ${paymentInstructions}
         <p style="margin-top:24px;">Merci pour votre générosité et votre engagement à nos côtés.</p>
@@ -130,7 +131,7 @@ Deno.serve(async (req) => {
       const adminHtml = `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
           <h2 style="color:#1a2b4c;">Nouvelle intention de don</h2>
-          <p><strong>${name}</strong> (${email}) vient de promettre un don de <strong>${amount} $</strong> via ${method === "bank_transfer" ? "virement bancaire" : "Mobile Money" + (network ? ` (${network})` : "")}.</p>
+          <p>${isCompany ? `<strong>${companyName}</strong> (contact : ${name}, ${email})` : `<strong>${name}</strong> (${email})`} vient de promettre un don de <strong>${amount} $</strong> via ${method === "bank_transfer" ? "virement bancaire" : "Mobile Money" + (network ? ` (${network})` : "")}.</p>
           ${referenceCode ? `<p>Code de référence à retrouver sur le relevé : <strong>${referenceCode}</strong></p>` : ""}
           <p>Consultez-la dans l'administration du site, section Dons.</p>
         </div>

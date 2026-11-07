@@ -150,12 +150,15 @@ export type Database = {
           bank_account_number: string | null
           bank_name: string | null
           bank_swift: string | null
+          company_name: string | null
+          company_tax_id: string | null
           created_at: string
           currency: string
           donor_country: string | null
           donor_email: string
           donor_name: string
           donor_phone: string | null
+          donor_type: string
           id: string
           message: string | null
           method: string
@@ -170,12 +173,15 @@ export type Database = {
           bank_account_number?: string | null
           bank_name?: string | null
           bank_swift?: string | null
+          company_name?: string | null
+          company_tax_id?: string | null
           created_at?: string
           currency?: string
           donor_country?: string | null
           donor_email: string
           donor_name: string
           donor_phone?: string | null
+          donor_type?: string
           id?: string
           message?: string | null
           method: string
@@ -190,12 +196,15 @@ export type Database = {
           bank_account_number?: string | null
           bank_name?: string | null
           bank_swift?: string | null
+          company_name?: string | null
+          company_tax_id?: string | null
           created_at?: string
           currency?: string
           donor_country?: string | null
           donor_email?: string
           donor_name?: string
           donor_phone?: string | null
+          donor_type?: string
           id?: string
           message?: string | null
           method?: string

@@ -9,7 +9,7 @@ import FormField, { fieldInputClass } from "@/components/FormField";
 import Honeypot from "@/components/Honeypot";
 import CountrySelect from "@/components/CountrySelect";
 import PhoneInput from "@/components/PhoneInput";
-import { CreditCard, Smartphone, User, Mail, Phone, Globe2, MessageSquare, Send, Loader2, CheckCircle2, HeartHandshake } from "lucide-react";
+import { CreditCard, Smartphone, User, Mail, Phone, Globe2, MessageSquare, Send, Loader2, CheckCircle2, HeartHandshake, Building2, Hash } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -54,9 +54,10 @@ const Donate = () => {
   const [amount, setAmount] = useState<number | "">(50);
   const [customAmount, setCustomAmount] = useState("");
   const [selectedMethod, setSelectedMethod] = useState<{ key: string; name: string } | null>(null);
+  const [donorType, setDonorType] = useState<"individual" | "company">("individual");
   const [form, setForm] = useState({
     firstName: "", lastName: "", email: "", phone: "", country: "", message: "",
-    mobileNetwork: "",
+    mobileNetwork: "", companyName: "", companyTaxId: "",
   });
   const [sending, setSending] = useState(false);
   const [honeypot, setHoneypot] = useState("");
@@ -71,7 +72,8 @@ const Donate = () => {
 
   const closeDialog = () => {
     setSelectedMethod(null);
-    setForm({ firstName: "", lastName: "", email: "", phone: "", country: "", message: "", mobileNetwork: "" });
+    setForm({ firstName: "", lastName: "", email: "", phone: "", country: "", message: "", mobileNetwork: "", companyName: "", companyTaxId: "" });
+    setDonorType("individual");
     setHoneypot("");
     setSuccessInfo(null);
   };
@@ -85,6 +87,10 @@ const Donate = () => {
     }
     if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.phone.trim() || !selectedMethod || !finalAmount || finalAmount <= 0) {
       toast.error(lang === "fr" ? "Merci de remplir les champs obligatoires." : "Please fill in the required fields.");
+      return;
+    }
+    if (donorType === "company" && !form.companyName.trim()) {
+      toast.error(lang === "fr" ? "Merci d'indiquer le nom de l'entreprise." : "Please enter the company name.");
       return;
     }
     if (selectedMethod.key === "mobile_money" && !form.mobileNetwork) {
@@ -109,6 +115,9 @@ const Donate = () => {
       payment_network: selectedMethod.key === "mobile_money" ? form.mobileNetwork : null,
       message: form.message.trim() || null,
       reference_code: referenceCode,
+      donor_type: donorType,
+      company_name: donorType === "company" ? form.companyName.trim() : null,
+      company_tax_id: donorType === "company" ? form.companyTaxId.trim() || null : null,
     });
     setSending(false);
     if (error) {
@@ -131,6 +140,8 @@ const Donate = () => {
         method: selectedMethod.key,
         network: selectedMethod.key === "mobile_money" ? form.mobileNetwork : undefined,
         referenceCode,
+        donorType,
+        companyName: donorType === "company" ? form.companyName.trim() : undefined,
       },
     }).catch(() => {});
     setSuccessInfo({ code: referenceCode });
@@ -282,11 +293,66 @@ const Donate = () => {
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
             <Honeypot value={honeypot} onChange={setHoneypot} />
 
+            <div>
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-primary uppercase tracking-wide mb-2">
+                {lang === "fr" ? "Vous donnez en tant que" : "You're donating as"}
+              </label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setDonorType("individual")}
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border-2 transition-colors ${
+                    donorType === "individual" ? "bg-accent text-accent-foreground border-accent" : "bg-card border-border hover:border-accent/50"
+                  }`}
+                >
+                  <User size={15} /> {lang === "fr" ? "Particulier" : "Individual"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDonorType("company")}
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border-2 transition-colors ${
+                    donorType === "company" ? "bg-accent text-accent-foreground border-accent" : "bg-card border-border hover:border-accent/50"
+                  }`}
+                >
+                  <Building2 size={15} /> {lang === "fr" ? "Entreprise" : "Company"}
+                </button>
+              </div>
+            </div>
+
+            {donorType === "company" && (
+              <div className="grid sm:grid-cols-2 gap-4">
+                <FormField icon={Building2} label={lang === "fr" ? "Nom de l'entreprise *" : "Company name *"}>
+                  <Input
+                    value={form.companyName}
+                    onChange={(e) => setForm({ ...form, companyName: e.target.value })}
+                    maxLength={120}
+                    className={fieldInputClass}
+                  />
+                </FormField>
+                <FormField icon={Hash} label={lang === "fr" ? "N° RCCM / NIF (optionnel)" : "Tax / registration ID (optional)"}>
+                  <Input
+                    value={form.companyTaxId}
+                    onChange={(e) => setForm({ ...form, companyTaxId: e.target.value })}
+                    maxLength={60}
+                    className={fieldInputClass}
+                  />
+                </FormField>
+              </div>
+            )}
+
             <div className="grid sm:grid-cols-2 gap-4">
-              <FormField icon={User} label={lang === "fr" ? "Prénom *" : "First name *"}>
+              <FormField icon={User} label={
+                donorType === "company"
+                  ? (lang === "fr" ? "Prénom du contact *" : "Contact first name *")
+                  : (lang === "fr" ? "Prénom *" : "First name *")
+              }>
                 <Input value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} maxLength={60} className={fieldInputClass} />
               </FormField>
-              <FormField icon={User} label={lang === "fr" ? "Nom *" : "Last name *"}>
+              <FormField icon={User} label={
+                donorType === "company"
+                  ? (lang === "fr" ? "Nom du contact *" : "Contact last name *")
+                  : (lang === "fr" ? "Nom *" : "Last name *")
+              }>
                 <Input value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} maxLength={60} className={fieldInputClass} />
               </FormField>
             </div>

@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { toast } from "sonner";
 import {
   HeartHandshake, Trash2, Phone, Globe2, Smartphone, Landmark, Copy, Check,
-  Wallet, CheckCircle2, Clock3, TrendingUp, XCircle, ShieldCheck, Search,
+  Wallet, CheckCircle2, Clock3, TrendingUp, XCircle, ShieldCheck, Search, Building2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { findCountry, countryFlag } from "@/data/countries";
@@ -186,7 +186,7 @@ const AdminDonations = () => {
   const searchQuery = search.trim().toLowerCase();
   const filteredDonations = searchQuery
     ? donations.filter((d) =>
-        [d.reference_code, d.payment_reference, d.donor_name, d.donor_email]
+        [d.reference_code, d.payment_reference, d.donor_name, d.donor_email, d.company_name]
           .some((v) => v?.toLowerCase().includes(searchQuery))
       )
     : donations;
@@ -208,7 +208,7 @@ const AdminDonations = () => {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher par code de référence, référence de paiement, nom ou e-mail..."
+            placeholder="Rechercher par code de référence, référence de paiement, nom, entreprise ou e-mail..."
             className="pl-9"
           />
         </div>
@@ -359,7 +359,14 @@ const AdminDonations = () => {
               <HeartHandshake size={16} className="text-primary mt-1 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <p className="font-semibold text-sm text-foreground">{d.donor_name}</p>
+                  <p className="font-semibold text-sm text-foreground">
+                    {d.donor_type === "company" ? d.company_name : d.donor_name}
+                  </p>
+                  {d.donor_type === "company" && (
+                    <span className="text-xs bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                      <Building2 size={10} /> Entreprise
+                    </span>
+                  )}
                   <a href={`mailto:${d.donor_email}`} className="text-xs text-accent hover:underline">{d.donor_email}</a>
                   <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full font-medium">
                     {d.amount.toLocaleString()} {d.currency}
@@ -379,6 +386,12 @@ const AdminDonations = () => {
                 </div>
 
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground mb-1">
+                  {d.donor_type === "company" && (
+                    <span className="flex items-center gap-1">
+                      <HeartHandshake size={11} /> Contact : {d.donor_name}
+                      {d.company_tax_id && ` · RCCM/NIF : ${d.company_tax_id}`}
+                    </span>
+                  )}
                   {d.donor_phone && <span className="flex items-center gap-1"><Phone size={11} /> {d.donor_phone}</span>}
                   {country && <span className="flex items-center gap-1"><Globe2 size={11} /> {countryFlag(country.code)} {country.fr}</span>}
                 </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation, NavLink } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminTheme } from "@/hooks/useAdminTheme";
+import { useDonateEnabled } from "@/hooks/useSiteSettings";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import {
   Newspaper, Users, Activity, Handshake, Image, MessageSquareQuote,
@@ -10,12 +11,13 @@ import {
 } from "lucide-react";
 
 // adminOnly: true = hidden from and blocked for editors (super-admin-only sections)
+// requiresDonate: true = hidden from and blocked for everyone while the Donate feature is off (unpaid)
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Tableau de bord", end: true, adminOnly: false },
   { to: "/admin/analytics", icon: BarChart3, label: "Statistiques", adminOnly: true },
   { to: "/admin/messages", icon: Mail, label: "Messages", adminOnly: false },
   { to: "/admin/memberships", icon: UserPlus, label: "Adhésions", adminOnly: true },
-  { to: "/admin/donations", icon: HeartHandshake, label: "Dons", adminOnly: false },
+  { to: "/admin/donations", icon: HeartHandshake, label: "Dons", adminOnly: false, requiresDonate: true },
   { to: "/admin/pages", icon: FileText, label: "Pages du site", adminOnly: false },
   { to: "/admin/contact-info", icon: Mail, label: "Coordonnées de contact", adminOnly: false },
   { to: "/admin/articles", icon: Newspaper, label: "Articles", adminOnly: false },
@@ -34,9 +36,11 @@ const navItems = [
 ];
 
 const ADMIN_ONLY_PATHS = navItems.filter((i) => i.adminOnly).map((i) => i.to);
+const DONATE_PATHS = navItems.filter((i) => i.requiresDonate).map((i) => i.to);
 
 const AdminLayout = () => {
   const { user, isAdmin, isEditor, loading, signOut } = useAuth();
+  const donateEnabled = useDonateEnabled();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -55,6 +59,12 @@ const AdminLayout = () => {
   }, [isAdmin, isEditor, location.pathname, navigate]);
 
   useEffect(() => {
+    if (!donateEnabled && DONATE_PATHS.some((p) => location.pathname.startsWith(p))) {
+      navigate("/admin", { replace: true });
+    }
+  }, [donateEnabled, location.pathname, navigate]);
+
+  useEffect(() => {
     setMobileNavOpen(false);
   }, [location.pathname]);
 
@@ -68,7 +78,7 @@ const AdminLayout = () => {
 
   if (!user || !(isAdmin || isEditor)) return null;
 
-  const visibleNavItems = navItems.filter((item) => isAdmin || !item.adminOnly);
+  const visibleNavItems = navItems.filter((item) => (isAdmin || !item.adminOnly) && (donateEnabled || !item.requiresDonate));
 
   const navLinks = (
     <>

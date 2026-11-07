@@ -18,7 +18,10 @@ export const SITE_SETTINGS_DEFAULTS = {
   donate_enabled: "false",
 } as const;
 
-export type SiteSettings = typeof SITE_SETTINGS_DEFAULTS;
+// Values are widened to `string`: the defaults use `as const`, which would
+// otherwise pin each key to its literal default (e.g. donate_enabled: "false")
+// and make any comparison against another value a type error.
+export type SiteSettings = { [K in keyof typeof SITE_SETTINGS_DEFAULTS]: string };
 
 export function useSiteSettings(): SiteSettings {
   const { data } = useQuery({

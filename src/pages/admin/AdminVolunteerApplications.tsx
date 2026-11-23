@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import JSZip from "jszip";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Briefcase, Trash2, Phone, Globe2, GraduationCap, Building2, FileText, Loader2, CalendarClock } from "lucide-react";
+import { Briefcase, Trash2, Phone, Globe2, GraduationCap, Building2, FileText, Loader2, CalendarClock, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { findCountry, countryFlag } from "@/data/countries";
 import { getMembershipCVUrl } from "@/lib/mediaStorage";
+
+/** Keeps a readable name but strips characters a zip entry / filesystem can't take. */
+const safeFileSegment = (s: string) => s.trim().replace(/[\\/:*?"<>|]+/g, "-").slice(0, 60) || "sans-nom";
 
 const STATUS_OPTIONS = [
   { value: "pending", label: "En attente" },
@@ -17,6 +21,8 @@ const STATUS_OPTIONS = [
 const AdminVolunteerApplications = () => {
   const queryClient = useQueryClient();
   const [openingCv, setOpeningCv] = useState<string | null>(null);
+  const [downloadingAll, setDownloadingAll] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState({ done: 0, total: 0 });
 
   const { data: applications = [], isLoading } = useQuery({
     queryKey: ["volunteer_applications"],
@@ -66,11 +72,100 @@ const AdminVolunteerApplications = () => {
     }
   };
 
+  // Bundles every CV and cover letter into one ZIP so an admin can archive
+  // them locally, then delete the originals from Storage to free up space —
+  // the bucket has no automatic cleanup otherwise.
+  const downloadAllCVs = async () => {
+    const files: { path: string; label: string }[] = [];
+    applications.forEach((a) => {
+      if (a.cv_url) files.push({ path: a.cv_url, label: `${safeFileSegment(a.applicant_name)} - CV` });
+      if (a.motivation_letter_url) {
+        files.push({ path: a.motivation_letter_url, label: `${safeFileSegment(a.applicant_name)} - Lettre de motivation` });
+      }
+    });
+    if (files.length === 0) {
+      toast.error("Aucun CV ou lettre de motivation à télécharger.");
+      return;
+    }
+
+    setDownloadingAll(true);
+    setDownloadProgress({ done: 0, total: files.length });
+    try {
+      const zip = new JSZip();
+      const usedNames = new Set<string>();
+      let failed = 0;
+
+      for (const f of files) {
+        try {
+          const url = await getMembershipCVUrl(f.path);
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const blob = await res.blob();
+
+          let name = `${f.label}.pdf`;
+          let i = 2;
+          while (usedNames.has(name)) {
+            name = `${f.label} (${i}).pdf`;
+            i += 1;
+          }
+          usedNames.add(name);
+          zip.file(name, blob);
+        } catch {
+          failed += 1;
+        }
+        setDownloadProgress((p) => ({ ...p, done: p.done + 1 }));
+      }
+
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `MUFO-CV-candidatures-${new Date().toISOString().slice(0, 10)}.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      if (failed > 0) {
+        toast.error(`${failed} fichier(s) n'ont pas pu être téléchargés (lien expiré ou fichier manquant).`);
+      } else {
+        toast.success(`${files.length} fichier(s) téléchargés dans l'archive ZIP.`);
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Échec du téléchargement groupé.");
+    } finally {
+      setDownloadingAll(false);
+    }
+  };
+
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-serif font-bold text-foreground">Candidatures Volontariat</h1>
-        <p className="text-sm text-muted-foreground mt-1">Candidatures envoyées depuis la page publique Volontariat.</p>
+      <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-3xl font-serif font-bold text-foreground">Candidatures Volontariat</h1>
+          <p className="text-sm text-muted-foreground mt-1">Candidatures envoyées depuis la page publique Volontariat.</p>
+        </div>
+        <div className="flex flex-col items-end gap-1.5">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 flex-shrink-0"
+            onClick={downloadAllCVs}
+            disabled={downloadingAll || applications.length === 0}
+          >
+            {downloadingAll ? (
+              <>
+                <Loader2 size={14} className="animate-spin" />
+                {downloadProgress.done}/{downloadProgress.total}
+              </>
+            ) : (
+              <>
+                <Download size={14} /> Télécharger tous les CV (ZIP)
+              </>
+            )}
+          </Button>
+          <p className="text-xs text-muted-foreground max-w-xs text-right">
+            Pour libérer de l'espace de stockage, archivez puis supprimez les originaux.
+          </p>
+        </div>
       </div>
 
       {isLoading ? (

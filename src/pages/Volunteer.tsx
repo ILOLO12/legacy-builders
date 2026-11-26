@@ -129,7 +129,15 @@ const Volunteer = () => {
     });
     setSending(false);
     if (error) {
-      toast.error(lang === "fr" ? "Une erreur est survenue. Réessayez." : "Something went wrong. Please try again.");
+      if (error.code === "23505") {
+        toast.error(
+          lang === "fr"
+            ? "Vous avez déjà une candidature en attente pour ce poste avec cette adresse e-mail. Merci d'attendre notre réponse avant d'en soumettre une nouvelle."
+            : "You already have a pending application for this position with this email address. Please wait for our response before submitting a new one."
+        );
+      } else {
+        toast.error(lang === "fr" ? "Une erreur est survenue. Réessayez." : "Something went wrong. Please try again.");
+      }
       return;
     }
     toast.success(

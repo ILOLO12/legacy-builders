@@ -52,6 +52,9 @@ const Contact = () => {
       toast.error(t.contact.errorFields);
       return;
     }
+    supabase.functions.invoke("send-contact-confirmation", {
+      body: { name: form.name.trim(), email: form.email.trim(), subject: form.subject.trim() || undefined },
+    }).catch(() => {});
     toast.success(t.contact.successMsg);
     setForm({ name: "", email: "", subject: "", message: "" });
   };

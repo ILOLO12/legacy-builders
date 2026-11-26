@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Save, Plus, Trash2, Mail, ShieldAlert, Landmark, HeartHandshake } from "lucide-react";
+import { Save, Plus, Trash2, Mail, ShieldAlert, Landmark, HeartHandshake, MessageSquare } from "lucide-react";
 import ImageUploadField from "@/components/admin/ImageUploadField";
 import { Switch } from "@/components/ui/switch";
 import { SITE_SETTINGS_DEFAULTS } from "@/hooks/useSiteSettings";
 
 const NOTIFICATIONS_KEY = "notifications_enabled";
 const DONATE_KEY = "donate_enabled";
+const CONTACT_CONFIRMATION_KEY = "contact_confirmation_enabled";
 
 const IDENTITY_FIELDS: { key: keyof typeof SITE_SETTINGS_DEFAULTS; label: string; kind?: "image" }[] = [
   { key: "site_name", label: "Nom de l'organisation" },
@@ -196,7 +197,23 @@ const AdminSettings = () => {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const knownKeys = new Set([...IDENTITY_FIELDS.map((f) => f.key as string), ...BANK_FIELDS.map((f) => f.key), ...MOBILE_FIELDS.map((f) => f.key), NOTIFICATIONS_KEY, DONATE_KEY]);
+  const contactConfirmationRow = settings.find((s) => s.key === CONTACT_CONFIRMATION_KEY);
+  const contactConfirmationEnabled = contactConfirmationRow?.value === "true";
+  const contactConfirmationMutation = useMutation({
+    mutationFn: async (nextEnabled: boolean) => {
+      const { error } = await supabase
+        .from("site_settings")
+        .upsert({ key: CONTACT_CONFIRMATION_KEY, value: String(nextEnabled) }, { onConflict: "key" });
+      if (error) throw error;
+    },
+    onSuccess: (_data, nextEnabled) => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "site_settings"] });
+      toast.success(nextEnabled ? "Confirmation des demandes de contact activée" : "Confirmation des demandes de contact désactivée");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const knownKeys = new Set([...IDENTITY_FIELDS.map((f) => f.key as string), ...BANK_FIELDS.map((f) => f.key), ...MOBILE_FIELDS.map((f) => f.key), NOTIFICATIONS_KEY, DONATE_KEY, CONTACT_CONFIRMATION_KEY]);
   const otherSettings = settings.filter((s) => !knownKeys.has(s.key));
 
   return (
@@ -257,6 +274,35 @@ const AdminSettings = () => {
             checked={donateEnabled}
             onCheckedChange={(v) => donateMutation.mutate(v)}
             disabled={donateMutation.isPending}
+          />
+        </div>
+      </div>
+
+      {/* Contact-form confirmation — super-admin only switch, off until the client has paid for this feature */}
+      <div className="bg-card border border-border rounded-xl p-6 mb-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <MessageSquare size={16} className="text-accent" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">Confirmation des demandes de contact</h3>
+              <p className="text-xs text-muted-foreground max-w-xl">
+                Envoie automatiquement un e-mail "nous avons bien reçu votre demande" à toute personne qui soumet le
+                formulaire Contact, et une alerte à l'adresse de contact. Indépendant de l'interrupteur de
+                notifications ci-dessus. Réservé à ton compte super-admin.
+              </p>
+              {!contactConfirmationEnabled && (
+                <p className="text-xs text-amber-600 flex items-center gap-1 mt-2">
+                  <ShieldAlert size={12} /> Actuellement désactivée — aucun e-mail automatique ne part pour le formulaire Contact.
+                </p>
+              )}
+            </div>
+          </div>
+          <Switch
+            checked={contactConfirmationEnabled}
+            onCheckedChange={(v) => contactConfirmationMutation.mutate(v)}
+            disabled={contactConfirmationMutation.isPending}
           />
         </div>
       </div>
